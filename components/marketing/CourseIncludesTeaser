@@ -1,0 +1,96 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+
+export default function CourseIncludesTeaser() {
+  const router = useRouter();
+
+  const cards = [
+    {
+      title: 'Video Lessons (TEAS-Aligned)',
+      bullets: [
+        'Reading, Math, Science, and English coverage',
+        'Deep Anatomy & Physiology system lessons',
+        'Math walkthroughs + common word problem types',
+      ],
+      accent: 'border-[#20B2AA] hover:shadow-[0_20px_60px_-30px_rgba(32,178,170,0.5)]',
+    },
+    {
+      title: 'Readings + Notes',
+      bullets: [
+        'A&P chapter-style readings (tissues, systems, organization)',
+        'Downloadable/onscreen notes for key skills',
+        'High-yield cheat sheets for quick review',
+      ],
+      accent: 'border-slate-200 hover:border-[#1E3A8A]',
+    },
+    {
+      title: 'Practice That Targets Weak Spots',
+      bullets: [
+        'Skill-based quizzes by topic',
+        'Reading/English practice in exam-style blocks',
+        'Instant feedback to fix mistakes immediately',
+      ],
+      accent: 'border-slate-200 hover:border-[#20B2AA]',
+    },
+    {
+      title: 'Exams That Feel Like Test Day',
+      bullets: [
+        '50-question diagnostic with instant scoring',
+        'Multiple practice exams + full-length simulations',
+        'Certificate after completion (practice exam section)',
+      ],
+      accent: 'border-slate-200 hover:border-[#F59E0B]',
+    },
+  ];
+
+  return (
+    <section id="whats-included" className="py-28 bg-white">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-14">
+          <h2 className="text-4xl font-extrabold text-[#1A1A1A] tracking-tight">
+            What’s Included in StudyBuddy TEAS 7 Prep
+          </h2>
+          <p className="mt-4 text-xl text-slate-600 max-w-3xl mx-auto">
+            Complete coverage for Reading, Math, Science (A&amp;P-heavy), and English—with realistic practice exams and an AI Tutor when you get stuck.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+          {cards.map((c) => (
+            <div
+              key={c.title}
+              className={`rounded-3xl border bg-white p-8 shadow-sm transition-all duration-300 ${c.accent}`}
+            >
+              <h3 className="text-2xl font-bold text-[#1A1A1A] mb-4">{c.title}</h3>
+              <ul className="space-y-3">
+                {c.bullets.map((b) => (
+                  <li key={b} className="flex items-start gap-3 text-base text-slate-700">
+                    <span className="mt-2 h-2 w-2 rounded-full bg-[#20B2AA] shrink-0" />
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
+          <button
+            onClick={() => router.push('/diagnostic')}
+            className="min-h-[56px] px-8 py-3.5 rounded-2xl bg-[#20B2AA] text-white text-lg font-bold shadow-[0_10px_40px_-10px_rgba(32,178,170,0.5)] hover:bg-[#18968F] hover:scale-105 transition-all duration-300"
+          >
+            Start Free Diagnostic
+          </button>
+
+          <button
+            onClick={() => document.getElementById('curriculum')?.scrollIntoView({ behavior: 'smooth' })}
+            className="min-h-[56px] px-8 py-3.5 rounded-2xl bg-white border-2 border-slate-200 text-slate-700 text-lg font-bold hover:border-[#20B2AA] hover:bg-slate-50 transition-all"
+          >
+            View Full Curriculum
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}

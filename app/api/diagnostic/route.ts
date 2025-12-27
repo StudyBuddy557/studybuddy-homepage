@@ -1,0 +1,71 @@
+import { NextResponse } from 'next/server';
+import { db } from '@/lib/firebase'; // Ensure this path matches your project
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+
+export async function POST(request: Request) {
+  try {
+    const data = await request.json();
+    const { email, score, correctCount, results } = data;
+
+    if (!email) {
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+    }
+
+    console.log('Processing diagnostic for:', email);
+
+    // ---------------------------------------------------------
+    // 1. SAVE TO FIRESTORE (The "Leads" Collection)
+    // ---------------------------------------------------------
+    try {
+      // We use the client SDK pattern here as defined in your coding conventions
+      const docRef = await addDoc(collection(db, 'leads'), {
+        email,
+        score,
+        correctCount,
+        examType: 'TEAS 7',
+        createdAt: serverTimestamp(), // Uses server time for accuracy
+        // Optional: save full detailed results if you want deep analytics later
+        details: results 
+      });
+      console.log('Saved to Firestore with ID:', docRef.id);
+    } catch (dbError) {
+      console.error('Firestore Error:', dbError);
+      // We continue to MailerLite even if Firestore fails
+    }
+
+    // ---------------------------------------------------------
+    // 2. SEND TO MAILERLITE (Optional but recommended)
+    // ---------------------------------------------------------
+    const MAILERLITE_KEY = process.env.MAILERLITE_API_KEY;
+    
+    if (MAILERLITE_KEY) {
+      try {
+        await fetch('https://connect.mailerlite.com/api/subscribers', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${MAILERLITE_KEY}`,
+          },
+          body: JSON.stringify({
+            email: email,
+            fields: {
+              dt_score: score, 
+            },
+            groups: ['YOUR_GROUP_ID'] // Add your MailerLite Group ID here
+          }),
+        });
+      } catch (mlError) {
+        console.error('MailerLite Error:', mlError);
+      }
+    }
+
+    return NextResponse.json({ success: true, message: 'Lead captured' });
+
+  } catch (error) {
+    console.error('Diagnostic API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
+}

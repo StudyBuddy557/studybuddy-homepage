@@ -1,0 +1,85 @@
+export interface StateData {
+  slug: string;
+  name: string;
+  programs_count: string;
+  avg_salary: string;
+  abbreviation: string;
+}
+
+export const stateData: StateData[] = [
+  // High-volume
+  { slug: "california", name: "California", programs_count: "180+", avg_salary: "$124,000", abbreviation: "CA" },
+  { slug: "texas", name: "Texas", programs_count: "165+", avg_salary: "$77,600", abbreviation: "TX" },
+  { slug: "florida", name: "Florida", programs_count: "145+", avg_salary: "$75,500", abbreviation: "FL" },
+  { slug: "new-york", name: "New York", programs_count: "155+", avg_salary: "$93,300", abbreviation: "NY" },
+  { slug: "pennsylvania", name: "Pennsylvania", programs_count: "125+", avg_salary: "$79,300", abbreviation: "PA" },
+  
+  // Mid-Atlantic
+  { slug: "new-jersey", name: "New Jersey", programs_count: "85+", avg_salary: "$89,700", abbreviation: "NJ" },
+  { slug: "maryland", name: "Maryland", programs_count: "65+", avg_salary: "$84,600", abbreviation: "MD" },
+  { slug: "virginia", name: "Virginia", programs_count: "95+", avg_salary: "$77,200", abbreviation: "VA" },
+  { slug: "delaware", name: "Delaware", programs_count: "12+", avg_salary: "$79,500", abbreviation: "DE" },
+  { slug: "west-virginia", name: "West Virginia", programs_count: "35+", avg_salary: "$68,100", abbreviation: "WV" },
+  
+  // Southeast
+  { slug: "north-carolina", name: "North Carolina", programs_count: "110+", avg_salary: "$73,800", abbreviation: "NC" },
+  { slug: "south-carolina", name: "South Carolina", programs_count: "55+", avg_salary: "$71,200", abbreviation: "SC" },
+  { slug: "georgia", name: "Georgia", programs_count: "95+", avg_salary: "$75,900", abbreviation: "GA" },
+  { slug: "alabama", name: "Alabama", programs_count: "65+", avg_salary: "$67,800", abbreviation: "AL" },
+  { slug: "mississippi", name: "Mississippi", programs_count: "45+", avg_salary: "$65,400", abbreviation: "MS" },
+  { slug: "louisiana", name: "Louisiana", programs_count: "60+", avg_salary: "$71,300", abbreviation: "LA" },
+  { slug: "tennessee", name: "Tennessee", programs_count: "75+", avg_salary: "$69,700", abbreviation: "TN" },
+  { slug: "kentucky", name: "Kentucky", programs_count: "55+", avg_salary: "$68,900", abbreviation: "KY" },
+  { slug: "arkansas", name: "Arkansas", programs_count: "40+", avg_salary: "$66,800", abbreviation: "AR" },
+  
+  // Midwest
+  { slug: "ohio", name: "Ohio", programs_count: "130+", avg_salary: "$75,600", abbreviation: "OH" },
+  { slug: "michigan", name: "Michigan", programs_count: "105+", avg_salary: "$79,200", abbreviation: "MI" },
+  { slug: "illinois", name: "Illinois", programs_count: "120+", avg_salary: "$81,900", abbreviation: "IL" },
+  { slug: "indiana", name: "Indiana", programs_count: "70+", avg_salary: "$71,500", abbreviation: "IN" },
+  { slug: "wisconsin", name: "Wisconsin", programs_count: "75+", avg_salary: "$78,400", abbreviation: "WI" },
+  { slug: "missouri", name: "Missouri", programs_count: "80+", avg_salary: "$72,200", abbreviation: "MO" },
+  { slug: "iowa", name: "Iowa", programs_count: "50+", avg_salary: "$67,900", abbreviation: "IA" },
+  { slug: "minnesota", name: "Minnesota", programs_count: "65+", avg_salary: "$83,700", abbreviation: "MN" },
+  { slug: "kansas", name: "Kansas", programs_count: "45+", avg_salary: "$68,500", abbreviation: "KS" },
+  { slug: "nebraska", name: "Nebraska", programs_count: "30+", avg_salary: "$69,300", abbreviation: "NE" },
+  { slug: "south-dakota", name: "South Dakota", programs_count: "18+", avg_salary: "$66,200", abbreviation: "SD" },
+  { slug: "north-dakota", name: "North Dakota", programs_count: "15+", avg_salary: "$72,800", abbreviation: "ND" },
+  
+  // Southwest
+  { slug: "arizona", name: "Arizona", programs_count: "55+", avg_salary: "$84,800", abbreviation: "AZ" },
+  { slug: "new-mexico", name: "New Mexico", programs_count: "25+", avg_salary: "$77,900", abbreviation: "NM" },
+  { slug: "oklahoma", name: "Oklahoma", programs_count: "50+", avg_salary: "$67,200", abbreviation: "OK" },
+  
+  // Mountain West
+  { slug: "colorado", name: "Colorado", programs_count: "50+", avg_salary: "$82,100", abbreviation: "CO" },
+  { slug: "utah", name: "Utah", programs_count: "30+", avg_salary: "$75,800", abbreviation: "UT" },
+  { slug: "nevada", name: "Nevada", programs_count: "20+", avg_salary: "$92,500", abbreviation: "NV" },
+  { slug: "idaho", name: "Idaho", programs_count: "18+", avg_salary: "$73,600", abbreviation: "ID" },
+  { slug: "montana", name: "Montana", programs_count: "12+", avg_salary: "$71,900", abbreviation: "MT" },
+  { slug: "wyoming", name: "Wyoming", programs_count: "8+", avg_salary: "$74,300", abbreviation: "WY" },
+  
+  // Pacific Northwest
+  { slug: "washington", name: "Washington", programs_count: "65+", avg_salary: "$95,300", abbreviation: "WA" },
+  { slug: "oregon", name: "Oregon", programs_count: "40+", avg_salary: "$98,600", abbreviation: "OR" },
+  
+  // New England
+  { slug: "massachusetts", name: "Massachusetts", programs_count: "90+", avg_salary: "$99,800", abbreviation: "MA" },
+  { slug: "connecticut", name: "Connecticut", programs_count: "45+", avg_salary: "$89,400", abbreviation: "CT" },
+  { slug: "rhode-island", name: "Rhode Island", programs_count: "15+", avg_salary: "$87,200", abbreviation: "RI" },
+  { slug: "vermont", name: "Vermont", programs_count: "12+", avg_salary: "$76,500", abbreviation: "VT" },
+  { slug: "new-hampshire", name: "New Hampshire", programs_count: "18+", avg_salary: "$79,800", abbreviation: "NH" },
+  { slug: "maine", name: "Maine", programs_count: "20+", avg_salary: "$76,100", abbreviation: "ME" },
+  
+  // Pacific & Non-Contiguous
+  { slug: "hawaii", name: "Hawaii", programs_count: "15+", avg_salary: "$106,500", abbreviation: "HI" },
+  { slug: "alaska", name: "Alaska", programs_count: "8+", avg_salary: "$91,200", abbreviation: "AK" },
+];
+
+export function getStateBySlug(slug: string): StateData | undefined {
+  return stateData.find((state) => state.slug === slug);
+}
+
+export function getAllStateSlugs(): string[] {
+  return stateData.map((state) => state.slug);
+}
