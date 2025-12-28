@@ -1,82 +1,104 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { clsx } from 'clsx';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { Menu, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
-export function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const pathname = usePathname();
-
-  // Handle scroll effect for glassmorphism
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+// ✅ CHANGED to 'export default' to match layout.tsx import
+export default function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   return (
-    <header
-      className={clsx(
-        'fixed top-0 left-0 right-0 z-40 transition-all duration-300 ease-in-out hidden md:block', // Hidden on mobile, visible desktop
-        isScrolled
-          ? 'h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm'
-          : 'h-24 bg-transparent border-b border-transparent'
-      )}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 rounded-xl bg-[#20B2AA] flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-[#20B2AA]/20 group-hover:scale-110 transition-transform">
-            S
-          </div>
-          <span className="font-extrabold text-2xl tracking-tight text-slate-900">
-            Study<span className="text-[#20B2AA]">Buddy</span>
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 h-24 flex items-center transition-all">
+      <div className="max-w-7xl mx-auto px-4 w-full flex items-center justify-between">
+        
+        {/* LOGO */}
+        <Link href="/" className="flex items-center gap-3 group">
+          <img 
+            src="/logo.png" 
+            alt="StudyBuddy Logo" 
+            className="h-14 w-auto object-contain group-hover:scale-105 transition-transform duration-300" 
+          />
+          <span className="font-bold text-slate-900 text-2xl tracking-tight group-hover:text-[#20B2AA] transition-colors">
+            StudyBuddy
           </span>
         </Link>
 
-        {/* Desktop Links */}
-        <nav className="flex items-center gap-8">
-          {[
-            { label: 'Diagnostic', href: '/diagnostic' },
-            { label: 'Syllabus', href: '/teas-7-syllabus' },
-            { label: 'State Reqs', href: '/states' },
-            { label: 'Pricing', href: '/pricing' },
-          ].map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={clsx(
-                'text-sm font-bold transition-colors',
-                pathname === link.href
-                  ? 'text-[#20B2AA]'
-                  : 'text-slate-500 hover:text-slate-900'
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-
-        {/* Auth / CTA */}
-        <div className="flex items-center gap-4">
-          <a
-            href="https://learn.studybuddy.live/login"
-            className="text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors"
-          >
+        {/* DESKTOP LINKS - AEO OPTIMIZED */}
+        <div className="hidden lg:flex items-center gap-6">
+          <Link href="/teas-7-syllabus" className="text-sm font-medium text-slate-600 hover:text-[#20B2AA] transition-colors">
+            Syllabus
+          </Link>
+          <Link href="/ai-tutor" className="text-sm font-medium text-slate-600 hover:text-[#20B2AA] transition-colors">
+            AI Tutor
+          </Link>
+          <Link href="/states" className="text-sm font-medium text-slate-600 hover:text-[#20B2AA] transition-colors">
+            State Req's
+          </Link>
+          <Link href="/#pricing" className="text-sm font-medium text-slate-600 hover:text-[#20B2AA] transition-colors">
+            Pricing
+          </Link>
+          
+          {/* External Login Link */}
+          <a href="https://learn.studybuddy.live/login" className="text-sm font-bold text-slate-900 hover:text-[#20B2AA] transition-colors ml-2">
             Log In
           </a>
-          <Link
-            href="/pricing"
-            className="px-6 py-2.5 rounded-xl bg-[#1A1A1A] text-white text-sm font-bold shadow-lg hover:bg-[#20B2AA] hover:shadow-[#20B2AA]/25 hover:-translate-y-0.5 transition-all"
+
+          {/* CTA WIRED TO DIAGNOSTIC */}
+          <button 
+            onClick={() => router.push('/diagnostic')}
+            className="px-5 py-2.5 bg-[#20B2AA] text-white text-sm font-bold rounded-full hover:bg-[#18968F] transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
           >
-            Get Started
-          </Link>
+            Start Free Diagnostic
+          </button>
         </div>
+
+        {/* MOBILE MENU TOGGLE */}
+        <button className="lg:hidden p-2 text-slate-600 hover:text-[#20B2AA]" onClick={() => setIsOpen(!isOpen)}>
+          {isOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
       </div>
-    </header>
+
+      {/* MOBILE MENU */}
+      {isOpen && (
+        <div className="lg:hidden absolute top-24 left-0 right-0 bg-white border-b border-slate-100 p-6 flex flex-col gap-4 shadow-xl animate-in slide-in-from-top-5 duration-200 h-[calc(100vh-6rem)] overflow-y-auto">
+          <Link href="/teas-7-syllabus" className="text-lg text-slate-600 font-medium hover:text-[#20B2AA] py-2 border-b border-slate-50" onClick={() => setIsOpen(false)}>
+            TEAS 7 Syllabus
+          </Link>
+          <Link href="/ai-tutor" className="text-lg text-slate-600 font-medium hover:text-[#20B2AA] py-2 border-b border-slate-50" onClick={() => setIsOpen(false)}>
+            AI Tutor Feature
+          </Link>
+          <Link href="/states" className="text-lg text-slate-600 font-medium hover:text-[#20B2AA] py-2 border-b border-slate-50" onClick={() => setIsOpen(false)}>
+            State Requirements
+          </Link>
+          <Link href="/compare/teas-prep-courses" className="text-lg text-slate-600 font-medium hover:text-[#20B2AA] py-2 border-b border-slate-50" onClick={() => setIsOpen(false)}>
+            Competitor Comparison
+          </Link>
+          <Link href="/pass-rate-methodology" className="text-lg text-slate-600 font-medium hover:text-[#20B2AA] py-2 border-b border-slate-50" onClick={() => setIsOpen(false)}>
+            Pass Rate Methodology
+          </Link>
+          <Link href="/#pricing" className="text-lg text-slate-600 font-medium hover:text-[#20B2AA] py-2 border-b border-slate-50" onClick={() => setIsOpen(false)}>
+            Pricing
+          </Link>
+          
+          <a href="https://learn.studybuddy.live/login" className="text-lg text-slate-900 font-bold hover:text-[#20B2AA] py-2" onClick={() => setIsOpen(false)}>
+            Log In
+          </a>
+          
+          {/* Mobile CTA */}
+          <button 
+            onClick={() => {
+              setIsOpen(false);
+              router.push('/diagnostic');
+            }}
+            className="w-full py-3 mt-2 bg-[#20B2AA] text-white text-lg font-bold rounded-xl shadow-md active:scale-95 transition-transform"
+          >
+            Start Free Diagnostic
+          </button>
+        </div>
+      )}
+    </nav>
   );
 }

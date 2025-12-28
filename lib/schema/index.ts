@@ -1,0 +1,2 @@
+export type SchemaType = 'Organization' | 'Product' | 'FAQPage' | 'Course' | 'Dataset' | 'HowTo' | 'WarrantyPromise';
+export interface BaseSchema { '@context': 'https://schema.org'; '@type': SchemaType; }
