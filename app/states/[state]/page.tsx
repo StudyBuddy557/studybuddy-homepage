@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getStateDetail } from '@/lib/data/state-details';
-import { getAllStateSlugs } from '@/state-data'; // Using your existing file for static params
+import { getAllStateSlugs } from '@/lib/state-data'; // Using your existing file for static params
 import { generateStateCredentialSchema } from '@/lib/schema';
 import { JsonLd } from '@/components/JsonLd';
 import { MapPin, School, Trophy, DollarSign, CheckCircle2, ArrowRight } from 'lucide-react';
