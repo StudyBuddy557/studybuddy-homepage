@@ -1,20 +1,35 @@
 'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Script from 'next/script';
-import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import { 
+  Check, 
+  MessageSquare, 
+  Calculator, 
+  Zap, 
+  BookOpen, 
+  ShieldCheck, 
+  ArrowRight, 
+  ChevronDown, 
+  Users, 
+  Award, 
+  MapPin,
+  Star,
+  Brain,
+  Sparkles
+} from 'lucide-react';
+
 // NOTE: Ensure these components exist or comment them out if they don't yet!
 import { ComparisonTable } from '@/components/ComparisonTable'; 
-import { Check, MessageSquare, Calculator, Zap, BookOpen, ShieldCheck, ArrowRight, ChevronDown, Users, Award, MapPin } from 'lucide-react';
-
 const FAQ = dynamic(() => import('@/components/marketing/FAQ'), { ssr: false });
 
 // --- LINKS CONFIGURATION ---
 const LINKS = {
   DIAGNOSTIC: '/diagnostic',
-  CHECKOUT_BASIC: 'https://buy.stripe.com/eVq7sKbtn7IR5ma5jhcjS05',
-  CHECKOUT_PRO: 'https://buy.stripe.com/bJe8wO6930gpdSG275cjS04',
+  CHECKOUT: '/register', 
   REFUND_POLICY: '/refunds',
 };
 
@@ -29,17 +44,61 @@ const states = [
   'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
 ];
 
-// --- SCHEMA.ORG DATA ---
+// --- AEO SCHEMA DATA ---
 const schema = {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "StudyBuddy",
-  "url": "https://www.studybuddy.live",
-  "logo": "https://www.studybuddy.live/logo.png",
-  "description": "AI-powered TEAS 7 test prep with expert-designed curriculum. 92% pass rate guarantee.",
-  "sameAs": [
-    "https://www.facebook.com/studybuddylive",
-    "https://twitter.com/studybuddylive"
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://studybuddy.live/#organization",
+      "name": "StudyBuddy",
+      "url": "https://www.studybuddy.live",
+      "logo": "https://www.studybuddy.live/logo.png",
+      "description": "AI-powered TEAS 7 test preparation platform built by nursing professors.",
+      "knowsAbout": ["TEAS 7 Exam", "ATI TEAS", "Nursing School Admissions", "Pre-Nursing Test Prep"],
+      "sameAs": [
+        "https://www.facebook.com/studybuddylive",
+        "https://twitter.com/studybuddylive"
+      ]
+    },
+    {
+      "@type": "Product",
+      "name": "StudyBuddy Unlimited TEAS Prep",
+      "description": "Comprehensive TEAS 7 preparation course with unlimited AI tutoring, 4,000+ practice questions, and professor-led video lectures.",
+      "offers": {
+        "@type": "Offer",
+        "price": "24.99",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "url": "https://studybuddy.live/pricing"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "523"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How much does StudyBuddy cost?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "StudyBuddy costs $24.99 per month, or you can save money with our 3-month plan for $59. Both plans include unlimited access to the AI Tutor and all study materials."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is StudyBuddy good for the TEAS 7?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. StudyBuddy is specifically built for the ATI TEAS 7 exam by nursing professors. It features a 92% first-time pass rate based on over 500 student results."
+          }
+        }
+      ]
+    }
   ]
 };
 
@@ -93,16 +152,14 @@ function SalesBot() {
         <div className="w-[calc(100vw-48px)] sm:w-[400px] overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-black/5 animate-in slide-in-from-bottom-10 fade-in duration-300 origin-bottom-right">
           <div className="flex items-center gap-4 bg-gradient-to-r from-[#20B2AA] to-[#18968F] p-5 text-white">
             <div className="relative shrink-0">
-              <img
-                src="/StudyBuddy_AI_tutor_Avatar.png"
-                className="h-12 w-12 rounded-full border-2 border-white/30 bg-white object-cover"
-                alt="AI Tutor"
-              />
+              <div className="h-12 w-12 rounded-full border-2 border-white/30 bg-white flex items-center justify-center text-teal-600">
+                <Brain className="w-8 h-8" />
+              </div>
               <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-[#18968F] bg-[#10B981]"></div>
             </div>
             <div className="flex-1 min-w-0">
-              <div className="font-bold text-lg leading-tight">StudyBuddy</div>
-              <div className="text-xs font-medium text-blue-50 opacity-90">TEAS 7 Expert • Online</div>
+              <div className="font-bold text-lg leading-tight">StudyBuddy AI</div>
+              <div className="text-xs font-medium text-blue-50 opacity-90">TEAS 7 Tutor • Online</div>
             </div>
             <button
               onClick={() => setIsOpen(false)}
@@ -118,7 +175,7 @@ function SalesBot() {
           <div className="bg-[#F8FAFC] p-5">
             <div className="mb-5 rounded-2xl rounded-tl-none border border-slate-200 bg-white p-4 text-[15px] leading-relaxed text-slate-700 shadow-sm">
               <span className="block font-bold text-[#20B2AA] text-xs mb-1 uppercase tracking-wider">AI Tutor</span>
-              Hi! 👋 Preparing for the TEAS 7? I can help you find your weak spots or check if you're ready.
+              Hi! 👋 Preparing for the TEAS 7? I can help you find your weak spots instantly.
             </div>
 
             <div className="flex flex-col gap-3">
@@ -187,8 +244,8 @@ export default function Home() {
 
           <div className="container mx-auto px-4 max-w-6xl text-center">
             <div className="inline-flex items-center gap-2 bg-[#20B2AA]/10 text-[#20B2AA] px-4 py-1.5 rounded-full text-xs font-bold tracking-wider mb-6">
-              <span className="flex h-2 w-2 rounded-full bg-[#20B2AA] animate-pulse"></span>
-              UPDATED FOR TEAS VERSION 7
+              <Star className="w-4 h-4 fill-current" />
+              92% FIRST-TIME PASS RATE
             </div>
 
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 mb-6 leading-tight">
@@ -199,7 +256,7 @@ export default function Home() {
             </h1>
 
             <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-10 leading-relaxed">
-              Join 50,000+ students using AI-powered diagnostics and expert-designed curriculum to boost their TEAS scores by 15% on average.
+              Join 500+ students using the only unlimited AI Tutor and professor-designed curriculum to master the TEAS 7 exam.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
@@ -220,6 +277,23 @@ export default function Home() {
               >
                 View Study Plans
               </button>
+            </div>
+            
+            <div className="flex flex-col md:flex-row items-center justify-center gap-6 text-sm font-medium text-slate-500">
+                <div className="flex items-center gap-2">
+                    <Check className="w-5 h-5 text-teal-500" />
+                    <span>$24.99/month</span>
+                </div>
+                <div className="hidden md:block w-1 h-1 bg-slate-300 rounded-full"></div>
+                <div className="flex items-center gap-2">
+                    <Check className="w-5 h-5 text-teal-500" />
+                    <span>Cancel anytime</span>
+                </div>
+                <div className="hidden md:block w-1 h-1 bg-slate-300 rounded-full"></div>
+                <div className="flex items-center gap-2">
+                    <Check className="w-5 h-5 text-teal-500" />
+                    <span>Money-back guarantee</span>
+                </div>
             </div>
           </div>
         </section>
@@ -387,19 +461,7 @@ export default function Home() {
                           <p className="text-sm text-slate-600">20+ years NCLEX & TEAS test prep expertise</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center shrink-0">
-                          <span className="text-lg font-bold text-indigo-600">EdD</span>
-                        </div>
-                        <div>
-                          <p className="font-bold text-slate-900">Instructional Technology</p>
-                          <p className="text-sm text-slate-600">30+ years designing adaptive learning systems</p>
-                        </div>
-                      </div>
                     </div>
-                    <p className="text-slate-600 leading-relaxed">
-                      Every lesson, every practice question, every video is created by subject-matter experts who've spent decades teaching nursing students. <strong className="text-slate-900">AI is only as good as the content it delivers</strong>—and ours is written by the best.
-                    </p>
                   </div>
                   <div className="relative">
                     <div className="absolute -inset-4 bg-gradient-to-tr from-indigo-200/30 to-blue-50 rounded-full blur-2xl"></div>
@@ -420,10 +482,6 @@ export default function Home() {
                           <span className="text-sm font-medium text-slate-700">Content Accuracy</span>
                           <span className="text-sm font-bold text-indigo-600">PhD-Verified</span>
                         </div>
-                        <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                          <span className="text-sm font-medium text-slate-700">Teaching Experience</span>
-                          <span className="text-sm font-bold text-indigo-600">75+ Years</span>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -439,9 +497,9 @@ export default function Home() {
                   </div>
                   <h3 className="text-2xl font-bold text-slate-900 mb-3">AI Delivers It Smarter</h3>
                   <p className="text-slate-500 leading-relaxed mb-6">
-                    Our PhD-designed curriculum is delivered through an AI tutor that adapts to your learning style, identifies weak spots instantly, and explains concepts 24/7. <strong className="text-slate-900">The AI doesn't create the content—it makes expert teaching available anytime.</strong>
+                    Our PhD-designed curriculum is delivered through an AI tutor that adapts to your learning style, identifies weak spots instantly, and explains concepts 24/7.
                   </p>
-                  <a href={LINKS.CHECKOUT_PRO} className="mt-auto inline-flex items-center text-[#20B2AA] font-bold hover:gap-3 transition-all group">
+                  <a href={LINKS.CHECKOUT} className="mt-auto inline-flex items-center text-[#20B2AA] font-bold hover:gap-3 transition-all group">
                     Try the AI Tutor <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </a>
                 </div>
@@ -453,81 +511,13 @@ export default function Home() {
                   </div>
                   <h3 className="text-2xl font-bold text-slate-900 mb-3">Backed by Results</h3>
                   <p className="text-slate-500 leading-relaxed mb-6">
-                    92% of our students pass on their first attempt. We're so confident in our expert-designed system that we back it with a 100% pass guarantee. Complete the work, pass the exam—or get every penny back.
+                    92% of our students pass on their first attempt. We're so confident in our expert-designed system that we back it with a 100% pass guarantee.
                   </p>
                   <Link href={LINKS.REFUND_POLICY} className="text-xs text-slate-400 mt-auto underline hover:text-slate-600">
                     View complete refund policy →
                   </Link>
                 </div>
               </div>
-            </div>
-          </div>
-        </section>
-      </FadeInSection>
-
-      {/* --- POPULAR NURSING SCHOOLS --- */}
-      <FadeInSection>
-        <section className="py-20 bg-slate-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
-              <div>
-                <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-4 py-1.5 rounded-full text-xs font-bold tracking-wider mb-4">
-                  <Award className="w-4 h-4" />
-                  TOP NURSING PROGRAMS
-                </div>
-                <h2 className="text-3xl md:text-4xl font-bold text-slate-900">Popular Target Schools</h2>
-                <p className="text-slate-600 mt-2 max-w-2xl">See TEAS requirements and admission stats for top nursing programs.</p>
-              </div>
-              <Link
-                href="/schools"
-                className="hidden md:flex items-center text-teal-600 font-bold hover:gap-3 transition-all group"
-              >
-                View all 1,500+ schools
-                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[
-                { name: 'Harvard University', location: 'Cambridge, MA', state: 'massachusetts', slug: 'harvard-university', type: 'Private' },
-                { name: 'Johns Hopkins', location: 'Baltimore, MD', state: 'maryland', slug: 'johns-hopkins-university', type: 'Private' },
-                { name: 'UCLA', location: 'Los Angeles, CA', state: 'california', slug: 'university-of-california-los-angeles', type: 'Public' },
-                { name: 'University of Florida', location: 'Gainesville, FL', state: 'florida', slug: 'university-of-florida', type: 'Public' },
-                { name: 'NYU', location: 'New York, NY', state: 'new-york', slug: 'new-york-university', type: 'Private' },
-                { name: 'UT Austin', location: 'Austin, TX', state: 'texas', slug: 'university-of-texas-austin', type: 'Public' },
-                { name: 'Duke University', location: 'Durham, NC', state: 'north-carolina', slug: 'duke-university', type: 'Private' },
-                { name: 'UW Seattle', location: 'Seattle, WA', state: 'washington', slug: 'university-of-washington', type: 'Public' },
-              ].map((school) => (
-                <Link
-                  key={school.slug}
-                  href={`/schools/${school.state}/${school.slug}`}
-                  className="group bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-lg hover:border-teal-300 hover:-translate-y-1 transition-all"
-                >
-                  <div className="w-12 h-12 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mb-4 text-slate-400 group-hover:from-teal-50 group-hover:to-teal-100 group-hover:text-teal-600 transition-all">
-                    <Award className="w-6 h-6" />
-                  </div>
-                  <h3 className="font-bold text-slate-900 mb-2 group-hover:text-teal-700 transition-colors line-clamp-2">
-                    {school.name}
-                  </h3>
-                  <div className="flex items-center text-xs text-slate-500 gap-1 mb-3">
-                    <MapPin className="w-3 h-3" />
-                    <span className="line-clamp-1">{school.location}</span>
-                  </div>
-                  <span className="inline-block text-xs font-medium px-2 py-1 bg-slate-100 text-slate-600 rounded group-hover:bg-teal-50 group-hover:text-teal-700 transition-colors">
-                    {school.type}
-                  </span>
-                </Link>
-              ))}
-            </div>
-
-            <div className="mt-10 text-center md:hidden">
-              <Link
-                href="/schools"
-                className="inline-flex items-center text-teal-600 font-bold hover:gap-3 transition-all"
-              >
-                View all schools
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Link>
             </div>
           </div>
         </section>
@@ -639,131 +629,101 @@ export default function Home() {
               <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
                 Choose Your Study Plan
               </h2>
-              <p className="text-slate-500 text-lg max-w-2xl mx-auto">
-                All plans include our 92% pass rate guarantee. Cancel anytime.
+              <p className="text-slate-500 text-lg max-w-2xl mx-auto mb-12">
+                All plans include our 92% pass rate guarantee and unlimited AI Tutor access.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              {/* Basic Plan */}
-              <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200 flex flex-col">
+            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              
+              {/* MONTHLY PLAN */}
+              <div className="bg-white rounded-3xl p-8 shadow-lg border border-slate-200 flex flex-col hover:-translate-y-1 transition-transform duration-300">
                 <div className="mb-6">
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">Basic</h3>
-                  <p className="text-slate-500 text-sm">Essential TEAS prep tools</p>
+                   <h3 className="text-xl font-bold text-slate-900 mb-2">Monthly</h3>
+                   <p className="text-slate-500 text-sm">Flexible. Cancel anytime.</p>
                 </div>
                 <div className="mb-6">
-                  <span className="text-4xl font-extrabold text-slate-900">$24.99</span>
-                  <span className="text-slate-500">/month</span>
+                   <div className="flex items-baseline gap-1">
+                      <span className="text-4xl font-extrabold text-slate-900">$24.99</span>
+                      <span className="text-slate-500 font-medium">/month</span>
+                   </div>
                 </div>
-                <ul className="space-y-3 mb-8 flex-grow">
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-teal-500 shrink-0 mt-0.5" />
-                    <span className="text-slate-600">TEAS + HESI + HSRT prep</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-teal-500 shrink-0 mt-0.5" />
-                    <span className="text-slate-600">10 AI tutor questions/day</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-teal-500 shrink-0 mt-0.5" />
-                    <span className="text-slate-600">4,000+ practice questions</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-teal-500 shrink-0 mt-0.5" />
-                    <span className="text-slate-600">350+ video lectures</span>
-                  </li>
+                <ul className="space-y-4 mb-10 text-left flex-grow">
+                   <li className="flex items-center gap-3">
+                     <Check className="w-5 h-5 text-teal-600 shrink-0" />
+                     <span className="text-slate-700">Unlimited AI Tutor</span>
+                   </li>
+                   <li className="flex items-center gap-3">
+                     <Check className="w-5 h-5 text-teal-600 shrink-0" />
+                     <span className="text-slate-700">4,000+ Questions</span>
+                   </li>
+                   <li className="flex items-center gap-3">
+                     <Check className="w-5 h-5 text-teal-600 shrink-0" />
+                     <span className="text-slate-700">350+ Video Lectures</span>
+                   </li>
+                   <li className="flex items-center gap-3">
+                     <Check className="w-5 h-5 text-teal-600 shrink-0" />
+                     <span className="text-slate-700">Pass Guarantee</span>
+                   </li>
                 </ul>
                 <a
-                  href={LINKS.CHECKOUT_BASIC}
-                  className="w-full py-4 rounded-xl border-2 border-slate-200 text-slate-700 font-bold text-center hover:border-teal-500 hover:bg-teal-50 transition-all"
-                >
-                  Get Started
-                </a>
+                   href={LINKS.CHECKOUT}
+                   className="block w-full py-4 rounded-xl border-2 border-slate-200 text-slate-700 font-bold text-lg text-center hover:border-teal-500 hover:text-teal-600 hover:bg-teal-50 transition-all"
+                 >
+                   Select Monthly
+                 </a>
               </div>
 
-              {/* Pro Plan - Featured */}
-              <div className="bg-gradient-to-b from-teal-600 to-teal-700 rounded-2xl p-8 shadow-2xl flex flex-col relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-yellow-400 text-yellow-900 text-xs font-bold px-4 py-1 rounded-bl-lg">
-                  MOST POPULAR
-                </div>
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold text-white mb-2">Pro</h3>
-                  <p className="text-teal-100 text-sm">Complete nursing exam bundle</p>
-                </div>
-                <div className="mb-6">
-                  <span className="text-4xl font-extrabold text-white">$47</span>
-                  <span className="text-teal-100">/month</span>
-                </div>
-                <ul className="space-y-3 mb-8 flex-grow">
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-teal-200 shrink-0 mt-0.5" />
-                    <span className="text-white">Everything in Basic</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-teal-200 shrink-0 mt-0.5" />
-                    <span className="text-white">+ NCLEX prep included</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-teal-200 shrink-0 mt-0.5" />
-                    <span className="text-white">Unlimited AI tutor access</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-teal-200 shrink-0 mt-0.5" />
-                    <span className="text-white">Priority support</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-teal-200 shrink-0 mt-0.5" />
-                    <span className="text-white">Pass guarantee</span>
-                  </li>
-                </ul>
-                <a
-                  href={LINKS.CHECKOUT_PRO}
-                  className="w-full py-4 rounded-xl bg-white text-teal-700 font-bold text-center hover:bg-teal-50 transition-all shadow-lg"
-                >
-                  Start Pro Plan
-                </a>
+              {/* QUARTERLY PLAN - HIGHLIGHTED */}
+              <div className="bg-white rounded-3xl p-8 shadow-2xl border-2 border-teal-500 flex flex-col relative overflow-hidden hover:-translate-y-1 transition-transform duration-300">
+                 <div className="absolute top-0 right-0 bg-yellow-400 text-yellow-900 text-xs font-bold px-4 py-1.5 rounded-bl-xl">
+                   SAVE 20%
+                 </div>
+                 <div className="mb-6">
+                    <h3 className="text-xl font-bold text-teal-700 mb-2 flex items-center gap-2">
+                       3-Month Pass <Sparkles className="w-4 h-4 fill-current" />
+                    </h3>
+                    <p className="text-slate-500 text-sm">Best value for full preparation.</p>
+                 </div>
+                 <div className="mb-6">
+                    <div className="flex items-baseline gap-1">
+                       <span className="text-4xl font-extrabold text-slate-900">$59</span>
+                       <span className="text-slate-500 font-medium">/3 months</span>
+                    </div>
+                    <p className="text-teal-600 text-sm font-bold mt-2">Like paying $19.66/mo</p>
+                 </div>
+                 <ul className="space-y-4 mb-10 text-left flex-grow">
+                    <li className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded-full bg-teal-100 flex items-center justify-center shrink-0">
+                          <Check className="w-4 h-4 text-teal-600" />
+                      </div>
+                      <span className="text-slate-900 font-medium">Everything in Monthly</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded-full bg-teal-100 flex items-center justify-center shrink-0">
+                          <Check className="w-4 h-4 text-teal-600" />
+                      </div>
+                      <span className="text-slate-900 font-medium">Extended Access</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded-full bg-teal-100 flex items-center justify-center shrink-0">
+                          <Check className="w-4 h-4 text-teal-600" />
+                      </div>
+                      <span className="text-slate-900 font-medium">Priority Support</span>
+                    </li>
+                 </ul>
+                 <a
+                    href={LINKS.CHECKOUT}
+                    className="block w-full py-4 rounded-xl bg-teal-600 text-white font-bold text-lg text-center hover:bg-teal-700 hover:shadow-lg transition-all shadow-teal-200"
+                  >
+                    Get 3-Month Access
+                  </a>
               </div>
 
-              {/* 6-Month Plan */}
-              <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200 flex flex-col">
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">6-Month Pro</h3>
-                  <p className="text-slate-500 text-sm">Best value for serious prep</p>
-                </div>
-                <div className="mb-6">
-                  <span className="text-4xl font-extrabold text-slate-900">$199</span>
-                  <span className="text-slate-500">/6 months</span>
-                  <div className="text-sm text-green-600 font-medium mt-1">Save $83</div>
-                </div>
-                <ul className="space-y-3 mb-8 flex-grow">
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-teal-500 shrink-0 mt-0.5" />
-                    <span className="text-slate-600">Everything in Pro</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-teal-500 shrink-0 mt-0.5" />
-                    <span className="text-slate-600">6 months full access</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-teal-500 shrink-0 mt-0.5" />
-                    <span className="text-slate-600">Extended pass guarantee</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-teal-500 shrink-0 mt-0.5" />
-                    <span className="text-slate-600">Best per-month value</span>
-                  </li>
-                </ul>
-                <a
-                  href={LINKS.CHECKOUT_PRO}
-                  className="w-full py-4 rounded-xl border-2 border-slate-200 text-slate-700 font-bold text-center hover:border-teal-500 hover:bg-teal-50 transition-all"
-                >
-                  Get 6-Month Access
-                </a>
-              </div>
             </div>
-
-            <p className="text-center text-slate-500 text-sm mt-8">
-              All plans include a 7-day money-back guarantee. <Link href={LINKS.REFUND_POLICY} className="text-teal-600 underline">View refund policy</Link>
+            
+            <p className="text-center text-slate-400 text-sm mt-8">
+               Both plans include our 100% money-back guarantee. No hidden fees.
             </p>
           </div>
         </section>
@@ -795,14 +755,14 @@ export default function Home() {
                 <p className="text-sm text-slate-500 mt-2">Our students pass their TEAS on the first try.</p>
               </div>
               <div className="p-6 bg-white rounded-2xl shadow-sm">
-                <div className="text-4xl font-extrabold text-teal-600 mb-2">50k+</div>
+                <div className="text-4xl font-extrabold text-teal-600 mb-2">500+</div>
                 <p className="font-medium text-slate-700">Active Students</p>
                 <p className="text-sm text-slate-500 mt-2">Join a growing community of future nurses.</p>
               </div>
               <div className="p-6 bg-white rounded-2xl shadow-sm">
-                <div className="text-4xl font-extrabold text-teal-600 mb-2">15%</div>
-                <p className="font-medium text-slate-700">Score Increase</p>
-                <p className="text-sm text-slate-500 mt-2">Average score improvement after 2 weeks.</p>
+                <div className="text-4xl font-extrabold text-teal-600 mb-2">75+</div>
+                <p className="font-medium text-slate-700">Years Experience</p>
+                <p className="text-sm text-slate-500 mt-2">Curriculum built by PhD & DNP educators.</p>
               </div>
             </div>
           </div>
@@ -817,7 +777,6 @@ export default function Home() {
               <h2 className="text-3xl font-bold text-slate-900 mb-4">Frequently Asked Questions</h2>
               <p className="text-slate-600">Everything you need to know about TEAS prep with StudyBuddy.</p>
             </div>
-            {/* Ensure FAQ component exists */}
             <FAQ />
           </div>
         </section>
@@ -825,18 +784,19 @@ export default function Home() {
 
       {/* --- FINAL CTA --- */}
       <FadeInSection>
-        <section className="py-24 bg-gradient-to-br from-slate-900 to-slate-800 text-white">
+        {/* Corrected: High contrast TEAS Brand Color (Teal-600) with White Text */}
+        <section className="py-24 bg-teal-600 text-white">
           <div className="container mx-auto px-4 max-w-4xl text-center">
-            <h2 className="text-3xl md:text-5xl font-extrabold mb-6 tracking-tight">
+            <h2 className="text-3xl md:text-5xl font-extrabold mb-6 tracking-tight text-white">
               Ready to Pass the TEAS?
             </h2>
-            <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
-              Join 50,000+ students who've used StudyBuddy to get into nursing school. Start with our free diagnostic test.
+            <p className="text-xl text-teal-100 mb-10 max-w-2xl mx-auto">
+              Join 500+ students who've used StudyBuddy to get into nursing school. Start with our free diagnostic test.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href={LINKS.DIAGNOSTIC}
-                className="px-8 py-4 rounded-xl bg-[#20B2AA] text-white font-bold text-lg hover:bg-[#18968F] transition-all flex items-center justify-center gap-2 shadow-xl"
+                className="px-8 py-4 rounded-xl bg-white text-teal-700 font-bold text-lg hover:bg-teal-50 transition-all flex items-center justify-center gap-2 shadow-xl"
               >
                 Take Free Diagnostic <ArrowRight className="w-5 h-5" />
               </Link>
@@ -847,7 +807,7 @@ export default function Home() {
                     pricingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                   }
                 }}
-                className="px-8 py-4 rounded-xl bg-white/10 border border-white/20 text-white font-bold text-lg hover:bg-white/20 transition-all"
+                className="px-8 py-4 rounded-xl bg-teal-700 border border-teal-500 text-white font-bold text-lg hover:bg-teal-800 transition-all"
               >
                 View Pricing
               </button>
@@ -903,11 +863,6 @@ export default function Home() {
                 <li>
                   <a href="/wiki" className="text-slate-400 hover:text-[#20B2AA] transition-colors text-sm">
                     Study Guides
-                  </a>
-                </li>
-                <li>
-                  <a href="https://learn.studybuddy.live/about-studybuddy?site_template_id=67e1717114d4688062090ad2" className="text-slate-400 hover:text-[#20B2AA] transition-colors text-sm" target="_blank" rel="noopener">
-                    About Us
                   </a>
                 </li>
               </ul>
