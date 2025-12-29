@@ -1,3 +1,4 @@
+// app/components/HomePage.tsx
 'use client';
 
 import Link from 'next/link';
@@ -8,6 +9,9 @@ import {
   Menu, Bot, Award, Star, Target, Brain, 
   Sparkles, Timer, BarChart3, Home, User
 } from 'lucide-react';
+import { organizationSchema } from '@/lib/schema/organization';
+import JsonLd from '@/app/components/JsonLd';
+import { stateData } from '@/lib/state-data';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 🛠️ UTILS & HOOKS
@@ -150,7 +154,7 @@ function StickyFloatingCTA() {
         </div>
         <div className="flex gap-4">
           <Link 
-            href="/syllabus" 
+            href="/teas-7-syllabus" 
             className="px-6 py-2.5 rounded-lg font-semibold text-slate-600 hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all"
           >
             View Study Plans
@@ -183,7 +187,7 @@ function MobileBottomNav() {
           Start Diagnostic
         </Link>
         
-        <Link href="/login" className="flex flex-col items-center text-slate-400 hover:text-[#20B2AA]">
+        <Link href="/dashboard" className="flex flex-col items-center text-slate-400 hover:text-[#20B2AA]">
           <User size={24} />
           <span className="text-[10px] mt-1 font-medium">Log In</span>
         </Link>
@@ -236,7 +240,6 @@ function StarRating({ count = 5, size = 14 }: { count?: number; size?: number })
   );
 }
 
-// Avatar placeholder component
 function AvatarPlaceholder({ index, name }: { index: number; name?: string }) {
   const colors = ['bg-teal-500', 'bg-blue-500', 'bg-purple-500', 'bg-pink-500', 'bg-orange-500'];
   const color = colors[index % colors.length];
@@ -261,14 +264,12 @@ export default function HomePage() {
   const scrollDirection = useScrollDirection();
   const [hasSeenModal, setHasSeenModal, isHydrated] = useLocalStorage('hasSeenExitModal', false);
   
-  // Track scroll for navbar transparency
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Exit Intent Logic - only run after hydration
   useEffect(() => {
     if (!isHydrated) return;
     
@@ -285,8 +286,9 @@ export default function HomePage() {
 
   const navItems = [
     { label: 'Diagnostic', href: '/diagnostic' },
-    { label: 'Syllabus', href: '/syllabus' },
-    { label: 'State Reqs', href: '/states' },
+    { label: 'Syllabus', href: '/teas-7-syllabus' },
+    { label: 'Methodology', href: '/pass-rate-methodology' },
+    { label: 'Compare', href: '/compare/teas-prep-courses' },
     { label: 'Pricing', href: '/pricing' },
   ];
 
@@ -313,13 +315,11 @@ export default function HomePage() {
   ];
 
   const faqItems = [
-    { question: "How does the Pass Guarantee work?", answer: "Complete 80%+ of the course, answer 1,000+ practice questions, and study for 30+ days. If you don't pass, we'll give you a full $59 refund or 60 free days of extended access. No hidden loops." },
-    { question: "Are the practice exams realistic?", answer: "Yes. Our questions match the difficulty, format, and timing of the actual ATI TEAS 7 exam." },
-    { question: "What specific subjects are on the TEAS 7?", answer: "Reading, Math, Science, and English & Language Usage." },
-    { question: "Can I use a calculator on the TEAS 7?", answer: "Yes, a basic four-function calculator is provided on-screen during the test." },
-    { question: "Does StudyBuddy work on my phone or tablet?", answer: "Yes, the platform is fully responsive and works great on mobile devices." },
-    { question: "Is this course updated for the 2026 TEAS 7?", answer: "Yes, we update our content weekly to match the latest ATI standards." },
-    { question: "What is a good TEAS score for nursing school?", answer: "It depends on the program, but generally 65-70% for ADN and 75-80% for BSN." },
+    { question: "How does the Pass Guarantee work?", answer: "Complete 80%+ of the course, answer 1,000+ practice questions, and study for 30+ days. If you don't pass, we'll give you a full $59 refund or 60 free days of extended access." },
+    { question: "Are the practice exams realistic?", answer: "Yes. Our questions match the difficulty, format, and timing of the actual ATI TEAS 7 exam blueprint." },
+    { question: "What specific subjects are on the TEAS 7?", answer: "Reading, Math, Science, and English & Language Usage. Check our Syllabus page for details." },
+    { question: "Is StudyBuddy legit?", answer: "Yes. We are created by nursing professors, verified by 500+ student outcomes, and back our claims with a money-back guarantee." },
+    { question: "What is a good TEAS score?", answer: "It depends on your state requirements. Check our State Guides to find the minimum score for schools in your area." },
   ];
 
   const reviews = [
@@ -340,6 +340,7 @@ export default function HomePage() {
     }
   ];
 
+  // AEO STRATEGY: Direct state page linking
   const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (e.target.value) {
       window.location.href = `/states/${e.target.value}`;
@@ -349,6 +350,9 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-[#20B2AA] selection:text-white pb-20 md:pb-0">
       
+      {/* 1. AEO Entity Schema (Essential for Google) */}
+      <JsonLd data={organizationSchema} />
+
       {/* 🧩 Components */}
       <ExitIntentModal isOpen={showExitIntent} onClose={() => setShowExitIntent(false)} />
       <StickyFloatingCTA />
@@ -364,7 +368,6 @@ export default function HomePage() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
-            
             <Link href="/" className="flex items-center gap-2 group">
               <div className="w-10 h-10 bg-gradient-to-br from-[#20B2AA] to-[#1E3A8A] rounded-lg flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
                 <span className="text-white font-bold text-xl">S</span>
@@ -388,7 +391,7 @@ export default function HomePage() {
 
             <div className="hidden md:flex items-center gap-3">
               <Link 
-                href="/login" 
+                href="/dashboard" 
                 className="text-slate-600 hover:text-[#20B2AA] font-medium transition-colors"
               >
                 Log In
@@ -412,7 +415,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Mobile Menu Dropdown */}
         {mobileOpen && (
           <div className="md:hidden absolute top-full left-0 w-full bg-white border-t border-slate-200 shadow-xl">
             <div className="px-4 py-4 space-y-2">
@@ -428,7 +430,7 @@ export default function HomePage() {
               ))}
               <div className="border-t border-slate-100 pt-3 mt-2">
                 <Link 
-                  href="/login" 
+                  href="/dashboard" 
                   className="block px-4 py-3 text-slate-600 font-medium"
                   onClick={() => setMobileOpen(false)}
                 >
@@ -444,7 +446,6 @@ export default function HomePage() {
           🎯 HERO SECTION
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        {/* Animated Background Mesh */}
         <div 
           className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-pink-200/40 via-teal-200/30 to-blue-200/40 rounded-full blur-3xl -z-10 animate-pulse" 
           style={{ animationDuration: '8s' }} 
@@ -454,11 +455,10 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             
             <div className="space-y-8 max-w-2xl">
-              {/* Badge & Social Proof */}
               <div className="flex flex-wrap items-center gap-4">
-                <span className="bg-teal-50 text-teal-700 text-xs font-extrabold px-4 py-1.5 rounded-full uppercase tracking-wider border border-teal-100">
+                <Link href="/teas-7-syllabus" className="bg-teal-50 text-teal-700 text-xs font-extrabold px-4 py-1.5 rounded-full uppercase tracking-wider border border-teal-100 hover:bg-teal-100 transition-colors">
                   Updated for TEAS 7 (2025)
-                </span>
+                </Link>
                 <div className="flex items-center gap-2">
                   <div className="flex -space-x-2">
                     {[0, 1, 2].map((i) => (
@@ -480,7 +480,6 @@ export default function HomePage() {
                 92% Pass Rate on First Attempt.
               </p>
 
-              {/* Feature Checklist */}
               <ul className="space-y-4 text-slate-600 font-medium">
                 <li className="flex items-center gap-3">
                   <CheckCircle2 className="w-6 h-6 text-[#20B2AA] shrink-0" />
@@ -496,7 +495,6 @@ export default function HomePage() {
                 </li>
               </ul>
 
-              {/* CTAs */}
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <Link 
                   href="/diagnostic" 
@@ -519,13 +517,11 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Hero Visual - Video Placeholder / Dashboard Preview */}
             <div className="relative mt-12 lg:mt-0" style={{ perspective: '1000px' }}>
               <div 
                 className="relative z-10 bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 md:p-8 transition-transform duration-700 ease-out hover:rotate-0"
                 style={{ transform: 'rotateY(-3deg)' }}
               >
-                {/* Mock Dashboard UI */}
                 <div className="flex items-center justify-between mb-8">
                   <div>
                     <h3 className="text-2xl font-bold text-slate-900">Your Study Plan</h3>
@@ -576,7 +572,6 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Floating Elements for Depth */}
               <div 
                 className="absolute -top-10 -right-10 bg-white p-4 rounded-xl shadow-xl z-20 animate-bounce" 
                 style={{ animationDuration: '3s' }}
@@ -593,7 +588,7 @@ export default function HomePage() {
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 VALUE PROPS - "What is StudyBuddy?"
+          🎯 VALUE PROPS
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <section className="py-24 bg-white border-t border-slate-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -617,18 +612,18 @@ export default function HomePage() {
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 COMPARISON TABLE
+          🎯 COMPARISON TABLE (Restored with AEO Links)
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <section className="py-24 bg-slate-50">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <span className="bg-amber-100 text-amber-800 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-4 inline-block border border-amber-200">
+            <Link href="/compare/teas-prep-courses" className="bg-amber-100 text-amber-800 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-4 inline-block border border-amber-200 hover:bg-amber-200 transition-colors">
               The Honest Comparison
-            </span>
+            </Link>
             <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
               Not All TEAS Prep Is <br/> <span className="text-[#20B2AA]">Created Equal</span>
             </h2>
-            <p className="text-slate-600 text-lg">Here&apos;s how we stack up against traditional textbooks and generic prep sites.</p>
+            <p className="text-slate-600 text-lg">See why students switch from ATI to StudyBuddy.</p>
           </div>
 
           <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
@@ -666,17 +661,11 @@ export default function HomePage() {
               <div className="text-xl font-extrabold text-[#20B2AA]">$24.99/mo</div>
             </div>
           </div>
-          
-          <div className="text-center mt-12">
-            <Link href="/pricing" className="inline-flex items-center gap-2 bg-[#1E3A8A] hover:bg-[#162c6b] text-white font-bold py-4 px-10 rounded-xl shadow-lg shadow-blue-900/20 transition-all hover:-translate-y-0.5">
-              Start Learning Today <ArrowRight className="w-5 h-5" />
-            </Link>
-          </div>
         </div>
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 STATE REQUIREMENTS
+          🎯 STATE REQUIREMENTS (Restored AEO Logic)
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <section className="py-24 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -695,30 +684,30 @@ export default function HomePage() {
               aria-label="Select your state"
             >
               <option value="">Select your state...</option>
-              <option value="california">California</option>
-              <option value="texas">Texas</option>
-              <option value="florida">Florida</option>
-              <option value="new-york">New York</option>
-              <option value="georgia">Georgia</option>
-              <option value="illinois">Illinois</option>
+              {stateData.map((state) => (
+                <option key={state.slug} value={state.slug}>{state.name}</option>
+              ))}
             </select>
             <button className="bg-[#20B2AA] hover:bg-[#1a9d96] text-white font-bold px-8 py-3 rounded-lg transition-colors whitespace-nowrap">
               View Guide
             </button>
           </div>
+          <p className="text-xs text-slate-400 mt-4 italic">
+            Most popular: <Link href="/states/california" className="hover:text-[#20B2AA]">California</Link>, <Link href="/states/texas" className="hover:text-[#20B2AA]">Texas</Link>, <Link href="/states/florida" className="hover:text-[#20B2AA]">Florida</Link>
+          </p>
         </div>
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 EXPERT CONTENT
+          🎯 EXPERT CONTENT (Link to Legit Check)
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <section className="py-24 bg-slate-50 border-t border-slate-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
-              <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-6 inline-block">
-                Expert-Designed Curriculum
-              </span>
+              <Link href="/is-studybuddy-legit" className="bg-indigo-100 text-indigo-700 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-6 inline-block hover:bg-indigo-200 transition-colors">
+                Verified Legitimacy
+              </Link>
               <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-8 leading-tight">
                 Built by PhD & DNP <br/> Educators. <br/>
                 <span className="text-indigo-600">Not Content Farms.</span>
@@ -744,7 +733,9 @@ export default function HomePage() {
                 <BookOpen className="w-10 h-10" />
               </div>
               <h3 className="text-4xl font-extrabold text-slate-900 mb-2">92% Pass Rate</h3>
-              <p className="text-slate-500 mb-8">Built on decades of teaching excellence</p>
+              <p className="text-slate-500 mb-8">
+                <Link href="/pass-rate-methodology" className="underline hover:text-indigo-600">View our verification methodology</Link>
+              </p>
               <div className="space-y-4">
                 <div className="flex justify-between text-sm p-4 bg-slate-50 rounded-lg">
                   <span className="text-slate-600 font-medium">Curriculum Quality</span>
@@ -765,11 +756,10 @@ export default function HomePage() {
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 PRICING
+          🎯 PRICING (Maintained)
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <section className="py-24 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Section Header */}
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
               Your Dedicated Partner for TEAS 7 Mastery
@@ -777,78 +767,9 @@ export default function HomePage() {
             <p className="text-slate-600 text-lg max-w-3xl mx-auto leading-relaxed">
               Preparing for the TEAS 7 shouldn&apos;t feel like a solitary struggle. You need more than just a textbook—you need a complete ecosystem designed to guide you from your first day of study to your passing score.
             </p>
-            <p className="text-slate-500 mt-4 max-w-3xl mx-auto">
-              We have built a &quot;done-for-you&quot; study system that combines the rigors of a classroom with the flexibility of a digital tutor. With 4,000+ questions, 10 full-length exams, and 24/7 support, we ensure you never have to face this challenge alone.
-            </p>
-          </div>
-
-          {/* Features Grid */}
-          <div className="grid md:grid-cols-2 gap-8 mb-16">
-            {/* The Roadmap */}
-            <div className="bg-slate-50 rounded-2xl p-8 border border-slate-100">
-              <div className="w-12 h-12 bg-[#20B2AA]/10 rounded-xl flex items-center justify-center mb-4">
-                <Target className="w-6 h-6 text-[#20B2AA]" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">The Roadmap: A Complete TEAS 7 System</h3>
-              <p className="text-slate-500 text-sm mb-4">We don&apos;t believe in guesswork. We provide a structured path aligned strictly with the latest TEAS 7 blueprint.</p>
-              <ul className="space-y-3 text-sm text-slate-600">
-                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-[#20B2AA] shrink-0 mt-0.5" /><span><strong>6 Comprehensive Modules:</strong> Orientation, Math, English, Reading, and Science.</span></li>
-                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-[#20B2AA] shrink-0 mt-0.5" /><span><strong>Deep Science Coverage:</strong> 17 dedicated chapters on Human Anatomy & Physiology.</span></li>
-                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-[#20B2AA] shrink-0 mt-0.5" /><span><strong>Test Strategy:</strong> We teach you how to take the test, not just what&apos;s on it.</span></li>
-              </ul>
-            </div>
-
-            {/* The Instruction */}
-            <div className="bg-slate-50 rounded-2xl p-8 border border-slate-100">
-              <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center mb-4">
-                <Play className="w-6 h-6 text-indigo-600" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">The Instruction: Learning That Fits Your Life</h3>
-              <p className="text-slate-500 text-sm mb-4">Whether you have a full hour or just 10 minutes between shifts, our platform adapts to your schedule.</p>
-              <ul className="space-y-3 text-sm text-slate-600">
-                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" /><span><strong>450+ Video Lectures:</strong> Bite-sized reviews to deep-dive classroom sessions.</span></li>
-                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" /><span><strong>Real-World Context:</strong> Understand the &quot;why&quot; behind concepts, not just formulas.</span></li>
-                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" /><span><strong>Diverse Teaching Styles:</strong> Visual walkthroughs, worked examples, and review clips.</span></li>
-              </ul>
-            </div>
-
-            {/* The Training */}
-            <div className="bg-slate-50 rounded-2xl p-8 border border-slate-100">
-              <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mb-4">
-                <BarChart3 className="w-6 h-6 text-amber-600" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">The Training: Simulation Builds Confidence</h3>
-              <p className="text-slate-500 text-sm mb-4">The best way to overcome test anxiety is to prove to yourself that you can do the work.</p>
-              <ul className="space-y-3 text-sm text-slate-600">
-                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" /><span><strong>4,000+ Practice Questions:</strong> Instant feedback and clear explanations.</span></li>
-                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" /><span><strong>10 Full-Length Practice Exams:</strong> 150 questions each, mimicking the actual TEAS format.</span></li>
-                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" /><span><strong>Score Reports:</strong> Detailed breakdowns pinpointing exactly where you&apos;re losing points.</span></li>
-              </ul>
-            </div>
-
-            {/* The Support */}
-            <div className="bg-slate-50 rounded-2xl p-8 border border-slate-100">
-              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
-                <Bot className="w-6 h-6 text-purple-600" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">The Support: You Are Never Alone</h3>
-              <p className="text-slate-500 text-sm mb-4">Support shouldn&apos;t stop when office hours end. Our platform is your constant companion.</p>
-              <ul className="space-y-3 text-sm text-slate-600">
-                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-purple-600 shrink-0 mt-0.5" /><span><strong>24/7 AI Tutor:</strong> Stuck at 2 AM? Our AI walks you through problems on-demand.</span></li>
-                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-purple-600 shrink-0 mt-0.5" /><span><strong>Personalized Guidance:</strong> Diagnostics identify your strengths, custom plans guide your next step.</span></li>
-                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-purple-600 shrink-0 mt-0.5" /><span><strong>Access on Any Device:</strong> Laptop, tablet, or phone—your progress syncs seamlessly.</span></li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Pricing Cards */}
-          <div className="text-center mb-12">
-            <h3 className="text-2xl font-bold text-slate-900 mb-2">Transparent Pricing</h3>
-            <p className="text-slate-500">One month to prep. Or lock in savings with 3 months.</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 items-start max-w-4xl mx-auto">
-            {/* Basic */}
             <div className="p-8 rounded-3xl border border-slate-200 text-left hover:border-slate-300 transition-all bg-white hover:shadow-lg">
               <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Month-to-Month</div>
               <h3 className="text-3xl font-bold text-slate-900 mb-2">Basic</h3>
@@ -862,16 +783,13 @@ export default function HomePage() {
                 <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> 450+ Video Lectures</li>
                 <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> 4,000+ Practice Questions</li>
                 <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> 10 Full-Length Practice Exams</li>
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> Detailed Score Reports</li>
                 <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> 24/7 AI Tutor Access</li>
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> Access on Any Device</li>
               </ul>
               <Link href="/pricing?plan=basic" className="block w-full py-4 text-center border-2 border-slate-200 rounded-xl font-bold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors">
                 Start Basic Plan
               </Link>
             </div>
              
-            {/* Pro */}
             <div className="p-8 rounded-3xl border-2 border-[#20B2AA] shadow-2xl text-left relative overflow-hidden bg-white">
               <div className="absolute top-0 right-0 bg-amber-400 text-white text-xs font-bold px-4 py-1.5 rounded-bl-xl uppercase tracking-wider">
                 Most Popular
@@ -910,103 +828,13 @@ export default function HomePage() {
               <Link href="/pricing?plan=pro" className="block w-full py-4 text-center bg-[#20B2AA] rounded-xl font-bold text-white hover:bg-[#1a9d96] transition-colors shadow-lg shadow-teal-500/20">
                 Get 3-Month Access
               </Link>
-              <p className="text-xs text-slate-400 text-center mt-4 leading-relaxed">
-                *100% Pass Guarantee: Complete 80%+ of course + 1,000+ practice questions + Study 30+ days. Don&apos;t pass? Full $59 refund or 60 free days. <Link href="/pass-guarantee" className="underline hover:text-slate-600">View complete policy</Link>
-              </p>
             </div>
           </div>
         </div>
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 PASS GUARANTEE
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section className="py-24 bg-gradient-to-b from-slate-50 to-white border-t border-slate-100">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <span className="bg-orange-100 text-orange-700 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-4 inline-block border border-orange-200">
-              Our Promise
-            </span>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
-              The StudyBuddy Promise: <span className="text-[#20B2AA]">A Partnership for Success</span>
-            </h2>
-            <p className="text-slate-600 text-lg max-w-2xl mx-auto">
-              The StudyBuddy Pass Guarantee is more than just a refund policy—it is a handshake agreement. If you put in the honest work, we accept the risk of the result.
-            </p>
-          </div>
-
-          <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
-            {/* Your Contribution */}
-            <div className="p-8 border-b border-slate-100">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center shrink-0">
-                  <span className="text-xl font-bold text-blue-600">1</span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">Your Contribution (The Effort)</h3>
-                  <p className="text-slate-500 text-sm mb-4">To ensure you&apos;re truly prepared, we ask that you fully immerse yourself in the learning process:</p>
-                  <ul className="space-y-2 text-sm text-slate-600">
-                    <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" /><span><strong>Showing Up:</strong> Complete at least 80% of the course material.</span></li>
-                    <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" /><span><strong>Testing Yourself:</strong> Answer 1,000+ practice questions to build mastery.</span></li>
-                    <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" /><span><strong>Being Consistent:</strong> Dedicate at least 30 days to the program before your exam.</span></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            {/* Our Pledge */}
-            <div className="p-8 border-b border-slate-100 bg-slate-50/50">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-[#20B2AA]/20 rounded-xl flex items-center justify-center shrink-0">
-                  <span className="text-xl font-bold text-[#20B2AA]">2</span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">Our Pledge (The Trust)</h3>
-                  <p className="text-slate-500 text-sm mb-4">If you hold up your end of the deal but the test doesn&apos;t go your way, we take the hit, not you. We will either:</p>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="bg-white p-4 rounded-xl border border-slate-200">
-                      <div className="font-bold text-slate-900 mb-1">Option A</div>
-                      <div className="text-sm text-slate-600">Full $59 refund—every penny back</div>
-                    </div>
-                    <div className="bg-white p-4 rounded-xl border border-slate-200">
-                      <div className="font-bold text-slate-900 mb-1">Option B</div>
-                      <div className="text-sm text-slate-600">60 free days of extended access</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* The Process */}
-            <div className="p-8">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center shrink-0">
-                  <span className="text-xl font-bold text-purple-600">3</span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">How to Honor the Pledge (The Process)</h3>
-                  <p className="text-slate-500 text-sm mb-4">Simple and transparent—no hassles, no hard feelings:</p>
-                  <ol className="space-y-2 text-sm text-slate-600">
-                    <li className="flex gap-2"><span className="font-bold text-purple-600">1.</span><span><strong>Send Your Score:</strong> Within 7 days of your test, email your official TEAS score report to support.</span></li>
-                    <li className="flex gap-2"><span className="font-bold text-purple-600">2.</span><span><strong>Verification:</strong> We verify you met the effort requirements before the test date.</span></li>
-                    <li className="flex gap-2"><span className="font-bold text-purple-600">3.</span><span><strong>Resolution:</strong> Choose your refund or extra study time. We process it immediately.</span></li>
-                  </ol>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom Line */}
-            <div className="bg-[#20B2AA]/5 p-6 border-t border-[#20B2AA]/20">
-              <p className="text-center text-slate-700 font-medium">
-                <strong>The Bottom Line:</strong> We want you to pass, not to pay for a product that didn&apos;t work for you. If you trust the process and do the work, we guarantee you won&apos;t be left empty-handed.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 SOCIAL PROOF / TESTIMONIALS
+          🎯 SOCIAL PROOF
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <section className="py-24 bg-slate-50 border-y border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1048,7 +876,7 @@ export default function HomePage() {
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 FAQ SECTION
+          🎯 FAQ
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <section className="py-24 bg-white px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
@@ -1069,7 +897,7 @@ export default function HomePage() {
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 FOOTER
+          🎯 FOOTER (Clean & Complete)
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <footer className="bg-[#0F172A] text-slate-400 pt-16 pb-24 md:pb-8 border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1084,7 +912,7 @@ export default function HomePage() {
               </p>
               <div className="text-xs text-slate-600 leading-relaxed">
                 © 2025 EdExpert LLC. All rights reserved. <br/>
-                TEAS® is a registered trademark of the Assessment Technologies Institute, which is unaffiliated, not a sponsor, or associated with StudyBuddy.
+                TEAS® is a registered trademark of the Assessment Technologies Institute.
               </div>
             </div>
             
