@@ -1,23 +1,19 @@
-// app/states/[state]/page.tsx
 import React from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getStateBySlug, stateData, getRelatedStates } from '@/state-data'; // Update path if needed
+// THIS IS THE CRITICAL FIX: Points to lib/state-data
+import { getStateBySlug, stateData, getRelatedStates } from '@/lib/state-data'; 
 import JsonLd from '@/app/components/JsonLd';
 import StartChatButton from '@/app/components/StartChatButton';
 import type { Metadata } from 'next';
 
-// 1. Static Generation for all 50 states (Instant Load Speeds)
 export async function generateStaticParams() {
   return stateData.map((state) => ({ state: state.slug }));
 }
 
-// 2. Dynamic SEO Metadata (Unique for every state)
 export async function generateMetadata({ params }: { params: { state: string } }): Promise<Metadata> {
   const state = getStateBySlug(params.state);
   if (!state) return {};
-  
-  const programCount = parseInt(state.programs_count.replace('+', ''));
   
   return {
     title: `TEAS 7 Requirements for ${state.name} Nursing Schools (${new Date().getFullYear()})`,
@@ -32,12 +28,10 @@ export default function StatePage({ params }: { params: { state: string } }) {
   const state = getStateBySlug(params.state);
   if (!state) return notFound();
 
-  // LOGIC: Reactive Copywriting based on salary data
   const salaryNum = parseInt(state.avg_salary.replace(/[^0-9]/g, ''));
   const isHighSalary = salaryNum > 85000;
   const isHighVolume = parseInt(state.programs_count.replace('+', '')) > 80;
   
-  // LOGIC: Crawl Mesh (Links to neighbors)
   const relatedStates = getRelatedStates(state.slug, state.region);
 
   const stateSchema = {
@@ -55,7 +49,6 @@ export default function StatePage({ params }: { params: { state: string } }) {
     <main className="bg-slate-50 min-h-screen">
       <JsonLd data={stateSchema} />
       
-      {/* Dynamic Hero */}
       <div className="bg-white border-b border-slate-200">
         <div className="container mx-auto px-4 py-16 max-w-5xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-teal-50 text-teal-700 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
@@ -65,7 +58,6 @@ export default function StatePage({ params }: { params: { state: string } }) {
             TEAS 7 Scores for <span className="text-teal-600">{state.name}</span>
           </h1>
           
-          {/* REACTIVE COPYWRITING: The text changes based on the data */}
           <p className="text-xl text-slate-600 max-w-3xl leading-relaxed">
             {isHighSalary 
               ? `Nursing in ${state.name} is highly competitive with an average salary of ${state.avg_salary}. Top programs often require TEAS scores above 85% to filter applicants.`
@@ -83,7 +75,6 @@ export default function StatePage({ params }: { params: { state: string } }) {
       </div>
 
       <div className="container mx-auto px-4 py-12 max-w-5xl grid md:grid-cols-[1fr_300px] gap-12">
-        {/* Main Content */}
         <div className="prose prose-slate prose-lg">
           <div className="grid grid-cols-2 gap-4 not-prose mb-8">
             <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
@@ -115,7 +106,6 @@ export default function StatePage({ params }: { params: { state: string } }) {
           <h3>Neighboring State Requirements</h3>
           <p>Compare requirements in other {state.region} states:</p>
           
-          {/* THE CRAWL MESH: Links to related states to trap bots */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 not-prose mt-4">
             {relatedStates.map(s => (
               <Link key={s.slug} href={`/states/${s.slug}`} className="group block p-4 bg-white border border-slate-200 rounded-lg hover:border-teal-400 hover:shadow-md transition-all">
@@ -126,7 +116,6 @@ export default function StatePage({ params }: { params: { state: string } }) {
           </div>
         </div>
 
-        {/* Sidebar */}
         <aside className="space-y-6">
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 sticky top-8">
             <h3 className="font-bold text-slate-900 mb-4">Study for {state.name} TEAS</h3>
