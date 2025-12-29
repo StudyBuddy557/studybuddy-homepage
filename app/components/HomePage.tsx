@@ -7,11 +7,13 @@ import {
   CheckCircle2, Zap, Shield, Users, ArrowRight, 
   Play, BookOpen, ChevronDown, X, 
   Menu, Bot, Award, Star, Target, Brain, 
-  Sparkles, Timer, BarChart3, Home, User, AlertCircle, MessageCircle
+  Sparkles, Timer, BarChart3, Home, User, AlertCircle
 } from 'lucide-react';
 import { organizationSchema } from '@/lib/schema/organization';
 import JsonLd from '@/app/components/JsonLd';
 import { stateData } from '@/lib/state-data';
+// IMPORT THE REAL SALES BOT
+import SalesBot from '@/app/components/SalesBot';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 🛠️ UTILS & HOOKS
@@ -72,52 +74,6 @@ function useLocalStorage(key: string, initialValue: boolean) {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 🧩 SUB-COMPONENTS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-// --- FLOATING SALES BOT ---
-function FloatingSalesBot() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [showBubble, setShowBubble] = useState(false);
-
-  // Show the "Hi!" bubble after 3 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => setShowBubble(true), 3000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2 hidden md:flex">
-      {/* The Speech Bubble */}
-      {showBubble && !isOpen && (
-        <div className="bg-white px-4 py-3 rounded-2xl rounded-br-none shadow-xl border border-slate-200 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[200px]">
-          <div className="flex justify-between items-start gap-2">
-            <p className="text-sm font-bold text-slate-800">Hi! Need help passing the TEAS?</p>
-            <button 
-              onClick={(e) => { e.stopPropagation(); setShowBubble(false); }}
-              className="text-slate-400 hover:text-slate-600"
-            >
-              <X size={14} />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* The Trigger Button with Avatar */}
-      <Link 
-        href="/dashboard"
-        className="group relative flex items-center justify-center w-16 h-16 rounded-full shadow-lg hover:shadow-teal-500/40 transition-all hover:scale-105 active:scale-95 bg-white border-2 border-[#20B2AA] overflow-hidden"
-        onMouseEnter={() => setShowBubble(true)}
-      >
-        <Image 
-          src="/StudyBuddy_AI_tutor_Avatar.png" 
-          alt="AI Tutor" 
-          fill
-          className="object-cover"
-        />
-        <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full z-10"></span>
-      </Link>
-    </div>
-  );
-}
 
 function ExitIntentModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   if (!isOpen) return null;
@@ -359,7 +315,6 @@ export default function HomePage() {
     { label: "EdD", title: "Instructional Technology", desc: "30+ years designing adaptive learning systems" }
   ];
 
-  // UPDATED FAQs
   const faqItems = [
     { question: "How does the Pass Guarantee work?", answer: "Complete 80%+ of the course, answer 1,000+ practice questions, and study for 30+ days. If you don't pass, we'll give you a full $59 refund or 60 free days of extended access. No hidden loops." },
     { question: "Are the practice exams realistic?", answer: "Yes. Our questions match the difficulty, format, and timing of the actual ATI TEAS 7 exam." },
@@ -396,8 +351,12 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-[#20B2AA] selection:text-white pb-20 md:pb-0">
+      
       <JsonLd data={organizationSchema} />
-      <FloatingSalesBot />
+      
+      {/* ADDED THE REAL SALES BOT HERE */}
+      <SalesBot />
+      
       <ExitIntentModal isOpen={showExitIntent} onClose={() => setShowExitIntent(false)} />
       <StickyFloatingCTA />
       <MobileBottomNav />
@@ -732,8 +691,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* PRICING */}
-      <section className="py-24 bg-white">
+      {/* PRICING WITH ID FOR BOT SCROLLING */}
+      <section id="pricing" className="py-24 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
