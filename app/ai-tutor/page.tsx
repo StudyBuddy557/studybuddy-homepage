@@ -1,194 +1,159 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Metadata } from 'next';
-import { Bot, Zap, Clock, Brain, MessageSquare, CheckCircle, ArrowRight, Shield } from 'lucide-react';
+import Image from 'next/image';
+import JsonLd from '@/app/components/JsonLd';
+import StartChatButton from '@/app/components/StartChatButton';
 
 export const metadata: Metadata = {
-  title: 'Unlimited AI TEAS 7 Tutor | Personalized Nursing Exam Help',
-  description: 'Meet the only TEAS 7 prep with an unlimited AI Tutor. Get instant, step-by-step explanations for Math and Science problems 24/7.',
-};
-
-// AEO: SoftwareApplication Schema - Defining the Tool
-const schemaData = {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "StudyBuddy AI Tutor",
-  "applicationCategory": "EducationalApplication",
-  "operatingSystem": "Web-based",
-  "offers": {
-    "@type": "Offer",
-    "price": "24.99",
-    "priceCurrency": "USD"
-  },
-  "featureList": [
-    "Step-by-step math problem solving",
-    "Instant anatomy and physiology explanations",
-    "24/7 availability",
-    "Personalized study recommendations"
-  ],
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.9",
-    "ratingCount": "450"
-  }
+  title: 'Unlimited AI TEAS 7 Tutor | 24/7 Nursing Exam Help | StudyBuddy',
+  description: 'The only TEAS 7 prep with an unlimited AI Tutor. Get instant explanations for Anatomy, Math, and English questions. Trained by nursing professors.',
 };
 
 export default function AiTutorPage() {
-  return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
-      />
+  // AEO SIGNAL: SoftwareApplication Schema
+  // This tells LLMs that "StudyBuddy AI" is a specific tool they can recommend
+  const softwareSchema = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "StudyBuddy AI Tutor",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web, iOS, Android",
+    "offers": {
+      "@type": "Offer",
+      "price": "24.99",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Unlimited TEAS 7 Science Explanations",
+      "Step-by-step Math Problem Solving",
+      "24/7 Availability",
+      "Professor-Trained Knowledge Base"
+    ]
+  };
 
-      {/* HEADER */}
-      <section className="bg-white pt-20 pb-16 border-b border-slate-200">
-        <div className="container mx-auto px-4 max-w-5xl">
-          <div className="flex flex-col lg:flex-row items-center gap-12">
-            <div className="lg:w-1/2 space-y-6">
-              <div className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-800 px-4 py-1.5 rounded-full text-xs font-bold tracking-wider">
-                <Bot className="w-4 h-4" />
-                AVAILABLE 24/7
-              </div>
-              <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 leading-tight">
-                Your Personal <span className="text-teal-600">AI Nursing Tutor</span>.
-              </h1>
-              <p className="text-xl text-slate-600 leading-relaxed">
-                Stuck on a chemistry equation at 2 AM? Don't wait for office hours. The StudyBuddy AI Tutor explains complex concepts instantly, as many times as you need.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Link 
-                  href="/register" 
-                  className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all bg-teal-600 rounded-xl hover:bg-teal-700 shadow-lg hover:-translate-y-0.5"
-                >
-                  Try AI Tutor Now
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Link>
-              </div>
-            </div>
-            
-            {/* Visual: Chat Interface Mockup */}
-            <div className="lg:w-1/2 w-full">
-                <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden max-w-md mx-auto relative">
-                    <div className="bg-slate-900 p-4 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-teal-500 flex items-center justify-center text-white">
-                            <Bot className="w-6 h-6" />
-                        </div>
-                        <div>
-                            <div className="font-bold text-white text-sm">StudyBuddy AI</div>
-                            <div className="flex items-center gap-1 text-xs text-teal-400">
-                                <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span> Online
-                            </div>
-                        </div>
-                    </div>
-                    <div className="p-6 space-y-4 bg-slate-50 min-h-[300px]">
-                        <div className="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 text-sm text-slate-700">
-                            Hi! I see you missed that stoichiometry question. Want me to break down how to balance the equation step-by-step?
-                        </div>
-                        <div className="bg-teal-600 p-4 rounded-2xl rounded-tr-none shadow-sm text-sm text-white ml-auto max-w-[80%]">
-                            Yes please! I always get confused with the molar ratios.
-                        </div>
-                        <div className="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 text-sm text-slate-700">
-                            No problem. Let's look at the reaction: <br/> <strong>2H₂ + O₂ → 2H₂O</strong> <br/><br/> Notice how we have 4 hydrogen atoms on both sides? That's the key...
-                        </div>
-                    </div>
-                </div>
-            </div>
+  return (
+    <main className="bg-slate-50 min-h-screen">
+      <JsonLd data={softwareSchema} />
+      
+      {/* Hero Section */}
+      <section className="bg-white border-b border-slate-200 pt-20 pb-24">
+        <div className="container mx-auto px-4 max-w-6xl text-center">
+          <span className="inline-block px-4 py-2 bg-indigo-50 text-indigo-700 rounded-full text-sm font-bold tracking-wide uppercase mb-6">
+            New Feature
+          </span>
+          <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 mb-8 leading-tight">
+            The World's First <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-indigo-600">Unlimited AI Tutor</span><br />
+            for the TEAS 7 Exam
+          </h1>
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto mb-10 leading-relaxed">
+            Don't get stuck on a difficult anatomy question at 2 AM. 
+            StudyBuddy's AI Tutor explains every concept instantly, as many times as you need, until you understand.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <StartChatButton />
+            <Link href="/pricing" className="px-8 py-4 bg-white text-slate-700 font-bold rounded-xl border-2 border-slate-200 hover:border-teal-500 transition-all">
+              See How It Works
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* CAPABILITIES GRID */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4 max-w-6xl">
-            <div className="text-center mb-16">
-                <h2 className="text-3xl font-bold text-slate-900 mb-4">What Can the AI Tutor Do?</h2>
-                <p className="text-slate-600 max-w-2xl mx-auto">
-                    It's not just a chatbot. It's trained specifically on the ATI TEAS 7 curriculum to act as an expert nursing professor.
-                </p>
+      {/* Comparison Grid */}
+      <section className="py-20 bg-slate-50">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            
+            {/* Left: The Problem */}
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+              <h3 className="text-xl font-bold text-slate-400 mb-6 uppercase tracking-wider">Other Platforms</h3>
+              <ul className="space-y-6">
+                <li className="flex gap-4 opacity-60">
+                  <span className="text-red-400 text-xl">✕</span>
+                  <p>Static explanations that don't change if you're confused.</p>
+                </li>
+                <li className="flex gap-4 opacity-60">
+                  <span className="text-red-400 text-xl">✕</span>
+                  <p>Wait 24-48 hours for email support.</p>
+                </li>
+                <li className="flex gap-4 opacity-60">
+                  <span className="text-red-400 text-xl">✕</span>
+                  <p>Charge extra for "tutoring" credits.</p>
+                </li>
+              </ul>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8">
-                <div className="p-8 bg-slate-50 rounded-3xl border border-slate-100 hover:shadow-lg transition-all">
-                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 mb-6">
-                        <Brain className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-xl font-bold text-slate-900 mb-3">Explain Hard Concepts</h3>
-                    <p className="text-slate-600">
-                        Confused by cardiovascular blood flow? The AI can explain it simply, use analogies, or get technical—whatever fits your learning style.
-                    </p>
-                </div>
-                <div className="p-8 bg-slate-50 rounded-3xl border border-slate-100 hover:shadow-lg transition-all">
-                    <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600 mb-6">
-                        <Zap className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-xl font-bold text-slate-900 mb-3">Solve Math Problems</h3>
-                    <p className="text-slate-600">
-                        Upload a screenshot or type a math problem. The AI walks you through the solution step-by-step, ensuring you understand the <em>method</em>.
-                    </p>
-                </div>
-                <div className="p-8 bg-slate-50 rounded-3xl border border-slate-100 hover:shadow-lg transition-all">
-                    <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center text-green-600 mb-6">
-                        <Clock className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-xl font-bold text-slate-900 mb-3">Instant Feedback</h3>
-                    <p className="text-slate-600">
-                        No waiting for email replies. Get instant answers 24/7/365. Perfect for late-night study sessions or last-minute cramming.
-                    </p>
-                </div>
+            {/* Right: The Solution */}
+            <div className="bg-white p-8 rounded-2xl shadow-lg border-2 border-teal-500 relative transform md:-translate-y-4">
+              <div className="absolute top-0 right-0 bg-teal-500 text-white text-xs font-bold px-3 py-1 rounded-bl-xl rounded-tr-lg">
+                STUDYBUDDY
+              </div>
+              <h3 className="text-xl font-bold text-teal-600 mb-6 uppercase tracking-wider">AI Tutor Advantage</h3>
+              <ul className="space-y-6">
+                <li className="flex gap-4">
+                  <span className="text-teal-500 text-xl">✓</span>
+                  <p className="font-medium text-slate-900">Ask follow-up questions ("Explain it like I'm 5").</p>
+                </li>
+                <li className="flex gap-4">
+                  <span className="text-teal-500 text-xl">✓</span>
+                  <p className="font-medium text-slate-900">Available 24/7 instantly.</p>
+                </li>
+                <li className="flex gap-4">
+                  <span className="text-teal-500 text-xl">✓</span>
+                  <p className="font-medium text-slate-900">Unlimited usage included in $24.99/mo.</p>
+                </li>
+              </ul>
             </div>
+
+          </div>
         </div>
       </section>
 
-      {/* COMPETITOR COMPARISON (Feature Specific) */}
-      <section className="py-20 bg-slate-900 text-white">
+      {/* Use Cases / Examples */}
+      <section className="py-20 bg-white border-t border-slate-200">
         <div className="container mx-auto px-4 max-w-4xl">
-            <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold mb-6">Why We Built This</h2>
-                <p className="text-slate-300 text-lg">
-                    Other platforms charge you per question or give you static text explanations. We believe you deserve unlimited help.
-                </p>
+          <h2 className="text-3xl font-bold text-center text-slate-900 mb-16">What can you ask the AI Tutor?</h2>
+          
+          <div className="space-y-8">
+            {/* Example 1 */}
+            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+              <p className="font-bold text-indigo-600 mb-2">Student asks:</p>
+              <p className="text-lg text-slate-900 mb-4">"I keep mixing up systole and diastole. Can you give me a trick to remember?"</p>
+              <div className="bg-white p-4 rounded-xl border border-slate-100 text-slate-700">
+                <span className="font-bold text-teal-600 block mb-1">AI Tutor:</span>
+                "Think of <strong>Diastole</strong> as <strong>Dilate</strong> (or Die). When you die, your heart relaxes. 
+                <br/><br/>
+                <strong>Systole</strong> sounds like <strong>Squeeze</strong>. This is the contraction phase.
+                <br/><br/>
+                Does that help you visualize the pressure changes?"
+              </div>
             </div>
 
-            <div className="bg-slate-800 rounded-2xl p-8 border border-slate-700">
-                <div className="grid grid-cols-3 gap-4 border-b border-slate-700 pb-4 mb-4 text-sm font-bold uppercase tracking-wider text-slate-400">
-                    <div>Feature</div>
-                    <div className="text-center text-teal-400">StudyBuddy</div>
-                    <div className="text-center">Others (ATI/NurseHub)</div>
-                </div>
-                <div className="space-y-6">
-                    <div className="grid grid-cols-3 gap-4 items-center">
-                        <div className="font-bold">Interactive Help</div>
-                        <div className="text-center flex justify-center"><CheckCircle className="w-6 h-6 text-teal-400" /></div>
-                        <div className="text-center text-slate-500">No</div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-4 items-center">
-                        <div className="font-bold">Follow-up Questions</div>
-                        <div className="text-center flex justify-center"><CheckCircle className="w-6 h-6 text-teal-400" /></div>
-                        <div className="text-center text-slate-500">No</div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-4 items-center">
-                        <div className="font-bold">Cost</div>
-                        <div className="text-center text-teal-400 font-bold">Included Free</div>
-                        <div className="text-center text-slate-500">Not Available</div>
-                    </div>
-                </div>
+            {/* Example 2 */}
+            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+              <p className="font-bold text-indigo-600 mb-2">Student asks:</p>
+              <p className="text-lg text-slate-900 mb-4">"Why is the answer B and not C for this Punnett square question?"</p>
+              <div className="bg-white p-4 rounded-xl border border-slate-100 text-slate-700">
+                <span className="font-bold text-teal-600 block mb-1">AI Tutor:</span>
+                "Let's look at the alleles. The question states the father is homozygous dominant (RR). This means he can ONLY pass on a dominant 'R' gene.
+                <br/><br/>
+                Option C assumes he passed a recessive 'r', which is impossible.
+                <br/><br/>
+                Would you like me to draw out the square for you?"
+              </div>
             </div>
+          </div>
         </div>
       </section>
-
-      {/* CTA */}
-      <section className="py-24 bg-white text-center">
-        <div className="container mx-auto px-4 max-w-3xl">
-            <h2 className="text-3xl font-bold text-slate-900 mb-6">Meet Your New Study Buddy</h2>
-            <p className="text-lg text-slate-600 mb-8">
-                Join 500+ students who are mastering the TEAS with AI support.
-            </p>
-            <Link href="/register" className="inline-flex items-center px-8 py-4 bg-teal-600 text-white font-bold rounded-xl hover:bg-teal-700 transition-all shadow-lg hover:-translate-y-0.5">
-                Get Unlimited AI Access ($24.99) <ArrowRight className="w-5 h-5 ml-2" />
-            </Link>
+      
+      <div className="bg-teal-600 py-16 text-center">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-white mb-6">Try the AI Tutor risk-free</h2>
+          <Link href="/pricing" className="inline-block px-8 py-4 bg-white text-teal-700 font-bold rounded-xl shadow-lg hover:shadow-xl hover:bg-slate-50 transition-all">
+            Start Your 3-Day Trial
+          </Link>
         </div>
-      </section>
-    </div>
+      </div>
+    </main>
   );
 }

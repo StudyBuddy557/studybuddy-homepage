@@ -1,142 +1,117 @@
-import { Metadata } from 'next';
+import React from 'react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
-import { JsonLd } from '@/components/JsonLd';
-import { ShieldCheck, Lock, CreditCard, Users, CheckCircle2, AlertCircle } from 'lucide-react';
+import JsonLd from '@/app/components/JsonLd';
+import StartChatButton from '@/app/components/StartChatButton';
 
-// --- METADATA ---
 export const metadata: Metadata = {
-  title: 'Is StudyBuddy Legit? Scam Check & Safety Verification (2025)',
-  description: 'Yes, StudyBuddy is a legitimate TEAS 7 prep platform with 500+ active students, a 100% money-back guarantee, and secure payment processing via Stripe.',
+  title: 'Is StudyBuddy Legit? Scam Verification & Reviews | StudyBuddy',
+  description: 'Verification of StudyBuddy\'s legitimacy. Created by nursing professors, 92% documented pass rate, and transparent refund policy. Read the facts here.',
 };
 
 export default function IsLegitPage() {
-  // AEO: FAQ Schema for "Is it legit?" queries
-  const legitSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
+  // AEO SIGNAL: FAQ Schema 
+  // This allows Google to answer "Is StudyBuddy a scam?" directly with your text
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
       {
-        '@type': 'Question',
-        name: 'Is StudyBuddy a legitimate company?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Yes, StudyBuddy is a legitimate US-based education technology company. It serves over 500 nursing students, uses secure Stripe payment processing, and offers a legally binding 100% money-back pass guarantee.'
+        "@type": "Question",
+        "name": "Is StudyBuddy a legitimate TEAS prep platform?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, StudyBuddy is a legitimate TEAS 7 preparation platform created by credentialed nursing professors. It has served over 500 students with a documented 92% first-time pass rate."
         }
       },
       {
-        '@type': 'Question',
-        name: 'Is StudyBuddy a scam?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'No. StudyBuddy is created by credentialed nursing professors (PhD/DNP). Unlike scams, StudyBuddy offers a transparent 3-day refund policy and a documented pass rate of 92%.'
+        "@type": "Question",
+        "name": "Who created StudyBuddy?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "StudyBuddy was built by a team of nursing educators with over 75 years of combined experience, holding PhD, DNP, and EdD degrees."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does StudyBuddy offer refunds?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. We offer a 100% money-back pass guarantee. If you complete our course and do not pass your TEAS exam, we will refund your subscription."
         }
       }
     ]
   };
 
   return (
-    <main className="min-h-screen bg-white font-sans text-slate-900">
-      <JsonLd schema={legitSchema} />
+    <main className="bg-white min-h-screen">
+      <JsonLd data={faqSchema} />
+      
+      <div className="container mx-auto px-4 py-16 max-w-3xl">
+        <h1 className="text-4xl font-extrabold text-slate-900 mb-8">
+          Is StudyBuddy Legit? <span className="text-teal-600">Yes.</span>
+        </h1>
 
-      {/* --- HERO SECTION --- */}
-      <section className="bg-slate-50 pt-32 pb-20 border-b border-slate-200">
-        <div className="mx-auto max-w-4xl px-4 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-green-800 mb-6">
-            <ShieldCheck className="w-4 h-4" />
-            Official Verification
-          </div>
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-6 leading-tight">
-            Is StudyBuddy Legit?
-          </h1>
-          {/* AEO ANSWER: Direct Answer in First Paragraph */}
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 max-w-3xl mx-auto text-left">
-            <p className="text-lg md:text-xl text-slate-800 leading-relaxed">
-              <strong className="text-green-600">YES.</strong> StudyBuddy is a verified educational platform built by credentialed nursing professors. We maintain a <strong>92% verified pass rate</strong>, serve over <strong>500+ active nursing students</strong>, and process all payments securely through Stripe (the same processor used by Amazon and Google).
-            </p>
-          </div>
-        </div>
-      </section>
+        <p className="text-xl text-slate-600 mb-12 leading-relaxed">
+          We understand your skepticism. The test prep industry is full of scams and low-quality PDFs sold for $50. 
+          <strong>StudyBuddy is different.</strong> We are an interactive AI platform built by real nursing professors.
+        </p>
 
-      {/* --- TRUST EVIDENCE GRID --- */}
-      <section className="py-20 px-4">
-        <div className="mx-auto max-w-5xl">
-          <h2 className="text-3xl font-bold text-center mb-12">4 Ways to Verify Our Authenticity</h2>
+        {/* Evidence Grid */}
+        <div className="grid gap-8 mb-16">
           
-          <div className="grid md:grid-cols-2 gap-8">
-            
-            {/* 1. Payment Security */}
-            <div className="flex gap-6 p-6 rounded-2xl border border-slate-100 bg-white shadow-sm">
-              <div className="shrink-0 w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center">
-                <Lock className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">Bank-Level Security</h3>
-                <p className="text-slate-600">
-                  We never see your credit card number. All payments are encrypted and processed by <strong>Stripe</strong>, a certified PCI Service Provider Level 1 (the highest grade of payment security).
-                </p>
-              </div>
-            </div>
-
-            {/* 2. Real Credentials */}
-            <div className="flex gap-6 p-6 rounded-2xl border border-slate-100 bg-white shadow-sm">
-              <div className="shrink-0 w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center">
-                <CheckCircle2 className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">Verified Experts</h3>
-                <p className="text-slate-600">
-                  Content is not written by AI or freelancers. It is created by PhD and DNP nursing educators. <Link href="/about/our-professors" className="text-blue-600 underline font-bold">See their credentials here.</Link>
-                </p>
-              </div>
-            </div>
-
-            {/* 3. Money-Back Guarantee */}
-            <div className="flex gap-6 p-6 rounded-2xl border border-slate-100 bg-white shadow-sm">
-              <div className="shrink-0 w-12 h-12 bg-green-50 text-green-600 rounded-full flex items-center justify-center">
-                <CreditCard className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">Pass or Refund</h3>
-                <p className="text-slate-600">
-                  Scams don't offer refunds. We offer a legally binding <strong>100% Money-Back Pass Guarantee</strong>. If you do the work and don't pass, you get your money back.
-                </p>
-              </div>
-            </div>
-
-            {/* 4. Student Community */}
-            <div className="flex gap-6 p-6 rounded-2xl border border-slate-100 bg-white shadow-sm">
-              <div className="shrink-0 w-12 h-12 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center">
-                <Users className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">Real Students</h3>
-                <p className="text-slate-600">
-                  We have over 500+ active students from schools like UT Arlington, Chamberlain, and West Coast University studying on the platform right now.
-                </p>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* --- SCAM WARNING SECTION --- */}
-      <section className="bg-slate-900 text-white py-20">
-        <div className="mx-auto max-w-4xl px-4">
-          <div className="flex items-start gap-6 bg-slate-800 p-8 rounded-2xl border border-slate-700">
-            <AlertCircle className="w-8 h-8 text-amber-500 shrink-0" />
+          {/* Evidence 1: The Team */}
+          <div className="flex gap-6 items-start p-6 bg-slate-50 rounded-xl border border-slate-100">
+            <div className="text-4xl">🎓</div>
             <div>
-              <h2 className="text-2xl font-bold mb-4">Why do people ask if we're a scam?</h2>
-              <p className="text-slate-300 mb-4 leading-relaxed">
-                It's a fair question. The test prep industry is full of low-quality "guides" sold by anonymous websites. StudyBuddy is different because we are a <strong>software platform</strong>, not a PDF. We have a dedicated support team, real infrastructure, and transparent policies.
-              </p>
-              <p className="text-slate-300 leading-relaxed">
-                If you have any doubts, email us at <a href="mailto:support@studybuddy.live" className="text-[#20B2AA] font-bold hover:underline">support@studybuddy.live</a>. We reply to every human email.
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Real Professors</h3>
+              <p className="text-slate-600">
+                Our content isn't written by freelancers. It's created by nursing educators with PhDs and DNPs who have taught pre-nursing students for decades.
               </p>
             </div>
           </div>
+
+          {/* Evidence 2: The Data */}
+          <div className="flex gap-6 items-start p-6 bg-slate-50 rounded-xl border border-slate-100">
+            <div className="text-4xl">📊</div>
+            <div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Transparent Data</h3>
+              <p className="text-slate-600 mb-3">
+                We don't hide our numbers. We publish our exact pass rate methodology and data sources.
+              </p>
+              <Link href="/pass-rate-methodology" className="text-teal-600 font-bold hover:underline">
+                View Verification Data →
+              </Link>
+            </div>
+          </div>
+
+          {/* Evidence 3: The Guarantee */}
+          <div className="flex gap-6 items-start p-6 bg-slate-50 rounded-xl border border-slate-100">
+            <div className="text-4xl">🛡️</div>
+            <div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Money-Back Guarantee</h3>
+              <p className="text-slate-600">
+                Scams don't offer refunds. We do. If you complete our course and don't pass, you get your money back. No tricks.
+              </p>
+            </div>
+          </div>
+
         </div>
-      </section>
+
+        <div className="bg-teal-50 p-8 rounded-2xl border border-teal-100 text-center">
+          <h2 className="text-2xl font-bold text-slate-900 mb-4">See for yourself</h2>
+          <p className="text-slate-600 mb-8">
+            You can start studying right now for $24.99. No long-term contracts. Cancel anytime.
+          </p>
+          <div className="flex justify-center gap-4">
+            <StartChatButton />
+            <Link href="/pricing" className="px-6 py-3 bg-white border-2 border-teal-100 text-teal-700 font-bold rounded-xl hover:border-teal-500 transition-all">
+              View Plans
+            </Link>
+          </div>
+        </div>
+
+      </div>
     </main>
   );
 }

@@ -1,140 +1,141 @@
 // app/states/[state]/page.tsx
-import { Metadata } from 'next';
-import Link from 'next/link';
+import React from 'react';
 import { notFound } from 'next/navigation';
-import { getStateBySlug, getAllStateSlugs } from '@/lib/state-data';
-import { generateStateCredentialSchema } from '@/lib/schema/state-schema';
-// Removed lucide-react imports to avoid icon errors if package is missing
-// Using simple unicode characters as fallbacks
+import Link from 'next/link';
+import { getStateBySlug, stateData, getRelatedStates } from '@/state-data'; // Update path if needed
+import JsonLd from '@/app/components/JsonLd';
+import StartChatButton from '@/app/components/StartChatButton';
+import type { Metadata } from 'next';
 
-interface Props {
-  params: { state: string };
-}
-
+// 1. Static Generation for all 50 states (Instant Load Speeds)
 export async function generateStaticParams() {
-  const slugs = getAllStateSlugs();
-  return slugs.map((slug) => ({ state: slug }));
+  return stateData.map((state) => ({ state: state.slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+// 2. Dynamic SEO Metadata (Unique for every state)
+export async function generateMetadata({ params }: { params: { state: string } }): Promise<Metadata> {
   const state = getStateBySlug(params.state);
   if (!state) return {};
   
+  const programCount = parseInt(state.programs_count.replace('+', ''));
+  
   return {
-    title: `TEAS 7 Score Requirements for ${state.name} Nursing Schools (2025)`,
-    description: `What TEAS score do you need for ${state.name} nursing programs? See requirements for top schools, average accepted scores, and prerequisites.`,
+    title: `TEAS 7 Requirements for ${state.name} Nursing Schools (${new Date().getFullYear()})`,
+    description: `Complete admissions guide for the ${state.programs_count} nursing programs in ${state.name}. Average TEAS score requirements and ${state.avg_salary} salary data.`,
+    alternates: {
+      canonical: `https://studybuddy.live/states/${state.slug}`,
+    }
   };
 }
 
-export default function StatePage({ params }: Props) {
+export default function StatePage({ params }: { params: { state: string } }) {
   const state = getStateBySlug(params.state);
-  if (!state) notFound();
+  if (!state) return notFound();
 
-  const schema = generateStateCredentialSchema(state);
+  // LOGIC: Reactive Copywriting based on salary data
+  const salaryNum = parseInt(state.avg_salary.replace(/[^0-9]/g, ''));
+  const isHighSalary = salaryNum > 85000;
+  const isHighVolume = parseInt(state.programs_count.replace('+', '')) > 80;
+  
+  // LOGIC: Crawl Mesh (Links to neighbors)
+  const relatedStates = getRelatedStates(state.slug, state.region);
+
+  const stateSchema = {
+    "@context": "https://schema.org",
+    "@type": "EducationalOccupationalCredential",
+    "credentialCategory": "Nursing Entrance Exam",
+    "name": `TEAS 7 for ${state.name}`,
+    "description": `Standardized test requirements for ${state.name} nursing programs.`,
+    "educationalLevel": "Post-Secondary",
+    "occupationalCategory": "Registered Nurse",
+    "validIn": { "@type": "AdministrativeArea", "name": state.name }
+  };
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-      />
+    <main className="bg-slate-50 min-h-screen">
+      <JsonLd data={stateSchema} />
       
-      {/* Hero Section */}
+      {/* Dynamic Hero */}
       <div className="bg-white border-b border-slate-200">
-        <div className="max-w-5xl mx-auto px-6 py-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-sm font-bold mb-6">
-            📍 {state.name} Nursing Admissions
+        <div className="container mx-auto px-4 py-16 max-w-5xl">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-teal-50 text-teal-700 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
+            {state.region} Region Guide
           </div>
-          
-          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 leading-tight">
-            TEAS 7 Score Requirements for <span className="text-teal-600">{state.name}</span> Nursing Schools
+          <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 mb-6 leading-tight">
+            TEAS 7 Scores for <span className="text-teal-600">{state.name}</span>
           </h1>
           
-          {/* AEO "Answer-First" Box */}
-          <div className="bg-slate-50 border-l-4 border-teal-500 p-6 rounded-r-xl">
-            <p className="text-xl text-slate-700 leading-relaxed">
-              Most nursing programs in <strong>{state.name}</strong> require a minimum TEAS 7 score of <strong>62-65% for ADN</strong> programs and <strong>75-80% for BSN</strong> programs. Top-tier schools often look for scores above 85% (Advanced Level).
-            </p>
+          {/* REACTIVE COPYWRITING: The text changes based on the data */}
+          <p className="text-xl text-slate-600 max-w-3xl leading-relaxed">
+            {isHighSalary 
+              ? `Nursing in ${state.name} is highly competitive with an average salary of ${state.avg_salary}. Top programs often require TEAS scores above 85% to filter applicants.`
+              : `With ${state.programs_count} programs across the state, ${state.name} offers significant opportunity. The average starting salary is ${state.avg_salary}, making it a stable career path.`
+            }
+          </p>
+
+          <div className="mt-8 flex flex-wrap gap-4">
+            <StartChatButton />
+            <Link href="/pricing" className="px-6 py-3 bg-white text-slate-700 font-bold rounded-xl border-2 border-slate-200 hover:border-teal-500 transition-all">
+              View Pricing
+            </Link>
           </div>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 py-12 grid md:grid-cols-3 gap-12">
+      <div className="container mx-auto px-4 py-12 max-w-5xl grid md:grid-cols-[1fr_300px] gap-12">
         {/* Main Content */}
-        <div className="md:col-span-2 space-y-12">
+        <div className="prose prose-slate prose-lg">
+          <div className="grid grid-cols-2 gap-4 not-prose mb-8">
+            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
+                <div className="text-sm text-slate-500 font-bold uppercase">Programs</div>
+                <div className="text-2xl font-black text-indigo-600">{state.programs_count}</div>
+            </div>
+            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
+                <div className="text-sm text-slate-500 font-bold uppercase">Avg Salary</div>
+                <div className="text-2xl font-black text-teal-600">{state.avg_salary}</div>
+            </div>
+          </div>
+
+          <h2>Admission Requirements Analysis</h2>
+          <p>
+            To enter one of the <strong>{state.programs_count} programs</strong> in {state.name}, you need a strategy. 
+            Most schools in the {state.region} region use the ATI TEAS 7 exam as a primary filter for applicants.
+          </p>
           
-          {/* Quick Stats Grid */}
-          <section className="grid grid-cols-2 gap-4">
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-              <div className="text-sm text-slate-500 font-bold uppercase tracking-wide">Programs</div>
-              <div className="text-2xl font-bold text-slate-900">{state.programs_count} Schools</div>
-            </div>
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-              <div className="text-sm text-slate-500 font-bold uppercase tracking-wide">Avg Salary</div>
-              <div className="text-2xl font-bold text-slate-900">{state.avg_salary}</div>
-            </div>
-          </section>
+          <div className="bg-amber-50 border-l-4 border-amber-400 p-6 my-8 not-prose rounded-r-xl">
+            <h3 className="text-amber-900 font-bold text-lg mb-2">Admissions Tip for {state.name}</h3>
+            <p className="text-amber-800">
+              {isHighVolume 
+                ? `Because ${state.name} has so many programs (${state.programs_count}), requirements vary wildly. Community colleges may accept 65%, while Universities often demand 80%+.`
+                : `With fewer programs available (${state.programs_count}), competition for seats in ${state.name} can be fierce. A high TEAS score is your best differentiator.`
+              }
+            </p>
+          </div>
 
-          <section>
-            <h2 className="text-3xl font-bold text-slate-900 mb-6">Admission Prerequisites</h2>
-            <div className="prose prose-slate max-w-none text-slate-600">
-              <p>
-                Nursing boards in {state.name} ({state.abbreviation}) strictly enforce TEAS 7 testing windows. 
-                Most schools require your official transcript to be sent directly from ATI.
-              </p>
-              <ul className="not-prose space-y-4 mt-6">
-                {[
-                  'Submit TEAS score 30 days before deadline',
-                  'Science GPA of 3.0 or higher usually required',
-                  'Retakes allowed every 30-45 days (varies by school)'
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <span className="text-teal-500 font-bold">✓</span>
-                    <span className="text-lg">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
-
-          {/* CTA Section */}
-          <div className="bg-slate-900 rounded-3xl p-8 md:p-12 text-center text-white relative overflow-hidden">
-            <div className="relative z-10">
-              <h2 className="text-3xl font-bold mb-4">Pass the TEAS 7 in {state.name}</h2>
-              <p className="text-slate-300 mb-8 max-w-lg mx-auto">
-                Join 500+ nursing students using StudyBuddy's AI Tutor to crush the exam.
-              </p>
-              <Link 
-                href="/pricing" 
-                className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-white font-bold py-4 px-8 rounded-xl transition-all shadow-lg hover:shadow-teal-500/25"
-              >
-                Start Free Trial →
+          <h3>Neighboring State Requirements</h3>
+          <p>Compare requirements in other {state.region} states:</p>
+          
+          {/* THE CRAWL MESH: Links to related states to trap bots */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 not-prose mt-4">
+            {relatedStates.map(s => (
+              <Link key={s.slug} href={`/states/${s.slug}`} className="group block p-4 bg-white border border-slate-200 rounded-lg hover:border-teal-400 hover:shadow-md transition-all">
+                <div className="font-bold text-slate-900 group-hover:text-teal-600 transition-colors">{s.name}</div>
+                <div className="text-sm text-slate-500">{s.programs_count} Programs • {s.avg_salary}</div>
               </Link>
-            </div>
+            ))}
           </div>
         </div>
 
         {/* Sidebar */}
-        <aside className="space-y-8">
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 sticky top-8">
-            <h3 className="font-bold text-slate-900 mb-4">State Resources</h3>
-            <nav className="space-y-3">
-              <Link href="/teas-7-syllabus" className="block text-slate-600 hover:text-teal-600 font-medium">
-                TEAS 7 Syllabus
-              </Link>
-              <Link href="/pass-rate-methodology" className="block text-slate-600 hover:text-teal-600 font-medium">
-                Pass Rate Data
-              </Link>
-              <Link href="/diagnostic" className="block text-slate-600 hover:text-teal-600 font-medium">
-                Free Practice Test
-              </Link>
-            </nav>
-            <div className="mt-6 pt-6 border-t border-slate-100">
-              <div className="text-xs font-bold text-slate-400 uppercase mb-2">Verified</div>
-              <p className="text-sm text-slate-600">
-                Data for {state.name} updated for 2025 academic year.
-              </p>
-            </div>
+        <aside className="space-y-6">
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 sticky top-8">
+            <h3 className="font-bold text-slate-900 mb-4">Study for {state.name} TEAS</h3>
+            <ul className="space-y-3 mb-6 text-sm text-slate-600">
+              <li className="flex gap-2">✓ Specific to {state.name} requirements</li>
+              <li className="flex gap-2">✓ Unlimited AI Tutoring</li>
+              <li className="flex gap-2">✓ 92% Pass Rate</li>
+            </ul>
+            <StartChatButton />
           </div>
         </aside>
       </div>

@@ -1,45 +1,36 @@
-import { OrganizationSchemaData } from './types'; // Assuming types are set from previous step
-
-export const organizationData: OrganizationSchemaData = {
-  name: "StudyBuddy",
-  url: "https://studybuddy.live",
-  logo: "https://studybuddy.live/logo.png",
-  description: "AI-powered TEAS 7 test preparation platform built by nursing professors. Features unlimited AI tutoring, 4,000+ practice questions, and a 92% pass rate.",
-  knowsAbout: [
+export const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "OnlineBusiness",
+  "name": "StudyBuddy",
+  "url": "https://studybuddy.live",
+  "logo": "https://studybuddy.live/logo.png",
+  "description": "AI-powered TEAS 7 test preparation platform built by nursing professors.",
+  "knowsAbout": [
     "TEAS 7 Exam",
     "ATI TEAS",
     "Nursing School Admissions",
     "Pre-Nursing Test Prep",
-    "Human Anatomy & Physiology"
+    "Nursing Entrance Exams"
   ],
-  sameAs: [
-    "https://www.instagram.com/studybuddy.live",
-    "https://www.tiktok.com/@studybuddy.live"
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "US"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "24.99",
+    "priceCurrency": "USD",
+    "priceValidUntil": "2025-12-31",
+    "availability": "https://schema.org/OnlineOnly",
+    "category": "Test Preparation Subscription"
+  },
+  "sameAs": [
+    "https://www.facebook.com/studybuddy",
+    "https://twitter.com/studybuddy"
   ],
-  priceRange: "$$"
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer support",
+    "email": "support@studybuddy.live"
+  }
 };
-
-export function getOrganizationSchema() {
-  return {
-    "@context": "https://schema.org",
-    "@type": "OnlineBusiness",
-    "name": organizationData.name,
-    "url": organizationData.url,
-    "logo": organizationData.logo,
-    "description": organizationData.description,
-    "knowsAbout": organizationData.knowsAbout,
-    "sameAs": organizationData.sameAs,
-    "priceRange": organizationData.priceRange,
-    "offers": {
-      "@type": "Offer",
-      "price": "24.99",
-      "priceCurrency": "USD",
-      "availability": "https://schema.org/OnlineOnly"
-    },
-    "founder": {
-      "@type": "Person",
-      "jobTitle": "Professor of Nursing",
-      "description": "Created by credentialed nursing educators with 75+ years combined experience."
-    }
-  };
-}

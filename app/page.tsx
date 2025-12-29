@@ -1,5 +1,9 @@
+// app/page.tsx
+import React from 'react';
 import type { Metadata } from 'next';
-import HomePage from '@/components/HomePage';
+// We import the hero we just built + other sections to form the "HomePage"
+import AeoHero from '@/app/components/AeoHero'; 
+import { organizationSchema } from '@/lib/schema/organization';
 
 export const metadata: Metadata = {
   title: 'TEAS 7 Practice Test & Prep Course | 92% Pass Rate | StudyBuddy',
@@ -18,22 +22,17 @@ export const metadata: Metadata = {
   },
 };
 
-// JSON-LD Schema for SEO
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'OnlineBusiness',
-  'name': 'StudyBuddy',
-  'description': 'AI-powered TEAS 7 test preparation platform built by nursing professors.',
-  'url': 'https://studybuddy.live',
-  'knowsAbout': ['TEAS 7 Exam', 'ATI TEAS', 'Nursing School Admissions'],
-  'priceRange': '$24.99 - $59.00',
-  'founder': { '@type': 'Person', 'jobTitle': 'Professor of Nursing' },
+// Merged Schema: Includes your new Rating data + existing Entity data
+const combinedSchema = {
+  ...organizationSchema,
   'aggregateRating': { 
     '@type': 'AggregateRating', 
     'ratingValue': '4.8', 
     'reviewCount': '523',
     'bestRating': '5'
-  }
+  },
+  'priceRange': '$24.99 - $59.00',
+  'founder': { '@type': 'Person', 'jobTitle': 'Professor of Nursing' }
 };
 
 export default function Page() {
@@ -41,9 +40,17 @@ export default function Page() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(combinedSchema) }}
       />
-      <HomePage />
+      
+      {/* This renders your main content. 
+        I've used the AeoHero directly here. 
+        If you prefer a separate file, create app/components/HomePage.tsx 
+      */}
+      <main>
+        <AeoHero />
+        {/* Competitor Grid & State Links will go here */}
+      </main>
     </>
   );
 }
