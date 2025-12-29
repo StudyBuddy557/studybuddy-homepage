@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect, useCallback } from 'react';
 import { 
   CheckCircle2, Zap, Shield, Users, ArrowRight, 
   Play, BookOpen, ChevronDown, X, 
   Menu, Bot, Award, Star, Target, Brain, 
-  Sparkles, Timer, BarChart3, Home, User
+  Sparkles, Timer, BarChart3, Home, User, AlertCircle, MessageCircle
 } from 'lucide-react';
 import { organizationSchema } from '@/lib/schema/organization';
 import JsonLd from '@/app/components/JsonLd';
@@ -71,6 +72,52 @@ function useLocalStorage(key: string, initialValue: boolean) {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 🧩 SUB-COMPONENTS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// --- FLOATING SALES BOT ---
+function FloatingSalesBot() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [showBubble, setShowBubble] = useState(false);
+
+  // Show the "Hi!" bubble after 3 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => setShowBubble(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2 hidden md:flex">
+      {/* The Speech Bubble */}
+      {showBubble && !isOpen && (
+        <div className="bg-white px-4 py-3 rounded-2xl rounded-br-none shadow-xl border border-slate-200 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[200px]">
+          <div className="flex justify-between items-start gap-2">
+            <p className="text-sm font-bold text-slate-800">Hi! Need help passing the TEAS?</p>
+            <button 
+              onClick={(e) => { e.stopPropagation(); setShowBubble(false); }}
+              className="text-slate-400 hover:text-slate-600"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* The Trigger Button with Avatar */}
+      <Link 
+        href="/dashboard"
+        className="group relative flex items-center justify-center w-16 h-16 rounded-full shadow-lg hover:shadow-teal-500/40 transition-all hover:scale-105 active:scale-95 bg-white border-2 border-[#20B2AA] overflow-hidden"
+        onMouseEnter={() => setShowBubble(true)}
+      >
+        <Image 
+          src="/StudyBuddy_AI_tutor_Avatar.png" 
+          alt="AI Tutor" 
+          fill
+          className="object-cover"
+        />
+        <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full z-10"></span>
+      </Link>
+    </div>
+  );
+}
 
 function ExitIntentModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   if (!isOpen) return null;
@@ -312,12 +359,15 @@ export default function HomePage() {
     { label: "EdD", title: "Instructional Technology", desc: "30+ years designing adaptive learning systems" }
   ];
 
+  // UPDATED FAQs
   const faqItems = [
-    { question: "How does the Pass Guarantee work?", answer: "Complete 80%+ of the course, answer 1,000+ practice questions, and study for 30+ days. If you don't pass, we'll give you a full $59 refund or 60 free days of extended access." },
-    { question: "Are the practice exams realistic?", answer: "Yes. Our questions match the difficulty, format, and timing of the actual ATI TEAS 7 exam blueprint." },
-    { question: "What specific subjects are on the TEAS 7?", answer: "Reading, Math, Science, and English & Language Usage. Check our Syllabus page for details." },
-    { question: "Is StudyBuddy legit?", answer: "Yes. We are created by nursing professors, verified by 500+ student outcomes, and back our claims with a money-back guarantee." },
-    { question: "What is a good TEAS score?", answer: "It depends on your state requirements. Check our State Guides to find the minimum score for schools in your area." },
+    { question: "How does the Pass Guarantee work?", answer: "Complete 80%+ of the course, answer 1,000+ practice questions, and study for 30+ days. If you don't pass, we'll give you a full $59 refund or 60 free days of extended access. No hidden loops." },
+    { question: "Are the practice exams realistic?", answer: "Yes. Our questions match the difficulty, format, and timing of the actual ATI TEAS 7 exam." },
+    { question: "What specific subjects are on the TEAS 7?", answer: "Reading, Math, Science, and English & Language Usage." },
+    { question: "Can I use a calculator on the TEAS 7?", answer: "Yes, a basic four-function calculator is provided on-screen during the test." },
+    { question: "Does StudyBuddy work on my phone or tablet?", answer: "Yes, the platform is fully responsive and works great on mobile devices." },
+    { question: "Is this course updated for the 2026 TEAS 7?", answer: "Yes, we update our content weekly to match the latest ATI standards." },
+    { question: "What is a good TEAS score for nursing school?", answer: "It depends on the program, but generally 65-70% for ADN and 75-80% for BSN." },
   ];
 
   const reviews = [
@@ -338,7 +388,6 @@ export default function HomePage() {
     }
   ];
 
-  // AEO STRATEGY: Direct state page linking
   const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (e.target.value) {
       window.location.href = `/states/${e.target.value}`;
@@ -347,18 +396,13 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-[#20B2AA] selection:text-white pb-20 md:pb-0">
-      
-      {/* 1. AEO Entity Schema (Essential for Google) */}
       <JsonLd data={organizationSchema} />
-
-      {/* 🧩 Components */}
+      <FloatingSalesBot />
       <ExitIntentModal isOpen={showExitIntent} onClose={() => setShowExitIntent(false)} />
       <StickyFloatingCTA />
       <MobileBottomNav />
 
-      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 NAVIGATION
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      {/* NAVIGATION */}
       <nav 
         className={`fixed top-0 w-full z-50 transition-all duration-300 ${
           scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-5'
@@ -367,8 +411,8 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-[#20B2AA] to-[#1E3A8A] rounded-lg flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
-                <span className="text-white font-bold text-xl">S</span>
+              <div className="relative w-10 h-10 transition-transform group-hover:scale-105">
+                <Image src="/logo.png" alt="StudyBuddy Logo" fill className="object-contain" />
               </div>
               <span className={`text-xl font-bold ${scrolled ? 'text-slate-900' : 'text-slate-900 lg:text-slate-800'}`}>
                 StudyBuddy
@@ -377,37 +421,18 @@ export default function HomePage() {
 
             <div className="hidden md:flex items-center gap-8">
               {navItems.map((item) => (
-                <Link 
-                  key={item.label} 
-                  href={item.href} 
-                  className="text-slate-600 hover:text-[#20B2AA] font-medium transition-colors text-sm lg:text-base"
-                >
+                <Link key={item.label} href={item.href} className="text-slate-600 hover:text-[#20B2AA] font-medium transition-colors text-sm lg:text-base">
                   {item.label}
                 </Link>
               ))}
             </div>
 
             <div className="hidden md:flex items-center gap-3">
-              <Link 
-                href="/dashboard" 
-                className="text-slate-600 hover:text-[#20B2AA] font-medium transition-colors"
-              >
-                Log In
-              </Link>
-              <Link 
-                href="/pricing" 
-                className="bg-[#20B2AA] text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-[#1a9d96] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
-              >
-                Get Started
-              </Link>
+              <Link href="/dashboard" className="text-slate-600 hover:text-[#20B2AA] font-medium transition-colors">Log In</Link>
+              <Link href="/pricing" className="bg-[#20B2AA] text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-[#1a9d96] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">Get Started</Link>
             </div>
 
-            <button 
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
-              aria-label="Toggle menu"
-              aria-expanded={mobileOpen}
-            >
+            <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden p-2 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
               {mobileOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
@@ -417,37 +442,21 @@ export default function HomePage() {
           <div className="md:hidden absolute top-full left-0 w-full bg-white border-t border-slate-200 shadow-xl">
             <div className="px-4 py-4 space-y-2">
               {navItems.map((item) => (
-                <Link 
-                  key={item.label}
-                  href={item.href} 
-                  className="block px-4 py-3 text-slate-700 hover:bg-[#20B2AA]/5 rounded-lg font-medium"
-                  onClick={() => setMobileOpen(false)}
-                >
+                <Link key={item.label} href={item.href} className="block px-4 py-3 text-slate-700 hover:bg-[#20B2AA]/5 rounded-lg font-medium" onClick={() => setMobileOpen(false)}>
                   {item.label}
                 </Link>
               ))}
               <div className="border-t border-slate-100 pt-3 mt-2">
-                <Link 
-                  href="/dashboard" 
-                  className="block px-4 py-3 text-slate-600 font-medium"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  Log In
-                </Link>
+                <Link href="/dashboard" className="block px-4 py-3 text-slate-600 font-medium" onClick={() => setMobileOpen(false)}>Log In</Link>
               </div>
             </div>
           </div>
         )}
       </nav>
 
-      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 HERO SECTION
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      {/* HERO SECTION */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div 
-          className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-pink-200/40 via-teal-200/30 to-blue-200/40 rounded-full blur-3xl -z-10 animate-pulse" 
-          style={{ animationDuration: '8s' }} 
-        />
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-pink-200/40 via-teal-200/30 to-blue-200/40 rounded-full blur-3xl -z-10 animate-pulse" style={{ animationDuration: '8s' }} />
         
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
@@ -494,17 +503,11 @@ export default function HomePage() {
               </ul>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Link 
-                  href="/diagnostic" 
-                  className="bg-[#20B2AA] text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-[#1a9d96] hover:shadow-xl hover:shadow-teal-500/20 hover:-translate-y-1 transition-all duration-200 flex flex-col items-center justify-center text-center"
-                >
+                <Link href="/diagnostic" className="bg-[#20B2AA] text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-[#1a9d96] hover:shadow-xl hover:shadow-teal-500/20 hover:-translate-y-1 transition-all duration-200 flex flex-col items-center justify-center text-center">
                   <span>Take Free 5-Min Diagnostic →</span>
                   <span className="text-xs font-normal opacity-90 mt-1">Get your personalized TEAS study plan</span>
                 </Link>
-                <Link 
-                  href="/pricing" 
-                  className="bg-white text-slate-700 px-8 py-4 rounded-xl font-bold text-lg border-2 border-slate-200 hover:border-slate-300 transition-all duration-200 flex flex-col items-center justify-center shadow-sm hover:shadow-md min-w-[160px]"
-                >
+                <Link href="/pricing" className="bg-white text-slate-700 px-8 py-4 rounded-xl font-bold text-lg border-2 border-slate-200 hover:border-slate-300 transition-all duration-200 flex flex-col items-center justify-center shadow-sm hover:shadow-md min-w-[160px]">
                   <span className="text-xs uppercase tracking-wide text-slate-500">Plans from</span>
                   <span className="text-lg text-slate-900">$24.99/mo</span>
                 </Link>
@@ -516,18 +519,13 @@ export default function HomePage() {
             </div>
 
             <div className="relative mt-12 lg:mt-0" style={{ perspective: '1000px' }}>
-              <div 
-                className="relative z-10 bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 md:p-8 transition-transform duration-700 ease-out hover:rotate-0"
-                style={{ transform: 'rotateY(-3deg)' }}
-              >
+              <div className="relative z-10 bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 md:p-8 transition-transform duration-700 ease-out hover:rotate-0" style={{ transform: 'rotateY(-3deg)' }}>
                 <div className="flex items-center justify-between mb-8">
                   <div>
                     <h3 className="text-2xl font-bold text-slate-900">Your Study Plan</h3>
                     <p className="text-slate-500 text-sm">Target Exam Date: Oct 15</p>
                   </div>
-                  <div className="bg-green-50 text-green-700 px-4 py-2 rounded-lg text-sm font-bold">
-                    On Track
-                  </div>
+                  <div className="bg-green-50 text-green-700 px-4 py-2 rounded-lg text-sm font-bold">On Track</div>
                 </div>
                 
                 <div className="space-y-6">
@@ -570,10 +568,7 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div 
-                className="absolute -top-10 -right-10 bg-white p-4 rounded-xl shadow-xl z-20 animate-bounce" 
-                style={{ animationDuration: '3s' }}
-              >
+              <div className="absolute -top-10 -right-10 bg-white p-4 rounded-xl shadow-xl z-20 animate-bounce" style={{ animationDuration: '3s' }}>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="text-green-500" size={20} />
                   <span className="font-bold text-slate-800">Correct!</span>
@@ -585,9 +580,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 VALUE PROPS
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      {/* VALUE PROPS */}
       <section className="py-24 bg-white border-t border-slate-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -609,9 +602,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 COMPARISON TABLE (Restored with AEO Links)
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      {/* COMPARISON TABLE */}
       <section className="py-24 bg-slate-50">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -625,7 +616,6 @@ export default function HomePage() {
           </div>
 
           <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
-            {/* Header Row */}
             <div className="grid grid-cols-4 bg-slate-50 border-b border-slate-200 py-6 px-4 text-center">
               <div className="text-left pl-6 font-bold text-xs uppercase tracking-widest text-slate-400 self-end">Features</div>
               <div><div className="font-bold text-slate-700">Textbooks</div><div className="text-xs text-slate-400">Traditional</div></div>
@@ -636,7 +626,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Rows */}
             {comparisonRows.map((row, i) => (
               <div key={i} className={`grid grid-cols-4 py-5 px-4 border-b border-slate-100 items-center text-center ${i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}>
                 <div className="text-left pl-6 text-sm font-bold text-slate-700">{row.label}</div>
@@ -662,9 +651,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 STATE REQUIREMENTS (Restored AEO Logic)
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      {/* STATE REQUIREMENTS */}
       <section className="py-24 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
@@ -676,19 +663,13 @@ export default function HomePage() {
           </p>
            
           <div className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto bg-white p-2 rounded-xl shadow-sm border border-slate-200">
-            <select 
-              className="flex-1 p-3 bg-transparent text-slate-700 font-medium focus:outline-none cursor-pointer rounded-lg"
-              onChange={handleStateChange}
-              aria-label="Select your state"
-            >
+            <select className="flex-1 p-3 bg-transparent text-slate-700 font-medium focus:outline-none cursor-pointer rounded-lg" onChange={handleStateChange} aria-label="Select your state">
               <option value="">Select your state...</option>
               {stateData.map((state) => (
                 <option key={state.slug} value={state.slug}>{state.name}</option>
               ))}
             </select>
-            <button className="bg-[#20B2AA] hover:bg-[#1a9d96] text-white font-bold px-8 py-3 rounded-lg transition-colors whitespace-nowrap">
-              View Guide
-            </button>
+            <button className="bg-[#20B2AA] hover:bg-[#1a9d96] text-white font-bold px-8 py-3 rounded-lg transition-colors whitespace-nowrap">View Guide</button>
           </div>
           <p className="text-xs text-slate-400 mt-4 italic">
             Most popular: <Link href="/states/california" className="hover:text-[#20B2AA]">California</Link>, <Link href="/states/texas" className="hover:text-[#20B2AA]">Texas</Link>, <Link href="/states/florida" className="hover:text-[#20B2AA]">Florida</Link>
@@ -696,9 +677,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 EXPERT CONTENT (Link to Legit Check)
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      {/* EXPERT CONTENT */}
       <section className="py-24 bg-slate-50 border-t border-slate-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-16 items-center">
@@ -753,9 +732,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 PRICING (Maintained)
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      {/* PRICING */}
       <section className="py-24 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -763,35 +740,33 @@ export default function HomePage() {
               Your Dedicated Partner for TEAS 7 Mastery
             </h2>
             <p className="text-slate-600 text-lg max-w-3xl mx-auto leading-relaxed">
-              Preparing for the TEAS 7 shouldn&apos;t feel like a solitary struggle. You need more than just a textbook—you need a complete ecosystem designed to guide you from your first day of study to your passing score.
+              We offer two simple paths. Both include our entire 4,000+ question bank and video library. The main difference is the AI Tutor access.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 items-start max-w-4xl mx-auto">
+            {/* Basic Plan */}
             <div className="p-8 rounded-3xl border border-slate-200 text-left hover:border-slate-300 transition-all bg-white hover:shadow-lg">
-              <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Month-to-Month</div>
+              <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Monthly Flexibility</div>
               <h3 className="text-3xl font-bold text-slate-900 mb-2">Basic</h3>
               <div className="flex items-baseline gap-1 mb-6">
                 <span className="text-5xl font-extrabold text-slate-900 tracking-tight">$24.99</span>
                 <span className="text-slate-500">/mo</span>
               </div>
-              <p className="text-xs text-slate-400 mb-6">Cancel anytime. No commitment.</p>
+              <p className="text-xs text-slate-400 mb-6">Cancel anytime. Good for short-term study.</p>
               <ul className="space-y-3 mb-8">
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> 6 Comprehensive Modules</li>
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> 450+ Video Lectures</li>
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> 4,000+ Practice Questions</li>
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> 10 Full-Length Practice Exams</li>
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> 24/7 AI Tutor Access</li>
+                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> Complete TEAS 7 Course (updated 2026)</li>
+                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> Practice Questions for each topic + Practice Exams</li>
+                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> TEAS Knowledge In Action Videos</li>
+                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> Access on Any Device</li>
+                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-slate-400 shrink-0"/> Standard AI Access (Limited)</li>
               </ul>
-              <Link href="/pricing?plan=basic" className="block w-full py-4 text-center border-2 border-slate-200 rounded-xl font-bold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors">
-                Start Basic Plan
-              </Link>
+              <Link href="/pricing?plan=basic" className="block w-full py-4 text-center border-2 border-slate-200 rounded-xl font-bold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors">Start Basic Plan</Link>
             </div>
              
+            {/* Pro Plan */}
             <div className="p-8 rounded-3xl border-2 border-[#20B2AA] shadow-2xl text-left relative overflow-hidden bg-white">
-              <div className="absolute top-0 right-0 bg-amber-400 text-white text-xs font-bold px-4 py-1.5 rounded-bl-xl uppercase tracking-wider">
-                Most Popular
-              </div>
+              <div className="absolute top-0 right-0 bg-amber-400 text-white text-xs font-bold px-4 py-1.5 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
               <div className="text-xs font-bold text-[#20B2AA] uppercase tracking-widest mb-4">Pass Guaranteed</div>
               <h3 className="text-3xl font-bold text-slate-900 mb-2">Pro</h3>
               <div className="flex items-baseline gap-1 mb-2">
@@ -801,15 +776,13 @@ export default function HomePage() {
               <div className="bg-green-100 text-green-800 text-xs font-bold px-3 py-1 rounded inline-block mb-6">Save $16 vs. Monthly</div>
               
               <ul className="space-y-3 mb-8">
-                <li className="flex gap-3 text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#20B2AA]"/> Everything in Basic
-                </li>
+                <li className="flex gap-3 text-sm font-bold text-slate-900 border-b border-slate-100 pb-3"><CheckCircle2 className="w-5 h-5 text-[#20B2AA]"/> Everything in Basic</li>
                 <li className="p-4 bg-teal-50 rounded-xl border border-teal-100">
                   <div className="flex gap-3">
                     <Zap className="w-5 h-5 text-amber-500 shrink-0 mt-0.5"/>
                     <div>
                       <div className="text-sm font-bold text-slate-900">UNLIMITED AI Tutor</div>
-                      <div className="text-xs text-slate-500">No daily limits. Ask anything, anytime.</div>
+                      <div className="text-xs text-slate-500">No daily limits. Ask complex questions 24/7.</div>
                     </div>
                   </div>
                 </li>
@@ -817,33 +790,25 @@ export default function HomePage() {
                   <div className="flex gap-3">
                     <Shield className="w-5 h-5 text-orange-500 shrink-0 mt-0.5"/>
                     <div>
-                      <div className="text-sm font-bold text-slate-900">100% Pass Guarantee*</div>
-                      <div className="text-xs text-slate-500">Do the work, we take the risk. Pass or get every penny back.</div>
+                      <div className="text-sm font-bold text-slate-900">100% Money-Back Guarantee</div>
+                      <div className="text-xs text-slate-500">If you don't pass, you get a full refund.</div>
                     </div>
                   </div>
                 </li>
               </ul>
-              <Link href="/pricing?plan=pro" className="block w-full py-4 text-center bg-[#20B2AA] rounded-xl font-bold text-white hover:bg-[#1a9d96] transition-colors shadow-lg shadow-teal-500/20">
-                Get 3-Month Access
-              </Link>
+              <Link href="/pricing?plan=pro" className="block w-full py-4 text-center bg-[#20B2AA] rounded-xl font-bold text-white hover:bg-[#1a9d96] transition-colors shadow-lg shadow-teal-500/20">Get 3-Month Access</Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 SOCIAL PROOF
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      {/* SOCIAL PROOF */}
       <section className="py-24 bg-slate-50 border-y border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-end mb-12">
             <div className="max-w-2xl">
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-                Nursing Students <span className="text-[#20B2AA]">Love Us</span>
-              </h2>
-              <p className="text-lg text-slate-600">
-                Don&apos;t just take our word for it. Here is what students admitted to top programs have to say.
-              </p>
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Nursing Students <span className="text-[#20B2AA]">Love Us</span></h2>
+              <p className="text-lg text-slate-600">Don&apos;t just take our word for it. Here is what students admitted to top programs have to say.</p>
             </div>
             <div className="hidden md:flex items-center gap-2 mt-4 md:mt-0">
               <div className="text-right">
@@ -873,9 +838,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 FAQ
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      {/* FAQ */}
       <section className="py-24 bg-white px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12">
@@ -884,19 +847,13 @@ export default function HomePage() {
           </div>
           <div className="space-y-4">
             {faqItems.map((item, i) => (
-              <FaqItem 
-                key={`faq-${i}`}
-                question={item.question} 
-                answer={item.answer} 
-              />
+              <FaqItem key={`faq-${i}`} question={item.question} answer={item.answer} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 FOOTER (Clean & Complete)
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      {/* FOOTER */}
       <footer className="bg-[#0F172A] text-slate-400 pt-16 pb-24 md:pb-8 border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-12 mb-12">
