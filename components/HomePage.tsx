@@ -1,13 +1,13 @@
-// app/components/HomePage.tsx
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect, useCallback } from 'react';
 import { 
   CheckCircle2, Zap, Shield, Users, ArrowRight, 
   Play, BookOpen, ChevronDown, X, 
   Menu, Bot, Award, Star, Target, Brain, 
-  Sparkles, Timer, BarChart3, Home, User
+  Sparkles, Timer, BarChart3, Home, User, AlertCircle, MessageCircle
 } from 'lucide-react';
 import { organizationSchema } from '@/lib/schema/organization';
 import JsonLd from '@/app/components/JsonLd';
@@ -39,7 +39,6 @@ function useScrollDirection() {
   return scrollDirection;
 }
 
-// Safe localStorage helper for SSR
 function useLocalStorage(key: string, initialValue: boolean) {
   const [storedValue, setStoredValue] = useState(initialValue);
   const [isHydrated, setIsHydrated] = useState(false);
@@ -73,6 +72,54 @@ function useLocalStorage(key: string, initialValue: boolean) {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 🧩 SUB-COMPONENTS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// --- UPDATED: FLOATING SALES BOT WITH AVATAR ---
+function FloatingSalesBot() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [showBubble, setShowBubble] = useState(false);
+
+  // Show the "Hi!" bubble after 3 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => setShowBubble(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2 hidden md:flex">
+      {/* The Speech Bubble */}
+      {showBubble && !isOpen && (
+        <div className="bg-white px-4 py-3 rounded-2xl rounded-br-none shadow-xl border border-slate-200 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[200px]">
+          <div className="flex justify-between items-start gap-2">
+            <p className="text-sm font-bold text-slate-800">Hi! Need help passing the TEAS?</p>
+            <button 
+              onClick={(e) => { e.stopPropagation(); setShowBubble(false); }}
+              className="text-slate-400 hover:text-slate-600"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* The Trigger Button with Custom Avatar */}
+      <Link 
+        href="/dashboard"
+        className="group relative flex items-center justify-center w-16 h-16 rounded-full shadow-lg hover:shadow-teal-500/40 transition-all hover:scale-105 active:scale-95 bg-white border-2 border-[#20B2AA] overflow-hidden"
+        onMouseEnter={() => setShowBubble(true)}
+      >
+        <Image 
+          src="/StudyBuddy_AI_tutor_Avatar.png" 
+          alt="AI Tutor" 
+          fill
+          className="object-cover"
+        />
+        
+        {/* Status Dot */}
+        <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full z-10"></span>
+      </Link>
+    </div>
+  );
+}
 
 function ExitIntentModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   if (!isOpen) return null;
@@ -315,11 +362,13 @@ export default function HomePage() {
   ];
 
   const faqItems = [
-    { question: "How does the Pass Guarantee work?", answer: "Complete 80%+ of the course, answer 1,000+ practice questions, and study for 30+ days. If you don't pass, we'll give you a full $59 refund or 60 free days of extended access." },
-    { question: "Are the practice exams realistic?", answer: "Yes. Our questions match the difficulty, format, and timing of the actual ATI TEAS 7 exam blueprint." },
-    { question: "What specific subjects are on the TEAS 7?", answer: "Reading, Math, Science, and English & Language Usage. Check our Syllabus page for details." },
-    { question: "Is StudyBuddy legit?", answer: "Yes. We are created by nursing professors, verified by 500+ student outcomes, and back our claims with a money-back guarantee." },
-    { question: "What is a good TEAS score?", answer: "It depends on your state requirements. Check our State Guides to find the minimum score for schools in your area." },
+    { question: "How does the Pass Guarantee work?", answer: "Complete 80%+ of the course, answer 1,000+ practice questions, and study for 30+ days. If you don't pass, we'll give you a full $59 refund or 60 free days of extended access. No hidden loops." },
+    { question: "Are the practice exams realistic?", answer: "Yes. Our questions match the difficulty, format, and timing of the actual ATI TEAS 7 exam." },
+    { question: "What specific subjects are on the TEAS 7?", answer: "Reading, Math, Science, and English & Language Usage." },
+    { question: "Can I use a calculator on the TEAS 7?", answer: "Yes, a basic four-function calculator is provided on-screen during the test." },
+    { question: "Does StudyBuddy work on my phone or tablet?", answer: "Yes, the platform is fully responsive and works great on mobile devices." },
+    { question: "Is this course updated for the 2026 TEAS 7?", answer: "Yes, we update our content weekly to match the latest ATI standards." },
+    { question: "What is a good TEAS score for nursing school?", answer: "It depends on the program, but generally 65-70% for ADN and 75-80% for BSN." },
   ];
 
   const reviews = [
@@ -354,6 +403,7 @@ export default function HomePage() {
       <JsonLd data={organizationSchema} />
 
       {/* 🧩 Components */}
+      <FloatingSalesBot />
       <ExitIntentModal isOpen={showExitIntent} onClose={() => setShowExitIntent(false)} />
       <StickyFloatingCTA />
       <MobileBottomNav />
@@ -369,8 +419,14 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-[#20B2AA] to-[#1E3A8A] rounded-lg flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
-                <span className="text-white font-bold text-xl">S</span>
+              {/* UPDATED: LOGO IMAGE */}
+              <div className="relative w-10 h-10 transition-transform group-hover:scale-105">
+                <Image
+                  src="/logo.png"
+                  alt="StudyBuddy Logo"
+                  fill
+                  className="object-contain"
+                />
               </div>
               <span className={`text-xl font-bold ${scrolled ? 'text-slate-900' : 'text-slate-900 lg:text-slate-800'}`}>
                 StudyBuddy
@@ -756,7 +812,7 @@ export default function HomePage() {
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 PRICING (Maintained)
+          🎯 PRICING (UPDATED FOR CLARITY & USER REQUEST)
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <section className="py-24 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -765,31 +821,35 @@ export default function HomePage() {
               Your Dedicated Partner for TEAS 7 Mastery
             </h2>
             <p className="text-slate-600 text-lg max-w-3xl mx-auto leading-relaxed">
-              Preparing for the TEAS 7 shouldn&apos;t feel like a solitary struggle. You need more than just a textbook—you need a complete ecosystem designed to guide you from your first day of study to your passing score.
+              We offer two simple paths. Both include our entire 4,000+ question bank and video library. The main difference is the AI Tutor access.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 items-start max-w-4xl mx-auto">
+            {/* Basic Plan */}
             <div className="p-8 rounded-3xl border border-slate-200 text-left hover:border-slate-300 transition-all bg-white hover:shadow-lg">
-              <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Month-to-Month</div>
+              <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Monthly Flexibility</div>
               <h3 className="text-3xl font-bold text-slate-900 mb-2">Basic</h3>
               <div className="flex items-baseline gap-1 mb-6">
                 <span className="text-5xl font-extrabold text-slate-900 tracking-tight">$24.99</span>
                 <span className="text-slate-500">/mo</span>
               </div>
-              <p className="text-xs text-slate-400 mb-6">Cancel anytime. No commitment.</p>
+              <p className="text-xs text-slate-400 mb-6">Cancel anytime. Good for short-term study.</p>
+              
+              {/* UPDATED FEATURES LIST PER USER REQUEST */}
               <ul className="space-y-3 mb-8">
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> 6 Comprehensive Modules</li>
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> 450+ Video Lectures</li>
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> 4,000+ Practice Questions</li>
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> 10 Full-Length Practice Exams</li>
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> 24/7 AI Tutor Access</li>
+                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> Complete TEAS 7 Course (updated 2026)</li>
+                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> Practice Questions for each topic + Practice Exams</li>
+                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> TEAS Knowledge In Action Videos</li>
+                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> Access on Any Device</li>
+                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-slate-400 shrink-0"/> Standard AI Access (Limited)</li>
               </ul>
               <Link href="/pricing?plan=basic" className="block w-full py-4 text-center border-2 border-slate-200 rounded-xl font-bold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors">
                 Start Basic Plan
               </Link>
             </div>
              
+            {/* Pro Plan */}
             <div className="p-8 rounded-3xl border-2 border-[#20B2AA] shadow-2xl text-left relative overflow-hidden bg-white">
               <div className="absolute top-0 right-0 bg-amber-400 text-white text-xs font-bold px-4 py-1.5 rounded-bl-xl uppercase tracking-wider">
                 Most Popular
@@ -811,7 +871,7 @@ export default function HomePage() {
                     <Zap className="w-5 h-5 text-amber-500 shrink-0 mt-0.5"/>
                     <div>
                       <div className="text-sm font-bold text-slate-900">UNLIMITED AI Tutor</div>
-                      <div className="text-xs text-slate-500">No daily limits. Ask anything, anytime.</div>
+                      <div className="text-xs text-slate-500">No daily limits. Ask complex questions 24/7.</div>
                     </div>
                   </div>
                 </li>
@@ -819,8 +879,8 @@ export default function HomePage() {
                   <div className="flex gap-3">
                     <Shield className="w-5 h-5 text-orange-500 shrink-0 mt-0.5"/>
                     <div>
-                      <div className="text-sm font-bold text-slate-900">100% Pass Guarantee*</div>
-                      <div className="text-xs text-slate-500">Do the work, we take the risk. Pass or get every penny back.</div>
+                      <div className="text-sm font-bold text-slate-900">100% Money-Back Guarantee</div>
+                      <div className="text-xs text-slate-500">If you don't pass, you get a full refund.</div>
                     </div>
                   </div>
                 </li>
