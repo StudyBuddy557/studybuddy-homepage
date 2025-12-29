@@ -320,7 +320,6 @@ export default function HomePage() {
     { question: "Does StudyBuddy work on my phone or tablet?", answer: "Yes, the platform is fully responsive and works great on mobile devices." },
     { question: "Is this course updated for the 2026 TEAS 7?", answer: "Yes, we update our content weekly to match the latest ATI standards." },
     { question: "What is a good TEAS score for nursing school?", answer: "It depends on the program, but generally 65-70% for ADN and 75-80% for BSN." },
-    { question: "What is the refund policy?", answer: "We offer a full refund within 3 days if you are not satisfied. Plus, our Pass Guarantee gives you a full $59 refund or 60 free days if you complete the requirements and don't pass." }
   ];
 
   const reviews = [
