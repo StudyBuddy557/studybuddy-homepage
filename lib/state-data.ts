@@ -1,5 +1,3 @@
-// lib/state-data.ts OR app/state-data.ts (Match your current location)
-
 export type Region = 'West' | 'Midwest' | 'South' | 'Northeast';
 
 export interface StateData {
@@ -64,7 +62,7 @@ export const stateData: StateData[] = [
   { slug: "pennsylvania", "name": "Pennsylvania", programs_count: "125+", avg_salary: "$79,300", abbreviation: "PA", region: "Northeast" },
   { slug: "massachusetts", "name": "Massachusetts", programs_count: "90+", avg_salary: "$99,800", abbreviation: "MA", region: "Northeast" },
   { slug: "new-jersey", "name": "New Jersey", programs_count: "85+", avg_salary: "$89,700", abbreviation: "NJ", region: "Northeast" },
-  { slug: "connecticut", "name": "Connecticut", programs_count: "45+", avg_salary: "$89,400", abbreviation: "CT", region: "Northeast" },
+  { slug: "connecticut", "name": "Connecticut", programs_count: "45+", avg_salary: "$89,400", "abbreviation": "CT", region: "Northeast" },
   { slug: "maine", "name": "Maine", programs_count: "20+", avg_salary: "$76,100", abbreviation: "ME", region: "Northeast" },
   { slug: "new-hampshire", "name": "New Hampshire", programs_count: "18+", avg_salary: "$79,800", abbreviation: "NH", region: "Northeast" },
   { slug: "rhode-island", "name": "Rhode Island", programs_count: "15+", avg_salary: "$87,200", abbreviation: "RI", region: "Northeast" },
@@ -75,8 +73,6 @@ export function getStateBySlug(slug: string): StateData | undefined {
   return stateData.find((state) => state.slug === slug);
 }
 
-// THE CRAWL MESH ALGORITHM
-// Finds neighbors in the same region to create infinite loop indexing
 export function getRelatedStates(currentSlug: string, region: string): StateData[] {
   return stateData
     .filter(s => s.region === region && s.slug !== currentSlug)

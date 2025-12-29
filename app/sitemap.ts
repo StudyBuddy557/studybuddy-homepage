@@ -1,17 +1,21 @@
-// app/sitemap.ts
 import { MetadataRoute } from 'next';
-import { stateData } from '@/lib/state-data'; // Ensure this path matches where you put the file
+// CORRECTED IMPORT PATH:
+import { stateData } from '@/lib/state-data';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://studybuddy.live';
 
-  // 1. Core Static Pages
   const staticRoutes = [
     '',              // Homepage
     '/diagnostic',   // Quiz
     '/dashboard',    // App
     '/pricing',      // Sales page
     '/refunds',      // Trust page
+    '/pass-rate-methodology',
+    '/ai-tutor',
+    '/is-studybuddy-legit',
+    '/compare/teas-prep-courses',
+    '/teas-7-syllabus'
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
@@ -19,7 +23,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 1.0,
   }));
 
-  // 2. Dynamic State Pages (The 50-State Engine)
   const stateRoutes = stateData.map((state) => ({
     url: `${baseUrl}/states/${state.slug}`,
     lastModified: new Date(),
@@ -27,8 +30,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  // 3. Competitor Comparison Pages (Placeholder for future)
-  // We will add these when we build the 'VS' folder logic
-  
   return [...staticRoutes, ...stateRoutes];
 }
