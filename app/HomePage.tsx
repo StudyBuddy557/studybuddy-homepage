@@ -7,13 +7,9 @@ import {
   CheckCircle2, Zap, Shield, Users, ArrowRight, 
   Play, BookOpen, ChevronDown, X, 
   Menu, Bot, Award, Star, Target, Brain, 
-  Sparkles, Timer, BarChart3, Home, User, AlertCircle
+  Sparkles, Timer, BarChart3, Home, User, AlertCircle, MessageCircle
 } from 'lucide-react';
-import { organizationSchema } from '@/lib/schema/organization';
-import JsonLd from '@/app/components/JsonLd';
 import { stateData } from '@/lib/state-data';
-// IMPORT THE REAL SALES BOT
-import SalesBot from '@/app/components/SalesBot';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 🛠️ UTILS & HOOKS
@@ -75,7 +71,97 @@ function useLocalStorage(key: string, initialValue: boolean) {
 // 🧩 SUB-COMPONENTS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-function ExitIntentModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+function FloatingSalesBot() {
+  const [showBubble, setShowBubble] = useState(false);
+
+  // Show the "Hi!" bubble after 3 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => setShowBubble(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="fixed bottom-6 right-6 z-50 hidden md:flex flex-col items-end gap-2">
+      {/* The Speech Bubble */}
+      {showBubble && (
+        <div className="bg-white px-4 py-3 rounded-2xl rounded-br-none shadow-xl border border-slate-200 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[200px]">
+          <div className="flex justify-between items-start gap-2">
+            <p className="text-sm font-bold text-slate-800">Hi! Need help passing the TEAS?</p>
+            <button 
+              onClick={(e) => { e.stopPropagation(); setShowBubble(false); }}
+              className="text-slate-400 hover:text-slate-600"
+              aria-label="Close message"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* The Trigger Button with Custom Avatar */}
+      <Link 
+        href="/dashboard"
+        className="group relative flex items-center justify-center w-16 h-16 rounded-full shadow-lg hover:shadow-teal-500/40 transition-all hover:scale-105 active:scale-95 bg-white border-2 border-[#20B2AA] overflow-hidden"
+        onMouseEnter={() => setShowBubble(true)}
+      >
+        <Image 
+          src="/StudyBuddy_AI_tutor_Avatar.png" 
+          alt="StudyBuddy AI Tutor - Click to chat for TEAS 7 help" 
+          fill
+          className="object-cover"
+        />
+        
+        {/* Status Dot */}
+        <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full z-10"></span>
+      </Link>
+    </div>
+  );
+}
+
+interface ExitIntentModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+function ExitIntentModal({ isOpen, onClose }: ExitIntentModalProps) {
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!email || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+
+    try {
+      // MailerLite API integration placeholder
+      // Replace with your actual MailerLite API endpoint
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source: 'exit_intent', discount: '20_percent' }),
+      });
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setTimeout(() => {
+          onClose();
+          setEmail('');
+          setSubmitStatus('idle');
+        }, 2000);
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      console.error('Subscription error:', error);
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -102,20 +188,35 @@ function ExitIntentModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
               Pass your TEAS 7 or get your money back. Grab your free study guide and discount code.
             </p>
             
-            <form className="space-y-3" onSubmit={(e) => e.preventDefault()}>
-              <input 
-                type="email" 
-                placeholder="Enter your email" 
-                className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#20B2AA] focus:border-transparent outline-none transition-all"
-                aria-label="Email address"
-              />
-              <button 
-                type="submit"
-                className="w-full bg-[#1E3A8A] text-white font-bold py-3 rounded-lg hover:bg-[#162c6b] transition-colors shadow-lg shadow-blue-900/20"
-              >
-                Unlock My 20% Off
-              </button>
-            </form>
+            {submitStatus === 'success' ? (
+              <div className="text-center py-8">
+                <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto mb-4" />
+                <p className="text-lg font-bold text-slate-900">You&apos;re in!</p>
+                <p className="text-sm text-slate-500">Check your email for your discount code.</p>
+              </div>
+            ) : (
+              <form className="space-y-3" onSubmit={handleSubmit}>
+                <input 
+                  type="email" 
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#20B2AA] focus:border-transparent outline-none transition-all"
+                  aria-label="Email address"
+                />
+                {submitStatus === 'error' && (
+                  <p className="text-red-500 text-sm">Something went wrong. Please try again.</p>
+                )}
+                <button 
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-[#1E3A8A] text-white font-bold py-3 rounded-lg hover:bg-[#162c6b] transition-colors shadow-lg shadow-blue-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? 'Submitting...' : 'Unlock My 20% Off'}
+                </button>
+              </form>
+            )}
             <button onClick={onClose} className="w-full text-center text-slate-400 text-xs mt-4 hover:text-slate-600 underline">
               No thanks, I&apos;ll pay full price
             </button>
@@ -262,6 +363,7 @@ export default function HomePage() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showExitIntent, setShowExitIntent] = useState(false);
+  const [selectedState, setSelectedState] = useState('');
   const scrollDirection = useScrollDirection();
   const [hasSeenModal, setHasSeenModal, isHydrated] = useLocalStorage('hasSeenExitModal', false);
   
@@ -343,25 +445,29 @@ export default function HomePage() {
     }
   ];
 
+  // AEO STRATEGY: Direct state page linking
   const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (e.target.value) {
-      window.location.href = `/states/${e.target.value}`;
+    setSelectedState(e.target.value);
+  };
+
+  const handleStateNavigate = () => {
+    if (selectedState) {
+      window.location.href = `/states/${selectedState}`;
     }
   };
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-[#20B2AA] selection:text-white pb-20 md:pb-0">
       
-      <JsonLd data={organizationSchema} />
-      
-      {/* ADDED THE REAL SALES BOT HERE */}
-      <SalesBot />
-      
+      {/* 🧩 Components */}
+      <FloatingSalesBot />
       <ExitIntentModal isOpen={showExitIntent} onClose={() => setShowExitIntent(false)} />
       <StickyFloatingCTA />
       <MobileBottomNav />
 
-      {/* NAVIGATION */}
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          🎯 NAVIGATION
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <nav 
         className={`fixed top-0 w-full z-50 transition-all duration-300 ${
           scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-5'
@@ -370,8 +476,14 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 group">
+              {/* UPDATED: LOGO IMAGE */}
               <div className="relative w-10 h-10 transition-transform group-hover:scale-105">
-                <Image src="/logo.png" alt="StudyBuddy Logo" fill className="object-contain" />
+                <Image
+                  src="/logo.png"
+                  alt="StudyBuddy Logo"
+                  fill
+                  className="object-contain"
+                />
               </div>
               <span className={`text-xl font-bold ${scrolled ? 'text-slate-900' : 'text-slate-900 lg:text-slate-800'}`}>
                 StudyBuddy
@@ -380,18 +492,37 @@ export default function HomePage() {
 
             <div className="hidden md:flex items-center gap-8">
               {navItems.map((item) => (
-                <Link key={item.label} href={item.href} className="text-slate-600 hover:text-[#20B2AA] font-medium transition-colors text-sm lg:text-base">
+                <Link 
+                  key={item.label} 
+                  href={item.href} 
+                  className="text-slate-600 hover:text-[#20B2AA] font-medium transition-colors text-sm lg:text-base"
+                >
                   {item.label}
                 </Link>
               ))}
             </div>
 
             <div className="hidden md:flex items-center gap-3">
-              <Link href="/dashboard" className="text-slate-600 hover:text-[#20B2AA] font-medium transition-colors">Log In</Link>
-              <Link href="/pricing" className="bg-[#20B2AA] text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-[#1a9d96] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">Get Started</Link>
+              <Link 
+                href="/dashboard" 
+                className="text-slate-600 hover:text-[#20B2AA] font-medium transition-colors"
+              >
+                Log In
+              </Link>
+              <Link 
+                href="/pricing" 
+                className="bg-[#20B2AA] text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-[#1a9d96] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+              >
+                Get Started
+              </Link>
             </div>
 
-            <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden p-2 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
+            <button 
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="md:hidden p-2 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+              aria-label="Toggle menu"
+              aria-expanded={mobileOpen}
+            >
               {mobileOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
@@ -401,21 +532,37 @@ export default function HomePage() {
           <div className="md:hidden absolute top-full left-0 w-full bg-white border-t border-slate-200 shadow-xl">
             <div className="px-4 py-4 space-y-2">
               {navItems.map((item) => (
-                <Link key={item.label} href={item.href} className="block px-4 py-3 text-slate-700 hover:bg-[#20B2AA]/5 rounded-lg font-medium" onClick={() => setMobileOpen(false)}>
+                <Link 
+                  key={item.label}
+                  href={item.href} 
+                  className="block px-4 py-3 text-slate-700 hover:bg-[#20B2AA]/5 rounded-lg font-medium"
+                  onClick={() => setMobileOpen(false)}
+                >
                   {item.label}
                 </Link>
               ))}
               <div className="border-t border-slate-100 pt-3 mt-2">
-                <Link href="/dashboard" className="block px-4 py-3 text-slate-600 font-medium" onClick={() => setMobileOpen(false)}>Log In</Link>
+                <Link 
+                  href="/dashboard" 
+                  className="block px-4 py-3 text-slate-600 font-medium"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  Log In
+                </Link>
               </div>
             </div>
           </div>
         )}
       </nav>
 
-      {/* HERO SECTION */}
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          🎯 HERO SECTION
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-pink-200/40 via-teal-200/30 to-blue-200/40 rounded-full blur-3xl -z-10 animate-pulse" style={{ animationDuration: '8s' }} />
+        <div 
+          className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-pink-200/40 via-teal-200/30 to-blue-200/40 rounded-full blur-3xl -z-10 animate-pulse" 
+          style={{ animationDuration: '8s' }} 
+        />
         
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
@@ -462,11 +609,17 @@ export default function HomePage() {
               </ul>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Link href="/diagnostic" className="bg-[#20B2AA] text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-[#1a9d96] hover:shadow-xl hover:shadow-teal-500/20 hover:-translate-y-1 transition-all duration-200 flex flex-col items-center justify-center text-center">
+                <Link 
+                  href="/diagnostic" 
+                  className="bg-[#20B2AA] text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-[#1a9d96] hover:shadow-xl hover:shadow-teal-500/20 hover:-translate-y-1 transition-all duration-200 flex flex-col items-center justify-center text-center"
+                >
                   <span>Take Free 5-Min Diagnostic →</span>
                   <span className="text-xs font-normal opacity-90 mt-1">Get your personalized TEAS study plan</span>
                 </Link>
-                <Link href="/pricing" className="bg-white text-slate-700 px-8 py-4 rounded-xl font-bold text-lg border-2 border-slate-200 hover:border-slate-300 transition-all duration-200 flex flex-col items-center justify-center shadow-sm hover:shadow-md min-w-[160px]">
+                <Link 
+                  href="/pricing" 
+                  className="bg-white text-slate-700 px-8 py-4 rounded-xl font-bold text-lg border-2 border-slate-200 hover:border-slate-300 transition-all duration-200 flex flex-col items-center justify-center shadow-sm hover:shadow-md min-w-[160px]"
+                >
                   <span className="text-xs uppercase tracking-wide text-slate-500">Plans from</span>
                   <span className="text-lg text-slate-900">$24.99/mo</span>
                 </Link>
@@ -478,13 +631,18 @@ export default function HomePage() {
             </div>
 
             <div className="relative mt-12 lg:mt-0" style={{ perspective: '1000px' }}>
-              <div className="relative z-10 bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 md:p-8 transition-transform duration-700 ease-out hover:rotate-0" style={{ transform: 'rotateY(-3deg)' }}>
+              <div 
+                className="relative z-10 bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 md:p-8 transition-transform duration-700 ease-out hover:rotate-0"
+                style={{ transform: 'rotateY(-3deg)' }}
+              >
                 <div className="flex items-center justify-between mb-8">
                   <div>
                     <h3 className="text-2xl font-bold text-slate-900">Your Study Plan</h3>
                     <p className="text-slate-500 text-sm">Target Exam Date: Oct 15</p>
                   </div>
-                  <div className="bg-green-50 text-green-700 px-4 py-2 rounded-lg text-sm font-bold">On Track</div>
+                  <div className="bg-green-50 text-green-700 px-4 py-2 rounded-lg text-sm font-bold">
+                    On Track
+                  </div>
                 </div>
                 
                 <div className="space-y-6">
@@ -527,7 +685,10 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="absolute -top-10 -right-10 bg-white p-4 rounded-xl shadow-xl z-20 animate-bounce" style={{ animationDuration: '3s' }}>
+              <div 
+                className="absolute -top-10 -right-10 bg-white p-4 rounded-xl shadow-xl z-20 animate-bounce" 
+                style={{ animationDuration: '3s' }}
+              >
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="text-green-500" size={20} />
                   <span className="font-bold text-slate-800">Correct!</span>
@@ -539,7 +700,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* VALUE PROPS */}
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          🎯 VALUE PROPS
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <section className="py-24 bg-white border-t border-slate-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -549,7 +712,7 @@ export default function HomePage() {
 
           <div className="grid md:grid-cols-4 gap-6">
             {valueProps.map((item, i) => (
-              <div key={i} className="p-8 rounded-2xl border border-slate-100 shadow-sm bg-white hover:border-[#20B2AA]/30 hover:shadow-lg transition-all group">
+              <div key={`value-prop-${i}`} className="p-8 rounded-2xl border border-slate-100 shadow-sm bg-white hover:border-[#20B2AA]/30 hover:shadow-lg transition-all group">
                 <div className="w-14 h-14 bg-teal-50 rounded-2xl flex items-center justify-center mb-6 text-[#20B2AA] group-hover:scale-110 transition-transform">
                   <item.icon className="w-7 h-7" />
                 </div>
@@ -561,7 +724,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* COMPARISON TABLE */}
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          🎯 COMPARISON TABLE (Restored with AEO Links)
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <section className="py-24 bg-slate-50">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -575,6 +740,7 @@ export default function HomePage() {
           </div>
 
           <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
+            {/* Header Row */}
             <div className="grid grid-cols-4 bg-slate-50 border-b border-slate-200 py-6 px-4 text-center">
               <div className="text-left pl-6 font-bold text-xs uppercase tracking-widest text-slate-400 self-end">Features</div>
               <div><div className="font-bold text-slate-700">Textbooks</div><div className="text-xs text-slate-400">Traditional</div></div>
@@ -585,8 +751,9 @@ export default function HomePage() {
               </div>
             </div>
 
+            {/* Rows */}
             {comparisonRows.map((row, i) => (
-              <div key={i} className={`grid grid-cols-4 py-5 px-4 border-b border-slate-100 items-center text-center ${i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}>
+              <div key={`comparison-row-${i}`} className={`grid grid-cols-4 py-5 px-4 border-b border-slate-100 items-center text-center ${i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}>
                 <div className="text-left pl-6 text-sm font-bold text-slate-700">{row.label}</div>
                 <div className="flex justify-center text-sm text-slate-500">
                   {row.textVal || (row.text ? <CheckCircle2 className="w-5 h-5 text-[#20B2AA]"/> : <X className="w-5 h-5 text-red-300"/>)}
@@ -610,7 +777,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* STATE REQUIREMENTS */}
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          🎯 STATE REQUIREMENTS (Restored AEO Logic)
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <section className="py-24 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
@@ -622,13 +791,24 @@ export default function HomePage() {
           </p>
            
           <div className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto bg-white p-2 rounded-xl shadow-sm border border-slate-200">
-            <select className="flex-1 p-3 bg-transparent text-slate-700 font-medium focus:outline-none cursor-pointer rounded-lg" onChange={handleStateChange} aria-label="Select your state">
+            <select 
+              className="flex-1 p-3 bg-transparent text-slate-700 font-medium focus:outline-none cursor-pointer rounded-lg"
+              onChange={handleStateChange}
+              value={selectedState}
+              aria-label="Select your state"
+            >
               <option value="">Select your state...</option>
               {stateData.map((state) => (
                 <option key={state.slug} value={state.slug}>{state.name}</option>
               ))}
             </select>
-            <button className="bg-[#20B2AA] hover:bg-[#1a9d96] text-white font-bold px-8 py-3 rounded-lg transition-colors whitespace-nowrap">View Guide</button>
+            <button 
+              onClick={handleStateNavigate}
+              disabled={!selectedState}
+              className="bg-[#20B2AA] hover:bg-[#1a9d96] text-white font-bold px-8 py-3 rounded-lg transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              View Guide
+            </button>
           </div>
           <p className="text-xs text-slate-400 mt-4 italic">
             Most popular: <Link href="/states/california" className="hover:text-[#20B2AA]">California</Link>, <Link href="/states/texas" className="hover:text-[#20B2AA]">Texas</Link>, <Link href="/states/florida" className="hover:text-[#20B2AA]">Florida</Link>
@@ -636,7 +816,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* EXPERT CONTENT */}
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          🎯 EXPERT CONTENT (Link to Legit Check)
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <section className="py-24 bg-slate-50 border-t border-slate-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-16 items-center">
@@ -651,7 +833,7 @@ export default function HomePage() {
                
               <div className="space-y-8">
                 {expertCredentials.map((item, i) => (
-                  <div key={i} className="flex gap-4">
+                  <div key={`credential-${i}`} className="flex gap-4">
                     <div className="w-14 h-14 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm shrink-0">
                       {item.label}
                     </div>
@@ -691,83 +873,131 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* PRICING WITH ID FOR BOT SCROLLING */}
-      <section id="pricing" className="py-24 bg-white">
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          🎯 PRICING (MATCHES SCREENSHOT)
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      <section id="pricing" className="py-24 bg-slate-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
-              Your Dedicated Partner for TEAS 7 Mastery
-            </h2>
-            <p className="text-slate-600 text-lg max-w-3xl mx-auto leading-relaxed">
-              We offer two simple paths. Both include our entire 4,000+ question bank and video library. The main difference is the AI Tutor access.
+            <p className="text-slate-600 text-xl">
+              One month to prep. Or lock in savings with 3 months.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 items-start max-w-4xl mx-auto">
             {/* Basic Plan */}
-            <div className="p-8 rounded-3xl border border-slate-200 text-left hover:border-slate-300 transition-all bg-white hover:shadow-lg">
-              <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Monthly Flexibility</div>
-              <h3 className="text-3xl font-bold text-slate-900 mb-2">Basic</h3>
-              <div className="flex items-baseline gap-1 mb-6">
+            <div className="p-8 rounded-3xl border border-slate-200 text-left bg-white shadow-sm">
+              <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Month-to-Month</div>
+              <h3 className="text-3xl font-bold text-slate-900 mb-4">Basic</h3>
+              <div className="flex items-baseline gap-1 mb-2">
                 <span className="text-5xl font-extrabold text-slate-900 tracking-tight">$24.99</span>
-                <span className="text-slate-500">/mo</span>
+                <span className="text-slate-500 text-lg">/mo</span>
               </div>
-              <p className="text-xs text-slate-400 mb-6">Cancel anytime. Good for short-term study.</p>
-              <ul className="space-y-3 mb-8">
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> Complete TEAS 7 Course (updated 2026)</li>
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> Practice Questions for each topic + Practice Exams</li>
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> TEAS Knowledge In Action Videos</li>
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> Access on Any Device</li>
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-slate-400 shrink-0"/> Standard AI Access (Limited)</li>
+              <p className="text-sm text-slate-400 mb-8">Cancel anytime. No commitment.</p>
+              
+              <ul className="space-y-4 mb-8">
+                <li className="flex gap-3 text-sm text-slate-600">
+                  <CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/>
+                  Complete TEAS 7 Course (17 Chapters)
+                </li>
+                <li className="flex gap-3 text-sm text-slate-600">
+                  <CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/>
+                  350+ Video Lectures
+                </li>
+                <li className="flex gap-3 text-sm text-slate-600">
+                  <CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/>
+                  Practice Questions + Practice Exams
+                </li>
+                <li className="flex gap-3 text-sm text-slate-600">
+                  <CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/>
+                  5 Full-Length Practice Exams
+                </li>
+                <li className="flex gap-3 text-sm text-slate-600">
+                  <CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/>
+                  TEAS Knowledge In Action Videos
+                </li>
+                <li className="flex gap-3 text-sm text-slate-600">
+                  <CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/>
+                  Access on Any Device
+                </li>
               </ul>
-              <Link href="/pricing?plan=basic" className="block w-full py-4 text-center border-2 border-slate-200 rounded-xl font-bold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors">Start Basic Plan</Link>
+              <Link href="/pricing?plan=basic" className="block w-full py-4 text-center border-2 border-slate-200 rounded-xl font-bold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors">
+                Start Basic Plan
+              </Link>
             </div>
              
             {/* Pro Plan */}
-            <div className="p-8 rounded-3xl border-2 border-[#20B2AA] shadow-2xl text-left relative overflow-hidden bg-white">
-              <div className="absolute top-0 right-0 bg-amber-400 text-white text-xs font-bold px-4 py-1.5 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
-              <div className="text-xs font-bold text-[#20B2AA] uppercase tracking-widest mb-4">Pass Guaranteed</div>
-              <h3 className="text-3xl font-bold text-slate-900 mb-2">Pro</h3>
-              <div className="flex items-baseline gap-1 mb-2">
-                <span className="text-5xl font-extrabold text-slate-900 tracking-tight">$59</span>
-                <span className="text-slate-500">/ 3 mo</span>
+            <div className="p-8 rounded-3xl border-2 border-[#20B2AA] shadow-xl text-left relative bg-white">
+              {/* Most Popular Badge */}
+              <div className="absolute -top-4 right-6 bg-amber-400 text-white text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wider flex items-center gap-1.5 shadow-lg">
+                <Sparkles className="w-3.5 h-3.5" />
+                Most Popular
               </div>
-              <div className="bg-green-100 text-green-800 text-xs font-bold px-3 py-1 rounded inline-block mb-6">Save $16 vs. Monthly</div>
               
-              <ul className="space-y-3 mb-8">
-                <li className="flex gap-3 text-sm font-bold text-slate-900 border-b border-slate-100 pb-3"><CheckCircle2 className="w-5 h-5 text-[#20B2AA]"/> Everything in Basic</li>
+              <div className="text-xs font-bold text-[#20B2AA] uppercase tracking-widest mb-4">Pass Guaranteed</div>
+              <h3 className="text-3xl font-bold text-slate-900 mb-4">Pro</h3>
+              <div className="flex items-baseline gap-1 mb-3">
+                <span className="text-5xl font-extrabold text-slate-900 tracking-tight">$59</span>
+                <span className="text-slate-500 text-lg">/ 3 mo</span>
+              </div>
+              <div className="bg-[#20B2AA] text-white text-sm font-semibold px-4 py-2 rounded-lg inline-block mb-6">
+                Save $16 vs. Monthly
+              </div>
+              
+              <ul className="space-y-4 mb-6">
+                <li className="flex gap-3 text-sm font-semibold text-slate-900">
+                  <CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/>
+                  Everything in Basic
+                </li>
+                
+                {/* AI Tutor Highlight */}
                 <li className="p-4 bg-teal-50 rounded-xl border border-teal-100">
                   <div className="flex gap-3">
                     <Zap className="w-5 h-5 text-amber-500 shrink-0 mt-0.5"/>
                     <div>
                       <div className="text-sm font-bold text-slate-900">UNLIMITED AI Tutor</div>
-                      <div className="text-xs text-slate-500">No daily limits. Ask complex questions 24/7.</div>
+                      <div className="text-xs text-[#20B2AA] font-medium">No daily limits. Ask anything, anytime.</div>
                     </div>
                   </div>
                 </li>
+                
+                {/* Pass Guarantee Highlight */}
                 <li className="p-4 bg-orange-50 rounded-xl border border-orange-100">
                   <div className="flex gap-3">
                     <Shield className="w-5 h-5 text-orange-500 shrink-0 mt-0.5"/>
                     <div>
-                      <div className="text-sm font-bold text-slate-900">100% Money-Back Guarantee</div>
-                      <div className="text-xs text-slate-500">If you don't pass, you get a full refund.</div>
+                      <div className="text-sm font-bold text-slate-900">100% Pass Guarantee*</div>
+                      <div className="text-xs text-orange-600 font-medium">Do the work, we take the risk. Pass or get every penny back.</div>
                     </div>
                   </div>
                 </li>
               </ul>
-              <Link href="/pricing?plan=pro" className="block w-full py-4 text-center bg-[#20B2AA] rounded-xl font-bold text-white hover:bg-[#1a9d96] transition-colors shadow-lg shadow-teal-500/20">Get 3-Month Access</Link>
+              
+              <Link href="/pricing?plan=pro" className="block w-full py-4 text-center bg-[#20B2AA] rounded-xl font-bold text-white hover:bg-[#1a9d96] transition-colors shadow-lg shadow-teal-500/20 mb-4">
+                Get 3-Month Access
+              </Link>
+              
+              <p className="text-xs text-slate-400 text-center leading-relaxed">
+                *100% Pass Guarantee: Complete 80%+ of course + 1,000+ practice questions + Study 30+ days. Don&apos;t pass? Full $59 refund or 60 free days. <Link href="/pass-guarantee" className="underline hover:text-slate-600">View complete policy</Link>
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* SOCIAL PROOF */}
-      <section className="py-24 bg-slate-50 border-y border-slate-200">
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          🎯 SOCIAL PROOF
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      <section className="py-24 bg-white border-y border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-end mb-12">
             <div className="max-w-2xl">
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Nursing Students <span className="text-[#20B2AA]">Love Us</span></h2>
-              <p className="text-lg text-slate-600">Don&apos;t just take our word for it. Here is what students admitted to top programs have to say.</p>
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+                Nursing Students <span className="text-[#20B2AA]">Love Us</span>
+              </h2>
+              <p className="text-lg text-slate-600">
+                Don&apos;t just take our word for it. Here is what students admitted to top programs have to say.
+              </p>
             </div>
             <div className="hidden md:flex items-center gap-2 mt-4 md:mt-0">
               <div className="text-right">
@@ -779,7 +1009,7 @@ export default function HomePage() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {reviews.map((review, i) => (
-              <div key={`review-${i}`} className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-lg transition-shadow">
+              <div key={`review-${i}`} className="bg-slate-50 p-8 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-lg transition-shadow">
                 <div>
                   <StarRating count={5} size={16} />
                   <p className="text-slate-700 italic my-4">&quot;{review.text}&quot;</p>
@@ -797,7 +1027,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FAQ */}
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          🎯 FAQ
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <section className="py-24 bg-white px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12">
@@ -806,13 +1038,19 @@ export default function HomePage() {
           </div>
           <div className="space-y-4">
             {faqItems.map((item, i) => (
-              <FaqItem key={`faq-${i}`} question={item.question} answer={item.answer} />
+              <FaqItem 
+                key={`faq-${i}`}
+                question={item.question} 
+                answer={item.answer} 
+              />
             ))}
           </div>
         </div>
       </section>
 
-      {/* FOOTER */}
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          🎯 FOOTER (Clean & Complete)
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <footer className="bg-[#0F172A] text-slate-400 pt-16 pb-24 md:pb-8 border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-12 mb-12">
@@ -845,7 +1083,7 @@ export default function HomePage() {
               <ul className="space-y-3 text-sm">
                 <li><Link href="/privacy" className="hover:text-[#20B2AA] transition-colors">Privacy Policy</Link></li>
                 <li><Link href="/terms" className="hover:text-[#20B2AA] transition-colors">Terms & Conditions</Link></li>
-                <li><Link href="/refunds" className="hover:text-[#20B2AA] transition-colors">Refund Policy</Link></li>
+                <li><Link href="/pass-guarantee" className="hover:text-[#20B2AA] transition-colors">Pass Guarantee</Link></li>
                 <li><a href="mailto:support@studybuddy.live" className="hover:text-[#20B2AA] transition-colors">support@studybuddy.live</a></li>
               </ul>
             </div>
