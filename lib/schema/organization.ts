@@ -34,3 +34,43 @@ export const organizationSchema = {
     "email": "support@studybuddy.live"
   }
 };
+
+export const productSchema = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "StudyBuddy TEAS 7 Prep Course",
+  "description": "AI-powered TEAS 7 test preparation with 4,000+ practice questions, unlimited AI tutor, and 100% Pass Guarantee.",
+  "brand": {
+    "@type": "Brand",
+    "name": "StudyBuddy"
+  },
+  "offers": {
+    "@type": "AggregateOffer",
+    "lowPrice": "24.99",
+    "highPrice": "59",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock",
+    "url": "https://studybuddy.live/pricing"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "reviewCount": "500",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+  "category": "Educational Software",
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "Pre-Nursing Students"
+  }
+};
+
+// Functions that page.tsx imports
+export function getOrganizationSchema() {
+  return organizationSchema;
+}
+
+export function getProductSchema() {
+  return productSchema;
+}
