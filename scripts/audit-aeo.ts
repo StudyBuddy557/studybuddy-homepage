@@ -30,6 +30,52 @@ function checkFile(filePath: string): boolean {
   return fs.existsSync(fullPath);
 }
 
+function checkSchemaInFile(filePath: string): { found: boolean; method: string } {
+  try {
+    const fullPath = path.join(process.cwd(), filePath);
+    if (!fs.existsSync(fullPath)) {
+      return { found: false, method: 'file not found' };
+    }
+    
+    const content = fs.readFileSync(fullPath, 'utf-8');
+    
+    // Check for inline JSON-LD script
+    if (content.includes('application/ld+json')) {
+      return { found: true, method: 'inline JSON-LD' };
+    }
+    
+    // Check for Next.js jsonLd pattern
+    if (content.includes('jsonLd')) {
+      return { found: true, method: 'Next.js jsonLd' };
+    }
+    
+    // Check for Schema component import AND usage
+    const hasSchemaImport = content.includes("from '@/components/Schema'") || 
+                           content.includes('from "@/components/Schema"') ||
+                           content.includes("from '../components/Schema'") ||
+                           content.includes('from "../components/Schema"');
+    
+    const hasSchemaUsage = content.includes('<Schema') || content.includes('<Schema>');
+    
+    if (hasSchemaImport && hasSchemaUsage) {
+      return { found: true, method: 'Schema component' };
+    }
+    
+    // Check for schema function imports (getOrganizationSchema, etc.)
+    const hasSchemaFunctionImport = content.includes('getOrganizationSchema') || 
+                                    content.includes('getProductSchema') ||
+                                    content.includes('Schema');
+    
+    if (hasSchemaFunctionImport && hasSchemaUsage) {
+      return { found: true, method: 'Schema component with functions' };
+    }
+    
+    return { found: false, method: 'none detected' };
+  } catch (e) {
+    return { found: false, method: 'error reading file' };
+  }
+}
+
 function audit() {
   console.log('\n🔍 STARTING AEO ASSET AUDIT...\n');
   
@@ -59,24 +105,12 @@ function audit() {
   });
 
   console.log('\n--- Checking Homepage Schema ---');
-  try {
-    const homepagePath = path.join(process.cwd(), 'app/page.tsx');
-    if (fs.existsSync(homepagePath)) {
-        const homepage = fs.readFileSync(homepagePath, 'utf-8');
-        // checking for common schema indicators
-        if (homepage.includes('application/ld+json') || homepage.includes('jsonLd') || homepage.includes('<Schema')) {
-          console.log('✅ FOUND:   Schema markup in app/page.tsx');
-          foundCount++;
-        } else {
-          console.log('❌ MISSING: No schema markup detected in app/page.tsx');
-          missingCount++;
-        }
-    } else {
-        console.log('❌ MISSING: app/page.tsx does not exist!');
-        missingCount++;
-    }
-  } catch (e) {
-    console.log('❌ ERROR:   Could not read app/page.tsx');
+  const schemaCheck = checkSchemaInFile('app/page.tsx');
+  if (schemaCheck.found) {
+    console.log(`✅ FOUND:   Schema markup in app/page.tsx (${schemaCheck.method})`);
+    foundCount++;
+  } else {
+    console.log(`❌ MISSING: No schema markup detected in app/page.tsx (${schemaCheck.method})`);
     missingCount++;
   }
 

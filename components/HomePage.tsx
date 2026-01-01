@@ -9,8 +9,6 @@ import {
   Menu, Bot, Award, Star, Target, Brain, 
   Sparkles, Timer, BarChart3, Home, User, AlertCircle, MessageCircle
 } from 'lucide-react';
-import { organizationSchema } from '@/lib/schema/organization';
-import JsonLd from '@/app/components/JsonLd';
 import { stateData } from '@/lib/state-data';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -73,9 +71,7 @@ function useLocalStorage(key: string, initialValue: boolean) {
 // 🧩 SUB-COMPONENTS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-// --- UPDATED: FLOATING SALES BOT WITH AVATAR ---
 function FloatingSalesBot() {
-  const [isOpen, setIsOpen] = useState(false);
   const [showBubble, setShowBubble] = useState(false);
 
   // Show the "Hi!" bubble after 3 seconds
@@ -85,15 +81,16 @@ function FloatingSalesBot() {
   }, []);
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2 hidden md:flex">
+    <div className="fixed bottom-6 right-6 z-50 hidden md:flex flex-col items-end gap-2">
       {/* The Speech Bubble */}
-      {showBubble && !isOpen && (
+      {showBubble && (
         <div className="bg-white px-4 py-3 rounded-2xl rounded-br-none shadow-xl border border-slate-200 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[200px]">
           <div className="flex justify-between items-start gap-2">
             <p className="text-sm font-bold text-slate-800">Hi! Need help passing the TEAS?</p>
             <button 
               onClick={(e) => { e.stopPropagation(); setShowBubble(false); }}
               className="text-slate-400 hover:text-slate-600"
+              aria-label="Close message"
             >
               <X size={14} />
             </button>
@@ -109,7 +106,7 @@ function FloatingSalesBot() {
       >
         <Image 
           src="/StudyBuddy_AI_tutor_Avatar.png" 
-          alt="AI Tutor" 
+          alt="StudyBuddy AI Tutor - Click to chat for TEAS 7 help" 
           fill
           className="object-cover"
         />
@@ -121,7 +118,50 @@ function FloatingSalesBot() {
   );
 }
 
-function ExitIntentModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+interface ExitIntentModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+function ExitIntentModal({ isOpen, onClose }: ExitIntentModalProps) {
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!email || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+
+    try {
+      // MailerLite API integration placeholder
+      // Replace with your actual MailerLite API endpoint
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source: 'exit_intent', discount: '20_percent' }),
+      });
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setTimeout(() => {
+          onClose();
+          setEmail('');
+          setSubmitStatus('idle');
+        }, 2000);
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      console.error('Subscription error:', error);
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -148,20 +188,35 @@ function ExitIntentModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
               Pass your TEAS 7 or get your money back. Grab your free study guide and discount code.
             </p>
             
-            <form className="space-y-3" onSubmit={(e) => e.preventDefault()}>
-              <input 
-                type="email" 
-                placeholder="Enter your email" 
-                className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#20B2AA] focus:border-transparent outline-none transition-all"
-                aria-label="Email address"
-              />
-              <button 
-                type="submit"
-                className="w-full bg-[#1E3A8A] text-white font-bold py-3 rounded-lg hover:bg-[#162c6b] transition-colors shadow-lg shadow-blue-900/20"
-              >
-                Unlock My 20% Off
-              </button>
-            </form>
+            {submitStatus === 'success' ? (
+              <div className="text-center py-8">
+                <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto mb-4" />
+                <p className="text-lg font-bold text-slate-900">You&apos;re in!</p>
+                <p className="text-sm text-slate-500">Check your email for your discount code.</p>
+              </div>
+            ) : (
+              <form className="space-y-3" onSubmit={handleSubmit}>
+                <input 
+                  type="email" 
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#20B2AA] focus:border-transparent outline-none transition-all"
+                  aria-label="Email address"
+                />
+                {submitStatus === 'error' && (
+                  <p className="text-red-500 text-sm">Something went wrong. Please try again.</p>
+                )}
+                <button 
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-[#1E3A8A] text-white font-bold py-3 rounded-lg hover:bg-[#162c6b] transition-colors shadow-lg shadow-blue-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? 'Submitting...' : 'Unlock My 20% Off'}
+                </button>
+              </form>
+            )}
             <button onClick={onClose} className="w-full text-center text-slate-400 text-xs mt-4 hover:text-slate-600 underline">
               No thanks, I&apos;ll pay full price
             </button>
@@ -308,6 +363,7 @@ export default function HomePage() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showExitIntent, setShowExitIntent] = useState(false);
+  const [selectedState, setSelectedState] = useState('');
   const scrollDirection = useScrollDirection();
   const [hasSeenModal, setHasSeenModal, isHydrated] = useLocalStorage('hasSeenExitModal', false);
   
@@ -391,17 +447,18 @@ export default function HomePage() {
 
   // AEO STRATEGY: Direct state page linking
   const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (e.target.value) {
-      window.location.href = `/states/${e.target.value}`;
+    setSelectedState(e.target.value);
+  };
+
+  const handleStateNavigate = () => {
+    if (selectedState) {
+      window.location.href = `/states/${selectedState}`;
     }
   };
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-[#20B2AA] selection:text-white pb-20 md:pb-0">
       
-      {/* 1. AEO Entity Schema (Essential for Google) */}
-      <JsonLd data={organizationSchema} />
-
       {/* 🧩 Components */}
       <FloatingSalesBot />
       <ExitIntentModal isOpen={showExitIntent} onClose={() => setShowExitIntent(false)} />
@@ -655,7 +712,7 @@ export default function HomePage() {
 
           <div className="grid md:grid-cols-4 gap-6">
             {valueProps.map((item, i) => (
-              <div key={i} className="p-8 rounded-2xl border border-slate-100 shadow-sm bg-white hover:border-[#20B2AA]/30 hover:shadow-lg transition-all group">
+              <div key={`value-prop-${i}`} className="p-8 rounded-2xl border border-slate-100 shadow-sm bg-white hover:border-[#20B2AA]/30 hover:shadow-lg transition-all group">
                 <div className="w-14 h-14 bg-teal-50 rounded-2xl flex items-center justify-center mb-6 text-[#20B2AA] group-hover:scale-110 transition-transform">
                   <item.icon className="w-7 h-7" />
                 </div>
@@ -696,7 +753,7 @@ export default function HomePage() {
 
             {/* Rows */}
             {comparisonRows.map((row, i) => (
-              <div key={i} className={`grid grid-cols-4 py-5 px-4 border-b border-slate-100 items-center text-center ${i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}>
+              <div key={`comparison-row-${i}`} className={`grid grid-cols-4 py-5 px-4 border-b border-slate-100 items-center text-center ${i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}>
                 <div className="text-left pl-6 text-sm font-bold text-slate-700">{row.label}</div>
                 <div className="flex justify-center text-sm text-slate-500">
                   {row.textVal || (row.text ? <CheckCircle2 className="w-5 h-5 text-[#20B2AA]"/> : <X className="w-5 h-5 text-red-300"/>)}
@@ -737,6 +794,7 @@ export default function HomePage() {
             <select 
               className="flex-1 p-3 bg-transparent text-slate-700 font-medium focus:outline-none cursor-pointer rounded-lg"
               onChange={handleStateChange}
+              value={selectedState}
               aria-label="Select your state"
             >
               <option value="">Select your state...</option>
@@ -744,7 +802,11 @@ export default function HomePage() {
                 <option key={state.slug} value={state.slug}>{state.name}</option>
               ))}
             </select>
-            <button className="bg-[#20B2AA] hover:bg-[#1a9d96] text-white font-bold px-8 py-3 rounded-lg transition-colors whitespace-nowrap">
+            <button 
+              onClick={handleStateNavigate}
+              disabled={!selectedState}
+              className="bg-[#20B2AA] hover:bg-[#1a9d96] text-white font-bold px-8 py-3 rounded-lg transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               View Guide
             </button>
           </div>
@@ -771,7 +833,7 @@ export default function HomePage() {
                
               <div className="space-y-8">
                 {expertCredentials.map((item, i) => (
-                  <div key={i} className="flex gap-4">
+                  <div key={`credential-${i}`} className="flex gap-4">
                     <div className="w-14 h-14 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm shrink-0">
                       {item.label}
                     </div>
