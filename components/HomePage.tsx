@@ -874,37 +874,52 @@ export default function HomePage() {
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 PRICING (UPDATED FOR CLARITY & USER REQUEST)
+          🎯 PRICING (MATCHES SCREENSHOT EXACTLY)
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-slate-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
-              Your Dedicated Partner for TEAS 7 Mastery
-            </h2>
-            <p className="text-slate-600 text-lg max-w-3xl mx-auto leading-relaxed">
-              We offer two simple paths. Both include our entire 4,000+ question bank and video library. The main difference is the AI Tutor access.
+            <p className="text-slate-600 text-xl">
+              One month to prep. Or lock in savings with 3 months.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 items-start max-w-4xl mx-auto">
             {/* Basic Plan */}
-            <div className="p-8 rounded-3xl border border-slate-200 text-left hover:border-slate-300 transition-all bg-white hover:shadow-lg">
-              <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Monthly Flexibility</div>
-              <h3 className="text-3xl font-bold text-slate-900 mb-2">Basic</h3>
-              <div className="flex items-baseline gap-1 mb-6">
+            <div className="p-8 rounded-3xl border border-slate-200 text-left bg-white shadow-sm">
+              <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Month-to-Month</div>
+              <h3 className="text-3xl font-bold text-slate-900 mb-4">Basic</h3>
+              <div className="flex items-baseline gap-1 mb-2">
                 <span className="text-5xl font-extrabold text-slate-900 tracking-tight">$24.99</span>
-                <span className="text-slate-500">/mo</span>
+                <span className="text-slate-500 text-lg">/mo</span>
               </div>
-              <p className="text-xs text-slate-400 mb-6">Cancel anytime. Good for short-term study.</p>
+              <p className="text-sm text-slate-400 mb-8">Cancel anytime. No commitment.</p>
               
-              {/* UPDATED FEATURES LIST PER USER REQUEST */}
-              <ul className="space-y-3 mb-8">
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> Complete TEAS 7 Course (updated 2026)</li>
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> Practice Questions for each topic + Practice Exams</li>
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> TEAS Knowledge In Action Videos</li>
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/> Access on Any Device</li>
-                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle2 className="w-5 h-5 text-slate-400 shrink-0"/> Standard AI Access (Limited)</li>
+              <ul className="space-y-4 mb-8">
+                <li className="flex gap-3 text-sm text-slate-600">
+                  <CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/>
+                  Complete TEAS 7 Course (17 Chapters)
+                </li>
+                <li className="flex gap-3 text-sm text-slate-600">
+                  <CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/>
+                  350+ Video Lectures
+                </li>
+                <li className="flex gap-3 text-sm text-slate-600">
+                  <CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/>
+                  Practice Questions + Practice Exams
+                </li>
+                <li className="flex gap-3 text-sm text-slate-600">
+                  <CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/>
+                  5 Full-Length Practice Exams
+                </li>
+                <li className="flex gap-3 text-sm text-slate-600">
+                  <CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/>
+                  TEAS Knowledge In Action Videos
+                </li>
+                <li className="flex gap-3 text-sm text-slate-600">
+                  <CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/>
+                  Access on Any Device
+                </li>
               </ul>
               <Link href="/pricing?plan=basic" className="block w-full py-4 text-center border-2 border-slate-200 rounded-xl font-bold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors">
                 Start Basic Plan
@@ -912,44 +927,59 @@ export default function HomePage() {
             </div>
              
             {/* Pro Plan */}
-            <div className="p-8 rounded-3xl border-2 border-[#20B2AA] shadow-2xl text-left relative overflow-hidden bg-white">
-              <div className="absolute top-0 right-0 bg-amber-400 text-white text-xs font-bold px-4 py-1.5 rounded-bl-xl uppercase tracking-wider">
+            <div className="p-8 rounded-3xl border-2 border-[#20B2AA] shadow-xl text-left relative bg-white">
+              {/* Most Popular Badge */}
+              <div className="absolute -top-4 right-6 bg-amber-400 text-white text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wider flex items-center gap-1.5 shadow-lg">
+                <Sparkles className="w-3.5 h-3.5" />
                 Most Popular
               </div>
-              <div className="text-xs font-bold text-[#20B2AA] uppercase tracking-widest mb-4">Pass Guaranteed</div>
-              <h3 className="text-3xl font-bold text-slate-900 mb-2">Pro</h3>
-              <div className="flex items-baseline gap-1 mb-2">
-                <span className="text-5xl font-extrabold text-slate-900 tracking-tight">$59</span>
-                <span className="text-slate-500">/ 3 mo</span>
-              </div>
-              <div className="bg-green-100 text-green-800 text-xs font-bold px-3 py-1 rounded inline-block mb-6">Save $16 vs. Monthly</div>
               
-              <ul className="space-y-3 mb-8">
-                <li className="flex gap-3 text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#20B2AA]"/> Everything in Basic
+              <div className="text-xs font-bold text-[#20B2AA] uppercase tracking-widest mb-4">Pass Guaranteed</div>
+              <h3 className="text-3xl font-bold text-slate-900 mb-4">Pro</h3>
+              <div className="flex items-baseline gap-1 mb-3">
+                <span className="text-5xl font-extrabold text-slate-900 tracking-tight">$59</span>
+                <span className="text-slate-500 text-lg">/ 3 mo</span>
+              </div>
+              <div className="bg-[#20B2AA] text-white text-sm font-semibold px-4 py-2 rounded-lg inline-block mb-6">
+                Save $16 vs. Monthly
+              </div>
+              
+              <ul className="space-y-4 mb-6">
+                <li className="flex gap-3 text-sm font-semibold text-slate-900">
+                  <CheckCircle2 className="w-5 h-5 text-[#20B2AA] shrink-0"/>
+                  Everything in Basic
                 </li>
+                
+                {/* AI Tutor Highlight */}
                 <li className="p-4 bg-teal-50 rounded-xl border border-teal-100">
                   <div className="flex gap-3">
                     <Zap className="w-5 h-5 text-amber-500 shrink-0 mt-0.5"/>
                     <div>
                       <div className="text-sm font-bold text-slate-900">UNLIMITED AI Tutor</div>
-                      <div className="text-xs text-slate-500">No daily limits. Ask complex questions 24/7.</div>
+                      <div className="text-xs text-[#20B2AA] font-medium">No daily limits. Ask anything, anytime.</div>
                     </div>
                   </div>
                 </li>
+                
+                {/* Pass Guarantee Highlight */}
                 <li className="p-4 bg-orange-50 rounded-xl border border-orange-100">
                   <div className="flex gap-3">
                     <Shield className="w-5 h-5 text-orange-500 shrink-0 mt-0.5"/>
                     <div>
-                      <div className="text-sm font-bold text-slate-900">100% Money-Back Guarantee</div>
-                      <div className="text-xs text-slate-500">If you don't pass, you get a full refund.</div>
+                      <div className="text-sm font-bold text-slate-900">100% Pass Guarantee*</div>
+                      <div className="text-xs text-orange-600 font-medium">Do the work, we take the risk. Pass or get every penny back.</div>
                     </div>
                   </div>
                 </li>
               </ul>
-              <Link href="/pricing?plan=pro" className="block w-full py-4 text-center bg-[#20B2AA] rounded-xl font-bold text-white hover:bg-[#1a9d96] transition-colors shadow-lg shadow-teal-500/20">
+              
+              <Link href="/pricing?plan=pro" className="block w-full py-4 text-center bg-[#20B2AA] rounded-xl font-bold text-white hover:bg-[#1a9d96] transition-colors shadow-lg shadow-teal-500/20 mb-4">
                 Get 3-Month Access
               </Link>
+              
+              <p className="text-xs text-slate-400 text-center leading-relaxed">
+                *100% Pass Guarantee: Complete 80%+ of course + 1,000+ practice questions + Study 30+ days. Don&apos;t pass? Full $59 refund or 60 free days. <Link href="/pass-guarantee" className="underline hover:text-slate-600">View complete policy</Link>
+              </p>
             </div>
           </div>
         </div>
