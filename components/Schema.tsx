@@ -1,16 +1,21 @@
-'use client';
+// components/Schema.tsx
 
-import { WithContext, Thing } from 'schema-dts';
+interface SchemaProps {
+  data: object | object[];
+}
 
-type Props = {
-  schema: WithContext<Thing>;
-};
-
-export default function Schema({ schema }: Props) {
+export function Schema({ data }: SchemaProps) {
+  const schemas = Array.isArray(data) ? data : [data];
+  
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-    />
+    <>
+      {schemas.map((schema, i) => (
+        <script
+          key={`schema-${i}`}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
+    </>
   );
 }
