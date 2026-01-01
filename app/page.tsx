@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import HomePage from '@/app/components/HomePage'; 
+// FIX: Removed '/app' because your components folder is at the project root
+import HomePage from '@/components/HomePage'; 
 import { Schema } from '@/components/Schema'; 
 import { getOrganizationSchema, getProductSchema } from '@/lib/schema/organization';
 
