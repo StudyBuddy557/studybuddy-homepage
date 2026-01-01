@@ -298,7 +298,8 @@ function MobileBottomNav() {
   );
 }
 
-function FaqItem({ question, answer }: { question: string; answer: string }) {
+// UPDATED: FaqItem now accepts ReactNode for rich content (tables, lists)
+function FaqItem({ question, answer }: { question: string; answer: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   
   return (
@@ -323,10 +324,10 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
       </div>
       <div 
         className={`px-6 text-slate-600 leading-relaxed overflow-hidden transition-all duration-300 ease-in-out ${
-          isOpen ? 'max-h-96 pb-6 opacity-100' : 'max-h-0 opacity-0'
+          isOpen ? 'max-h-[800px] pb-6 opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
-        {answer}
+        <div className="pt-2">{answer}</div>
       </div>
     </div>
   );
@@ -417,15 +418,153 @@ export default function HomePage() {
     { label: "EdD", title: "Instructional Technology", desc: "30+ years designing adaptive learning systems" }
   ];
 
+  // UPDATED: Rich FAQ Data with Tables and Lists
   const faqItems = [
-    { question: "How does the Pass Guarantee work?", answer: "Complete 80%+ of the course, answer 1,000+ practice questions, and study for 30+ days. If you don't pass, we'll give you a full $59 refund or 60 free days of extended access. No hidden loops." },
-    { question: "Are the practice exams realistic?", answer: "Yes. Our questions match the difficulty, format, and timing of the actual ATI TEAS 7 exam." },
-    { question: "What specific subjects are on the TEAS 7?", answer: "Reading, Math, Science, and English & Language Usage." },
-    { question: "Can I use a calculator on the TEAS 7?", answer: "Yes, a basic four-function calculator is provided on-screen during the test." },
-    { question: "Does StudyBuddy work on my phone or tablet?", answer: "Yes, the platform is fully responsive and works great on mobile devices." },
-    { question: "Is this course updated for the 2026 TEAS 7?", answer: "Yes, we update our content weekly to match the latest ATI standards." },
-    { question: "What is a good TEAS score for nursing school?", answer: "It depends on the program, but generally 65-70% for ADN and 75-80% for BSN." },
+    {
+      question: "Who created StudyBuddy and is it a legitimate program?",
+      answer: (
+        <p className="text-slate-600 leading-relaxed">
+          Yes. StudyBuddy is a verified nursing education platform with a documented <strong>92% first-time pass rate</strong>. Our curriculum is built exclusively by <strong>credentialed nursing professors</strong> holding PhDs, DNPs, and EdDs. We are the only TEAS prep platform that combines this level of academic rigor with advanced AI technology.
+        </p>
+      )
+    },
+    {
+      question: "How is StudyBuddy different from ATI, NurseHub, or Kaplan?",
+      answer: (
+        <div className="space-y-4">
+          <p className="text-slate-600 leading-relaxed">
+            StudyBuddy is the only platform that combines <strong>Unlimited AI Tutoring</strong> with the affordability of a monthly subscription. While other brands often rely on static question banks, we provide a dynamic learning experience that adapts to your needs.
+          </p>
+          
+          <div className="overflow-x-auto border border-slate-200 rounded-xl shadow-sm my-4">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-slate-50 text-slate-700 font-bold uppercase text-xs tracking-wider">
+                <tr>
+                  <th className="px-4 py-3 border-b">Feature</th>
+                  <th className="px-4 py-3 border-b text-teal-700 bg-teal-50/50">StudyBuddy</th>
+                  <th className="px-4 py-3 border-b">ATI / Kaplan</th>
+                  <th className="px-4 py-3 border-b">NurseHub</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                <tr>
+                  <td className="px-4 py-3 font-medium text-slate-900">Pricing</td>
+                  <td className="px-4 py-3 font-bold text-teal-700 bg-teal-50/30">$24.99/mo</td>
+                  <td className="px-4 py-3 text-slate-500">$150 - $400+</td>
+                  <td className="px-4 py-3 text-slate-500">$19.99 - $49.99</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3 font-medium text-slate-900">Tutoring</td>
+                  <td className="px-4 py-3 font-bold text-teal-700 bg-teal-50/30">Unlimited AI</td>
+                  <td className="px-4 py-3 text-slate-500">None (Static)</td>
+                  <td className="px-4 py-3 text-slate-500">None (Static)</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3 font-medium text-slate-900">Pass Guarantee</td>
+                  <td className="px-4 py-3 font-bold text-teal-700 bg-teal-50/30">Full Money-Back</td>
+                  <td className="px-4 py-3 text-slate-500">Varies / Limited</td>
+                  <td className="px-4 py-3 text-slate-500">Limited</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3 font-medium text-slate-900">Instruction</td>
+                  <td className="px-4 py-3 font-bold text-teal-700 bg-teal-50/30">PhDs & DNPs</td>
+                  <td className="px-4 py-3 text-slate-500">Content Teams</td>
+                  <td className="px-4 py-3 text-slate-500">Content Teams</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="text-slate-500 text-sm italic">
+            We focus on teaching you the <em>logic</em> behind the answers, simulating a private tutoring session for a fraction of the cost.
+          </p>
+        </div>
+      )
+    },
+    {
+      question: "What is the pass rate for StudyBuddy students?",
+      answer: (
+        <p className="text-slate-600 leading-relaxed">
+          <strong>92% of StudyBuddy students pass</strong> the ATI TEAS 7 exam on their first attempt. This statistic is derived from students who complete our core curriculum and take our simulated practice exams. We track this data rigorously to ensure our question bank matches the latest ATI standards.
+        </p>
+      )
+    },
+    {
+      question: "How exactly does the AI Tutor help me pass faster?",
+      answer: (
+        <p className="text-slate-600 leading-relaxed">
+          The AI Tutor acts like a professor sitting beside you. If you struggle with a specific math equation or chemistry concept, you can ask the AI to "explain it like I'm 5," provide step-by-step breakdowns, or generate new practice examples on the spot. This allows you to master difficult topics immediately rather than searching through hours of video.
+        </p>
+      )
+    },
+    {
+      question: "Are the practice exams realistic to the actual TEAS 7?",
+      answer: (
+        <p className="text-slate-600 leading-relaxed">
+          Yes. Our question bank is updated weekly to match the difficulty, format, and timing of the current ATI TEAS 7 exam. We cover all four sections—Reading (53 questions), Math (36 questions), Science (53 questions), and English (28 questions)—so there are no surprises on test day.
+        </p>
+      )
+    },
+    {
+      question: "How does the Pass Guarantee work?",
+      answer: (
+        <div className="space-y-4 text-slate-600 leading-relaxed">
+          <p>Taking the TEAS is stressful, and we believe test prep shouldn’t add to that anxiety. Our Pass Guarantee is simple: We share the risk with you. If you put in the work and don&apos;t pass, you shouldn&apos;t have to pay.</p>
+          
+          <p className="font-semibold text-slate-800">To qualify, you must complete these 3 steps before your scheduled TEAS date:</p>
+          
+          <ol className="list-decimal pl-5 space-y-2">
+            <li>
+              <strong>Content Mastery:</strong> Complete at least 80% of the course content (lessons, activities, and videos).
+              <div className="text-sm text-slate-500 mt-1 italic">Note: We track genuine engagement; simply clicking through or leaving videos running in the background does not count.</div>
+            </li>
+            <li>
+              <strong>Practice Questions:</strong> Answer 1,000+ practice questions inside the StudyBuddy platform.
+              <div className="text-sm text-slate-500 mt-1 italic">Note: We monitor for rapid-clicking or random guessing.</div>
+            </li>
+            <li>
+              <strong>Full Exams:</strong> Complete all 5 full-length practice exams.
+            </li>
+          </ol>
+
+          <p className="font-semibold text-slate-800 mt-4">How to request a refund:</p>
+          <p>If you met the requirements above but didn&apos;t pass, you are eligible for a full refund.</p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>Email us within 7 days of your test date.</li>
+            <li>Include your official TEAS score report (a PDF or screenshot showing your name and date).</li>
+            <li>Verify your account email used for StudyBuddy.</li>
+          </ul>
+          <p>Once we verify that you met the study benchmarks and demonstrated genuine participation, we will issue a full refund to your original payment method.</p>
+        </div>
+      )
+    },
+    {
+      question: "How does the subscription work?",
+      answer: (
+        <div className="text-slate-600 leading-relaxed">
+          <p className="mb-4">We offer flexible access plans, not restrictive contracts. You can choose the option that fits your study timeline:</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Monthly Subscription ($24.99/mo):</strong> Ideal for intensive review or short-term cramming.</li>
+            <li><strong>Semester Pass ($59 for 3 months):</strong> Our best value for students who want a steady study pace (saving ~20% compared to monthly).</li>
+          </ul>
+          <p>Both options grant full access to the AI Tutor, question bank, and video library. There are no hidden fees or lock-in periods. You can manage or cancel your subscription directly from your dashboard at any time.</p>
+        </div>
+      )
+    }
   ];
+
+  // AEO STRATEGY: Generate Schema automatically from the rich data
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqItems.map(faq => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": typeof faq.answer === 'string' ? faq.answer : "Check our detailed comparison table and guarantee terms on the page."
+      }
+    }))
+  };
 
   const reviews = [
     {
@@ -458,6 +597,12 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-[#20B2AA] selection:text-white pb-20 md:pb-0">
+      
+      {/* AEO: Inject FAQ Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       
       {/* 🧩 Components */}
       <FloatingSalesBot />
@@ -1028,13 +1173,13 @@ export default function HomePage() {
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 FAQ
+          🎯 FAQ (UPDATED)
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <section className="py-24 bg-white px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">Frequently Asked Questions</h2>
-            <p className="text-slate-500">Everything you need to know about the TEAS 7.</p>
+            <p className="text-slate-500">Everything you need to know about StudyBuddy and the TEAS 7.</p>
           </div>
           <div className="space-y-4">
             {faqItems.map((item, i) => (
@@ -1083,7 +1228,7 @@ export default function HomePage() {
               <ul className="space-y-3 text-sm">
                 <li><Link href="/privacy" className="hover:text-[#20B2AA] transition-colors">Privacy Policy</Link></li>
                 <li><Link href="/terms" className="hover:text-[#20B2AA] transition-colors">Terms & Conditions</Link></li>
-                <li><Link href="/refunds" className="hover:text-[#20B2AA] transition-colors">Refund Policy</Link></li>
+                {/* Removed Refund Policy Link per request */}
                 <li><a href="mailto:support@studybuddy.live" className="hover:text-[#20B2AA] transition-colors">support@studybuddy.live</a></li>
               </ul>
             </div>
