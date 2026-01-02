@@ -1,76 +1,53 @@
-export const organizationSchema = {
-  "@context": "https://schema.org",
-  "@type": "OnlineBusiness",
-  "name": "StudyBuddy",
-  "url": "https://studybuddy.live",
-  "logo": "https://studybuddy.live/logo.png",
-  "description": "AI-powered TEAS 7 test preparation platform built by nursing professors.",
-  "knowsAbout": [
-    "TEAS 7 Exam",
-    "ATI TEAS",
-    "Nursing School Admissions",
-    "Pre-Nursing Test Prep",
-    "Nursing Entrance Exams"
-  ],
-  "address": {
-    "@type": "PostalAddress",
-    "addressCountry": "US"
-  },
-  "offers": {
-    "@type": "Offer",
-    "price": "24.99",
-    "priceCurrency": "USD",
-    "priceValidUntil": "2025-12-31",
-    "availability": "https://schema.org/OnlineOnly",
-    "category": "Test Preparation Subscription"
-  },
-  "sameAs": [
-    "https://www.facebook.com/studybuddy",
-    "https://twitter.com/studybuddy"
-  ],
-  "contactPoint": {
-    "@type": "ContactPoint",
-    "contactType": "customer support",
-    "email": "support@studybuddy.live"
-  }
-};
+/**
+ * Organization Schema
+ * Central organization entity for all schemas
+ */
 
-export const productSchema = {
-  "@context": "https://schema.org",
-  "@type": "Product",
-  "name": "StudyBuddy TEAS 7 Prep Course",
-  "description": "AI-powered TEAS 7 test preparation with 4,000+ practice questions, unlimited AI tutor, and 100% Pass Guarantee.",
-  "brand": {
-    "@type": "Brand",
-    "name": "StudyBuddy"
-  },
-  "offers": {
-    "@type": "AggregateOffer",
-    "lowPrice": "24.99",
-    "highPrice": "59",
-    "priceCurrency": "USD",
-    "availability": "https://schema.org/InStock",
-    "url": "https://studybuddy.live/pricing"
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.8",
-    "reviewCount": "500",
-    "bestRating": "5",
-    "worstRating": "1"
-  },
-  "category": "Educational Software",
-  "audience": {
-    "@type": "Audience",
-    "audienceType": "Pre-Nursing Students"
-  }
-};
+import type { WithContext, Organization } from 'schema-dts';
 
-// Functions that page.tsx imports
-export function getOrganizationSchema() {
-  return organizationSchema;
-}
+export const ORG_ID = 'https://studybuddy.live#organization';
+export const TEAS_ENTITY_ID = 'https://studybuddy.live/teas-7-exam#entity';
 
-export function getProductSchema() {
-  return productSchema;
+/**
+ * Get the central organization schema
+ * This should be included in every page's schema array
+ */
+export function getOrganizationSchema(): WithContext<Organization> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': ORG_ID,
+    name: 'StudyBuddy',
+    url: 'https://studybuddy.live',
+    logo: {
+      '@type': 'ImageObject',
+      url: 'https://studybuddy.live/logo.png',
+      width: '600',
+      height: '60'
+    },
+    description: 'AI-powered TEAS 7 exam preparation with 92% pass rate. Comprehensive study platform for nursing students with personalized tutoring, 4,000+ practice questions, and proven methodology.',
+    sameAs: [
+      'https://www.facebook.com/studybuddyteas',
+      'https://twitter.com/studybuddyteas',
+      'https://www.linkedin.com/company/studybuddy'
+    ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'Customer Support',
+      email: 'support@studybuddy.live',
+      availableLanguage: 'English'
+    },
+    foundingDate: '2023',
+    knowsAbout: [
+      'TEAS 7 Exam Preparation',
+      'Nursing Education',
+      'Test Preparation',
+      'Online Learning',
+      'Artificial Intelligence Tutoring'
+    ],
+    areaServed: {
+      '@type': 'Country',
+      name: 'United States'
+    }
+  };
 }

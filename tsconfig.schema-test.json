@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "lib/teas/**/*",
+    "lib/schema/**/*",
+    "app/pass-rate-methodology/**/*"
+  ],
+  "exclude": [
+    "components/**/*",
+    "scripts/**/*"
+  ]
+}
