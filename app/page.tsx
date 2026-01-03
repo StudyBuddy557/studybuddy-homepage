@@ -1,6 +1,8 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import HomePage from './HomePage';
+import { buildJsonLdForPage } from '@/lib/schema/render';
+import { findPageMapping } from '@/lib/teas/find-page';
 
 export const metadata: Metadata = {
   title: 'TEAS 7 Exam Prep Course | 92% Pass Rate | StudyBuddy',
@@ -8,5 +10,18 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <HomePage />;
+  const mapping = findPageMapping('/');
+  const jsonLd = mapping ? buildJsonLdForPage('home', { mapping }) : null;
+
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLd }}
+        />
+      )}
+      <HomePage />
+    </>
+  );
 }
