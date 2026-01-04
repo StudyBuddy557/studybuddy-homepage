@@ -2,9 +2,6 @@ import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Shield, CheckCircle2, XCircle, Mail, FileText, Clock, BookOpen, HelpCircle } from 'lucide-react';
-import { buildJsonLdForPage } from '@/lib/schema/render';
-import { findPageMapping } from '@/lib/teas/find-page';
-
 
 export const metadata: Metadata = {
   title: '100% Pass Guarantee Policy | StudyBuddy TEAS 7 Prep',
@@ -15,18 +12,8 @@ export const metadata: Metadata = {
 };
 
 export default function PassGuaranteePage() {
-  const mapping = findPageMapping('/pass-guarantee');
-  const jsonLd = mapping ? buildJsonLdForPage('generic', { mapping }) : null;
-
   return (
-    <>
-      {jsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: jsonLd }}
-        />
-      )}
-      <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50">
       {/* Header */}
       <header className="bg-white border-b border-slate-200">
         <div className="max-w-4xl mx-auto px-4 py-6">
@@ -274,6 +261,5 @@ export default function PassGuaranteePage() {
         </div>
       </footer>
     </div>
-    </>
   );
 }

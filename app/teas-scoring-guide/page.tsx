@@ -1,4 +1,7 @@
 import type { Metadata } from 'next';
+import { buildJsonLdForPage } from '@/lib/schema/render';
+import { findPageMapping } from '@/lib/teas/find-page';
+
 
 export const metadata: Metadata = {
   title: 'How is the TEAS 7 Scored? | Scoring Guide & Chart',
@@ -6,6 +9,9 @@ export const metadata: Metadata = {
 };
 
 export default function TeasScoringGuidePage() {
+  const mapping = findPageMapping('/teas-scoring-guide');
+  const jsonLd = mapping ? buildJsonLdForPage('guide', { mapping }) : null;
+
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -17,7 +23,14 @@ export default function TeasScoringGuidePage() {
   };
 
   return (
-    <main className="max-w-4xl mx-auto px-6 py-12">
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLd }}
+        />
+      )}
+      <main className="max-w-4xl mx-auto px-6 py-12">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <h1 className="text-4xl font-extrabold text-slate-900 mb-8">How is the TEAS 7 Exam Scored?</h1>
       <p className="text-xl text-slate-700 mb-8">The ATI TEAS 7 provides a Total Score ranging from 0% to 100%. Academic Preparedness Levels range from Developmental to Exemplary.</p>
@@ -30,5 +43,6 @@ export default function TeasScoringGuidePage() {
         </ul>
       </div>
     </main>
+    </>
   );
 }

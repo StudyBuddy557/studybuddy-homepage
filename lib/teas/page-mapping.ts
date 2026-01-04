@@ -27,10 +27,6 @@ export interface PageOntologyMapping {
   stateSlug?: string;
 }
 
-/**
- * Complete page ontology registry
- * Maps every significant route to its TEAS exam relationships
- */
 export const PAGE_ONTOLOGY: Record<string, PageOntologyMapping> = {
   home: {
     pageId: 'home',
@@ -86,11 +82,11 @@ export const PAGE_ONTOLOGY: Record<string, PageOntologyMapping> = {
     }
   },
 
-  course: {
+  pricing: {
     pageId: 'course',
-    route: '/course',
-    title: 'TEAS 7 Course Details | StudyBuddy Premium',
-    description: 'Complete TEAS 7 preparation covering Reading, Math, Science, and English. AI tutor, unlimited practice questions, and comprehensive video lessons.',
+    route: '/pricing',
+    title: 'TEAS 7 Course Pricing | StudyBuddy Premium Plans',
+    description: 'Affordable TEAS 7 prep with AI tutoring. Plans from $24.99/mo. 92% pass rate.',
     sections: ['reading', 'math', 'science', 'english'],
     subskills: [
       'reading.key-ideas-details',
@@ -105,67 +101,70 @@ export const PAGE_ONTOLOGY: Record<string, PageOntologyMapping> = {
       'english.conventions-standard-english',
       'english.knowledge-of-language',
       'english.using-language-vocabulary'
-    ]
+    ],
+    outcomes: { passRate: 92, avgScore: 78.3, questionCount: 4000 }
   },
 
-  'compare-ati': {
+  'teas-reading-guide': {
+    pageId: 'guide-teas-reading',
+    route: '/teas-reading-strategies',
+    title: 'TEAS 7 Reading Strategies Guide',
+    description: 'Master TEAS 7 Reading section strategies.',
+    sections: ['reading'],
+    subskills: ['reading.key-ideas-details', 'reading.craft-structure', 'reading.integration-knowledge-ideas']
+  },
+
+  'teas-math-guide-route': {
+    pageId: 'guide-teas-math',
+    route: '/teas-math-guide',
+    title: 'TEAS 7 Math Guide',
+    description: 'Complete TEAS 7 Math guide.',
+    sections: ['math'],
+    subskills: ['math.numbers-algebra', 'math.measurement-data']
+  },
+
+  'teas-science-guide-route': {
+    pageId: 'guide-teas-science',
+    route: '/teas-science-guide',
+    title: 'TEAS 7 Science Guide',
+    description: 'Master TEAS 7 Science.',
+    sections: ['science'],
+    subskills: ['science.anatomy-physiology', 'science.biology', 'science.chemistry', 'science.scientific-reasoning']
+  },
+
+  'compare-courses': {
     pageId: 'compare-ati',
-    route: '/compare/ati-teas-smartprep',
-    title: 'StudyBuddy vs ATI TEAS SmartPrep Comparison',
-    description: 'Compare StudyBuddy and ATI TEAS SmartPrep. Features, pricing, AI tutoring, and pass rates for TEAS 7 exam preparation.',
+    route: '/compare/teas-prep-courses',
+    title: 'Best TEAS 7 Prep Courses Compared',
+    description: 'Compare top TEAS 7 prep courses.',
     sections: ['reading', 'math', 'science', 'english'],
     subskills: []
   },
 
-  'guide-teas-reading': {
+  'syllabus': {
     pageId: 'guide-teas-reading',
-    route: '/guides/teas-reading',
-    title: 'TEAS 7 Reading Section Guide | 45 Questions in 55 Minutes',
-    description: 'Master the TEAS 7 Reading section. Key ideas, craft and structure, and integration strategies with practice questions and expert tips.',
-    sections: ['reading'],
-    subskills: [
-      'reading.key-ideas-details',
-      'reading.craft-structure',
-      'reading.integration-knowledge-ideas'
-    ]
+    route: '/teas-7-syllabus',
+    title: 'TEAS 7 Syllabus & Content Outline',
+    description: 'Complete TEAS 7 syllabus and content outline.',
+    sections: ['reading', 'math', 'science', 'english'],
+    subskills: []
   },
 
-  'guide-teas-math': {
-    pageId: 'guide-teas-math',
-    route: '/guides/teas-math',
-    title: 'TEAS 7 Math Section Guide | Numbers, Algebra & Data',
-    description: 'Complete guide to TEAS 7 Mathematics. Master numbers, algebra, measurements, and data interpretation with 38 scored questions.',
-    sections: ['math'],
-    subskills: [
-      'math.numbers-algebra',
-      'math.measurement-data'
-    ]
+  'scoring': {
+    pageId: 'guide-teas-reading',
+    route: '/teas-scoring-guide',
+    title: 'TEAS 7 Scoring Guide',
+    description: 'How TEAS 7 scoring works.',
+    sections: [],
+    subskills: []
   },
 
-  'guide-teas-science': {
-    pageId: 'guide-teas-science',
-    route: '/guides/teas-science',
-    title: 'TEAS 7 Science Section Guide | A&P, Biology & Chemistry',
-    description: 'TEAS 7 Science mastery guide. Anatomy, physiology, biology, chemistry, and scientific reasoning across 50 questions.',
-    sections: ['science'],
-    subskills: [
-      'science.anatomy-physiology',
-      'science.biology',
-      'science.chemistry',
-      'science.scientific-reasoning'
-    ]
-  },
-
-  'guide-teas-english': {
-    pageId: 'guide-teas-english',
-    route: '/guides/teas-english',
-    title: 'TEAS 7 English Section Guide | Grammar & Vocabulary',
-    description: 'Master TEAS 7 English and Language Usage. Conventions, language knowledge, and vocabulary for 37 scored questions.',
-    sections: ['english'],
-    subskills: [
-      'english.conventions-standard-english',
-      'english.knowledge-of-language',
-      'english.using-language-vocabulary'
-    ]
+  'professors': {
+    pageId: 'course',
+    route: '/about/our-professors',
+    title: 'Our TEAS 7 Expert Professors',
+    description: 'Meet our doctoral-level professors.',
+    sections: [],
+    subskills: []
   }
 };

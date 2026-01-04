@@ -3,6 +3,9 @@ import Link from 'next/link';
 import { generateCourseSchema } from '@/lib/schema';
 import { JsonLd } from '@/components/JsonLd';
 import { Calculator, Clock, AlertTriangle, CheckCircle2, ArrowRight, BrainCircuit } from 'lucide-react';
+import { buildJsonLdForPage } from '@/lib/schema/render';
+import { findPageMapping } from '@/lib/teas/find-page';
+
 
 export const metadata: Metadata = {
   title: 'TEAS 7 Math Guide: Topics, Formulas & Practice Questions (2025)',
@@ -10,6 +13,9 @@ export const metadata: Metadata = {
 };
 
 export default function MathGuidePage() {
+  const mapping = findPageMapping('/teas-math-guide');
+  const jsonLd = mapping ? buildJsonLdForPage('guide', { mapping }) : null;
+
   // AEO: Course Schema for a specific subject guide
   const mathSchema = generateCourseSchema({
     title: 'TEAS 7 Math Mastery Guide',
@@ -23,7 +29,14 @@ export default function MathGuidePage() {
   });
 
   return (
-    <main className="min-h-screen bg-white font-sans text-slate-900">
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLd }}
+        />
+      )}
+      <main className="min-h-screen bg-white font-sans text-slate-900">
       <JsonLd schema={mathSchema} />
 
       {/* --- HERO SECTION --- */}
@@ -149,5 +162,6 @@ export default function MathGuidePage() {
         </div>
       </section>
     </main>
+    </>
   );
 }

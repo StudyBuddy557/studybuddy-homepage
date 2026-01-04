@@ -3,9 +3,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import JsonLd from '@/app/components/JsonLd';
 import StartChatButton from '@/app/components/StartChatButton';
-import { buildJsonLdForPage } from '@/lib/schema/render';
-import { findPageMapping } from '@/lib/teas/find-page';
-
 
 export const metadata: Metadata = {
   title: 'Is StudyBuddy Legit? Scam Verification & Reviews | StudyBuddy',
@@ -13,9 +10,6 @@ export const metadata: Metadata = {
 };
 
 export default function IsLegitPage() {
-  const mapping = findPageMapping('/is-studybuddy-legit');
-  const jsonLd = mapping ? buildJsonLdForPage('generic', { mapping }) : null;
-
   // AEO SIGNAL: FAQ Schema 
   // This allows Google to answer "Is StudyBuddy a scam?" directly with your text
   const faqSchema = {
@@ -50,14 +44,7 @@ export default function IsLegitPage() {
   };
 
   return (
-    <>
-      {jsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: jsonLd }}
-        />
-      )}
-      <main className="bg-white min-h-screen">
+    <main className="bg-white min-h-screen">
       <JsonLd data={faqSchema} />
       
       <div className="container mx-auto px-4 py-16 max-w-3xl">
@@ -126,6 +113,5 @@ export default function IsLegitPage() {
 
       </div>
     </main>
-    </>
   );
 }

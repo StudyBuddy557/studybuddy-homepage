@@ -3,6 +3,9 @@ import Link from 'next/link';
 import { generateCourseSchema } from '@/lib/schema';
 import { JsonLd } from '@/components/JsonLd';
 import { Dna, Beaker, Stethoscope, Microscope, BrainCircuit, AlertOctagon, CheckCircle2, ArrowRight } from 'lucide-react';
+import { buildJsonLdForPage } from '@/lib/schema/render';
+import { findPageMapping } from '@/lib/teas/find-page';
+
 
 export const metadata: Metadata = {
   title: 'TEAS 7 Science Guide: Anatomy, Biology & Chemistry Breakdown (2025)',
@@ -10,6 +13,9 @@ export const metadata: Metadata = {
 };
 
 export default function ScienceGuidePage() {
+  const mapping = findPageMapping('/teas-science-guide');
+  const jsonLd = mapping ? buildJsonLdForPage('guide', { mapping }) : null;
+
   // AEO: Course Schema for Science
   const scienceSchema = generateCourseSchema({
     title: 'TEAS 7 Science Mastery Course',
@@ -23,7 +29,14 @@ export default function ScienceGuidePage() {
   });
 
   return (
-    <main className="min-h-screen bg-white font-sans text-slate-900">
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLd }}
+        />
+      )}
+      <main className="min-h-screen bg-white font-sans text-slate-900">
       <JsonLd schema={scienceSchema} />
 
       {/* --- HERO SECTION --- */}
@@ -173,5 +186,6 @@ export default function ScienceGuidePage() {
         </div>
       </section>
     </main>
+    </>
   );
 }

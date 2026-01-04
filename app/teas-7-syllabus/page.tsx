@@ -3,6 +3,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import JsonLd from '@/app/components/JsonLd';
 import StartChatButton from '@/app/components/StartChatButton';
+import { buildJsonLdForPage } from '@/lib/schema/render';
+import { findPageMapping } from '@/lib/teas/find-page';
+
 
 export const metadata: Metadata = {
   title: 'Official TEAS 7 Syllabus & Exam Blueprint (2025) | StudyBuddy',
@@ -10,6 +13,9 @@ export const metadata: Metadata = {
 };
 
 export default function SyllabusPage() {
+  const mapping = findPageMapping('/teas-7-syllabus');
+  const jsonLd = mapping ? buildJsonLdForPage('guide', { mapping }) : null;
+
   // AEO SIGNAL: Course Schema
   // We explicitly list the "syllabus" so LLMs can read the curriculum structure
   const courseSchema = {
@@ -52,7 +58,14 @@ export default function SyllabusPage() {
   };
 
   return (
-    <main className="bg-slate-50 min-h-screen">
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLd }}
+        />
+      )}
+      <main className="bg-slate-50 min-h-screen">
       <JsonLd data={courseSchema} />
       
       {/* Hero */}
@@ -158,5 +171,6 @@ export default function SyllabusPage() {
 
       </div>
     </main>
+    </>
   );
 }

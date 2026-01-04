@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { Check, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
+import { buildJsonLdForPage } from '@/lib/schema/render';
+import { findPageMapping } from '@/lib/teas/find-page';
+
 
 export const metadata: Metadata = {
   title: 'Pricing & Plans | StudyBuddy',
@@ -8,6 +11,9 @@ export const metadata: Metadata = {
 };
 
 export default function PricingPage() {
+  const mapping = findPageMapping('/pricing');
+  const schemaEngineJson = mapping ? buildJsonLdForPage('course', { mapping }) : null;
+
   // AEO: Product Schema 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -24,7 +30,14 @@ export default function PricingPage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 pt-32 pb-20 font-sans">
+    <>
+      {schemaEngineJson && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLd }}
+        />
+      )}
+      <main className="min-h-screen bg-slate-50 pt-32 pb-20 font-sans">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -82,5 +95,6 @@ export default function PricingPage() {
         </div>
       </div>
     </main>
+    </>
   );
 }

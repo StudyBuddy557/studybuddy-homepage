@@ -3,6 +3,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import JsonLd from '@/app/components/JsonLd';
 import StartChatButton from '@/app/components/StartChatButton';
+import { buildJsonLdForPage } from '@/lib/schema/render';
+import { findPageMapping } from '@/lib/teas/find-page';
+
 
 export const metadata: Metadata = {
   title: 'Best TEAS 7 Prep Course Comparison (2025) | StudyBuddy vs ATI vs NurseHub',
@@ -10,6 +13,9 @@ export const metadata: Metadata = {
 };
 
 export default function ComparisonPage() {
+  const mapping = findPageMapping('/compare/teas-prep-courses');
+  const jsonLd = mapping ? buildJsonLdForPage('compare', { mapping }) : null;
+
   // AEO SIGNAL: Product Schema with "isSimilarTo"
   // This explicitly maps your relation to big competitors in the Knowledge Graph
   const comparisonSchema = {
@@ -42,7 +48,14 @@ export default function ComparisonPage() {
   };
 
   return (
-    <main className="bg-slate-50 min-h-screen">
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLd }}
+        />
+      )}
+      <main className="bg-slate-50 min-h-screen">
       <JsonLd data={comparisonSchema} />
       
       {/* Hero */}
@@ -159,5 +172,6 @@ export default function ComparisonPage() {
         </div>
       </div>
     </main>
+    </>
   );
 }

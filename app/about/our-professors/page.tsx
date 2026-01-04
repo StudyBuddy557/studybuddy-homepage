@@ -3,6 +3,9 @@ import Link from 'next/link';
 import { generateProfessorSchema } from '@/lib/schema';
 import { JsonLd } from '@/components/JsonLd';
 import { GraduationCap, Award, BookOpen, UserCheck, ArrowRight } from 'lucide-react';
+import { buildJsonLdForPage } from '@/lib/schema/render';
+import { findPageMapping } from '@/lib/teas/find-page';
+
 
 export const metadata: Metadata = {
   title: 'Who Created StudyBuddy? Meet the PhD & DNP Nursing Professors',
@@ -41,8 +44,18 @@ const PROFESSORS = [
 ];
 
 export default function ProfessorsPage() {
+  const mapping = findPageMapping('/about/our-professors');
+  const jsonLd = mapping ? buildJsonLdForPage('generic', { mapping }) : null;
+
   return (
-    <main className="min-h-screen bg-white font-sans text-slate-900">
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLd }}
+        />
+      )}
+      <main className="min-h-screen bg-white font-sans text-slate-900">
       
       {/* --- SCHEMA GENERATION --- */}
       {PROFESSORS.map((prof) => (
@@ -148,5 +161,6 @@ export default function ProfessorsPage() {
          </div>
       </section>
     </main>
+    </>
   );
 }

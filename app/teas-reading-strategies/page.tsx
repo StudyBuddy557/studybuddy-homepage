@@ -1,4 +1,7 @@
 import type { Metadata } from 'next';
+import { buildJsonLdForPage } from '@/lib/schema/render';
+import { findPageMapping } from '@/lib/teas/find-page';
+
 
 export const metadata: Metadata = {
   title: 'TEAS 7 Reading Strategies | Key Ideas & Details',
@@ -6,6 +9,9 @@ export const metadata: Metadata = {
 };
 
 export default function TeasReadingStrategiesPage() {
+  const mapping = findPageMapping('/teas-reading-strategies');
+  const jsonLd = mapping ? buildJsonLdForPage('guide', { mapping }) : null;
+
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Course',
@@ -14,7 +20,14 @@ export default function TeasReadingStrategiesPage() {
   };
 
   return (
-    <main className="max-w-4xl mx-auto px-6 py-12">
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLd }}
+        />
+      )}
+      <main className="max-w-4xl mx-auto px-6 py-12">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <h1 className="text-4xl font-extrabold text-slate-900 mb-8">TEAS 7 Reading Strategies</h1>
       <p className="text-xl text-slate-700 mb-8">The Reading section has 53 questions. Focus on identifying the <strong>Topic String</strong> in the first sentence of paragraphs.</p>
@@ -23,5 +36,6 @@ export default function TeasReadingStrategiesPage() {
         <div className="bg-white border p-6 rounded-xl"><h3 className="font-bold text-teal-600">Fact vs Opinion</h3><p>Avoid "should" or "best" - these are opinions.</p></div>
       </div>
     </main>
+    </>
   );
 }
