@@ -1,37 +1,70 @@
+/**
+ * Sitemap.xml Generator (Next.js App Router)
+ * Location: app/sitemap.ts
+ * Includes all static pages + dynamic state/school pages
+ */
+
 import { MetadataRoute } from 'next';
-import { stateData } from '@/lib/state-data';
+
+const baseUrl = 'https://studybuddy.live';
+
+// List of US states for state-specific pages
+const states = [
+  'alabama', 'alaska', 'arizona', 'arkansas', 'california',
+  'colorado', 'connecticut', 'delaware', 'florida', 'georgia',
+  'hawaii', 'idaho', 'illinois', 'indiana', 'iowa',
+  'kansas', 'kentucky', 'louisiana', 'maine', 'maryland',
+  'massachusetts', 'michigan', 'minnesota', 'mississippi', 'missouri',
+  'montana', 'nebraska', 'nevada', 'new-hampshire', 'new-jersey',
+  'new-mexico', 'new-york', 'north-carolina', 'north-dakota', 'ohio',
+  'oklahoma', 'oregon', 'pennsylvania', 'rhode-island', 'south-carolina',
+  'south-dakota', 'tennessee', 'texas', 'utah', 'vermont',
+  'virginia', 'washington', 'west-virginia', 'wisconsin', 'wyoming',
+];
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://www.studybuddy.live';
+  // Core pages
+  const corePages: MetadataRoute.Sitemap = [
+    {
+      url: baseUrl,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 1.0,
+    },
+    {
+      url: `${baseUrl}/pricing`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/diagnostic`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/guarantee`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/pass-rate-methodology`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+  ];
 
-  // 1. Define your core static pages
-  const staticRoutes = [
-    '',              // Homepage
-    '/diagnostic',
-    '/dashboard',
-    '/pricing',
-    '/refunds',
-    '/pass-rate-methodology',
-    '/ai-tutor',
-    '/is-studybuddy-legit',
-    '/compare/teas-prep-courses',
-    '/teas-7-syllabus'
-  ].map((route) => ({
-    url: `${baseUrl}${route}`,
+  // State-specific pages
+  const statePages: MetadataRoute.Sitemap = states.map((state) => ({
+    url: `${baseUrl}/states/${state}`,
     lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
-    priority: 1.0,
-  }));
-
-  // 2. Generate dynamic state pages from your data
-  // This loops through 'california', 'texas', etc.
-  const stateRoutes = stateData.map((state) => ({
-    url: `${baseUrl}/states/${state.slug}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
+    changeFrequency: 'monthly' as const,
     priority: 0.8,
   }));
 
-  // 3. Combine them
-  return [...staticRoutes, ...stateRoutes];
+  // Combine all pages
+  return [...corePages, ...statePages];
 }

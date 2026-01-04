@@ -36,3 +36,4 @@ next-env.d.ts
 
 # Lighthouse reports
 /lighthouse-reports
+.env.local.backup
