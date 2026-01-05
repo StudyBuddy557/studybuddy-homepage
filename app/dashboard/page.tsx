@@ -1,5 +1,3 @@
-import AIChat from '@/components/chat/AIChat';
-
 export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -8,14 +6,10 @@ export default function DashboardPage() {
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <h2 className="text-xl font-semibold mb-2">Welcome back!</h2>
           <p className="text-gray-600">
-            This is where your course content would go. 
-            The **Gold AI Tutor** should be visible in the bottom right corner of this page.
+            This dashboard is for logged-in students. The AI assistant is available site-wide in the bottom right corner.
           </p>
         </div>
       </div>
-
-      {/* The AI Tutor lives here now! */}
-      <AIChat />
     </div>
   );
 }

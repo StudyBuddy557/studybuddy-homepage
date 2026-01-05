@@ -67,110 +67,10 @@ function useLocalStorage(key: string, initialValue: boolean) {
   return [storedValue, setValue, isHydrated] as const;
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 🧩 SUB-COMPONENTS
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-function FloatingSalesBot() {
-  const [showBubble, setShowBubble] = useState(false);
-
-  // Show the "Hi!" bubble after 3 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => setShowBubble(true), 3000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  return (
-    <div className="fixed bottom-6 right-6 z-50 hidden md:flex flex-col items-end gap-2">
-      {/* The Speech Bubble */}
-      {showBubble && (
-        <div className="bg-white px-4 py-3 rounded-2xl rounded-br-none shadow-xl border border-slate-200 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[200px]">
-          <div className="flex justify-between items-start gap-2">
-            <p className="text-sm font-bold text-slate-800">Hi! Need help passing the TEAS?</p>
-            <button 
-              onClick={(e) => { e.stopPropagation(); setShowBubble(false); }}
-              className="text-slate-400 hover:text-slate-600"
-              aria-label="Close message"
-            >
-              <X size={14} />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* The Trigger Button with Custom Avatar */}
-      <Link 
-        href="/dashboard"
-        className="group relative flex items-center justify-center w-16 h-16 rounded-full shadow-lg hover:shadow-teal-500/40 transition-all hover:scale-105 active:scale-95 bg-white border-2 border-[#20B2AA] overflow-hidden"
-        onMouseEnter={() => setShowBubble(true)}
-      >
-        <Image 
-          src="/StudyBuddy_AI_tutor_Avatar.png" 
-          alt="StudyBuddy AI Tutor - Click to chat for TEAS 7 help" 
-          fill
-          className="object-cover"
-        />
-        
-        {/* Status Dot */}
-        <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full z-10"></span>
-      </Link>
-    </div>
-  );
-}
-
-interface ExitIntentModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-function ExitIntentModal({ isOpen, onClose }: ExitIntentModalProps) {
-  const [email, setEmail] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!email || isSubmitting) return;
-
-    setIsSubmitting(true);
-    setSubmitStatus('idle');
-
-    try {
-      // MailerLite API integration placeholder
-      // Replace with your actual MailerLite API endpoint
-      const response = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'exit_intent', discount: '20_percent' }),
-      });
-
-      if (response.ok) {
-        setSubmitStatus('success');
-        setTimeout(() => {
-          onClose();
-          setEmail('');
-          setSubmitStatus('idle');
-        }, 2000);
-      } else {
-        setSubmitStatus('error');
-      }
-    } catch (error) {
-      console.error('Subscription error:', error);
-      setSubmitStatus('error');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden relative animate-in fade-in zoom-in duration-300">
-        <button 
-          onClick={onClose}
-          className="absolute top-4 right-4 p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors"
-          aria-label="Close modal"
         >
           <X size={20} className="text-slate-500" />
         </button>
@@ -605,7 +505,6 @@ export default function HomePage() {
       />
       
       {/* 🧩 Components */}
-      <FloatingSalesBot />
       <ExitIntentModal isOpen={showExitIntent} onClose={() => setShowExitIntent(false)} />
       <StickyFloatingCTA />
       <MobileBottomNav />
@@ -715,7 +614,7 @@ export default function HomePage() {
             <div className="space-y-8 max-w-2xl">
               <div className="flex flex-wrap items-center gap-4">
                 <Link href="/teas-7-syllabus" className="bg-teal-50 text-teal-700 text-xs font-extrabold px-4 py-1.5 rounded-full uppercase tracking-wider border border-teal-100 hover:bg-teal-100 transition-colors">
-                  Updated for TEAS 7 (2025)
+                  Updated for TEAS 7 (2026)
                 </Link>
                 <div className="flex items-center gap-2">
                   <div className="flex -space-x-2">
@@ -1208,7 +1107,7 @@ export default function HomePage() {
                 AI-powered TEAS 7 prep built by PhD & DNP nursing educators with 75+ years of combined experience. Pass guaranteed.
               </p>
               <div className="text-xs text-slate-600 leading-relaxed">
-                © 2025 EdExpert LLC. All rights reserved. <br/>
+                © 2026 EdExpert LLC. All rights reserved. <br/>
                 TEAS® is a registered trademark of the Assessment Technologies Institute.
               </div>
             </div>

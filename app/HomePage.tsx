@@ -71,53 +71,6 @@ function useLocalStorage(key: string, initialValue: boolean) {
 // 🧩 SUB-COMPONENTS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-function FloatingSalesBot() {
-  const [showBubble, setShowBubble] = useState(false);
-
-  // Show the "Hi!" bubble after 3 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => setShowBubble(true), 3000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  return (
-    <div className="fixed bottom-6 right-6 z-50 hidden md:flex flex-col items-end gap-2">
-      {/* The Speech Bubble */}
-      {showBubble && (
-        <div className="bg-white px-4 py-3 rounded-2xl rounded-br-none shadow-xl border border-slate-200 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[200px]">
-          <div className="flex justify-between items-start gap-2">
-            <p className="text-sm font-bold text-slate-800">Hi! Need help passing the TEAS?</p>
-            <button 
-              onClick={(e) => { e.stopPropagation(); setShowBubble(false); }}
-              className="text-slate-400 hover:text-slate-600"
-              aria-label="Close message"
-            >
-              <X size={14} />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* The Trigger Button with Custom Avatar */}
-      <Link 
-        href="/dashboard"
-        className="group relative flex items-center justify-center w-16 h-16 rounded-full shadow-lg hover:shadow-teal-500/40 transition-all hover:scale-105 active:scale-95 bg-white border-2 border-[#20B2AA] overflow-hidden"
-        onMouseEnter={() => setShowBubble(true)}
-      >
-        <Image 
-          src="/StudyBuddy_AI_tutor_Avatar.png" 
-          alt="StudyBuddy AI Tutor - Click to chat for TEAS 7 help" 
-          fill
-          className="object-cover"
-        />
-        
-        {/* Status Dot */}
-        <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full z-10"></span>
-      </Link>
-    </div>
-  );
-}
-
 interface ExitIntentModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -460,7 +413,6 @@ export default function HomePage() {
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-[#20B2AA] selection:text-white pb-20 md:pb-0">
       
       {/* 🧩 Components */}
-      <FloatingSalesBot />
       <ExitIntentModal isOpen={showExitIntent} onClose={() => setShowExitIntent(false)} />
       <StickyFloatingCTA />
       <MobileBottomNav />
@@ -570,7 +522,7 @@ export default function HomePage() {
             <div className="space-y-8 max-w-2xl">
               <div className="flex flex-wrap items-center gap-4">
                 <Link href="/teas-7-syllabus" className="bg-teal-50 text-teal-700 text-xs font-extrabold px-4 py-1.5 rounded-full uppercase tracking-wider border border-teal-100 hover:bg-teal-100 transition-colors">
-                  Updated for TEAS 7 (2025)
+                  Updated for TEAS 7 (2026)
                 </Link>
                 <div className="flex items-center gap-2">
                   <div className="flex -space-x-2">
@@ -675,11 +627,16 @@ export default function HomePage() {
                 </div>
 
                 <div className="mt-8 pt-6 border-t border-slate-100 flex items-center gap-4">
-                   <div className="w-12 h-12 bg-[#1E3A8A] rounded-full flex items-center justify-center text-white flex-shrink-0">
-                      <Bot size={24} />
+                   <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border-2 border-[#20B2AA]">
+                      <Image 
+                        src="/StudyBuddy_AI_tutor_Avatar.png" 
+                        alt="StudyBuddy" 
+                        fill 
+                        className="object-cover"
+                      />
                    </div>
                    <div className="text-sm">
-                      <p className="font-bold text-slate-900">AI Tutor says:</p>
+                      <p className="font-bold text-slate-900">StudyBuddy says:</p>
                       <p className="text-slate-600">&quot;You&apos;ve mastered Life Sciences! Let&apos;s boost that Math score.&quot;</p>
                    </div>
                 </div>
@@ -1063,7 +1020,7 @@ export default function HomePage() {
                 AI-powered TEAS 7 prep built by PhD & DNP nursing educators with 75+ years of combined experience. Pass guaranteed.
               </p>
               <div className="text-xs text-slate-600 leading-relaxed">
-                © 2025 EdExpert LLC. All rights reserved. <br/>
+                © 2026 EdExpert LLC. All rights reserved. <br/>
                 TEAS® is a registered trademark of the Assessment Technologies Institute.
               </div>
             </div>

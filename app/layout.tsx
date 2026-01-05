@@ -5,6 +5,7 @@ import './globals.css';
 // Importing your new analytics components
 import GoogleTagManager from '@/components/analytics/GoogleTagManager';
 import MicrosoftClarity from '@/components/analytics/MicrosoftClarity';
+import EnterpriseAIConcierge from '@/components/enterprise-ai/EnterpriseAIConcierge';
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -36,6 +37,9 @@ export default function RootLayout({
         <MicrosoftClarity />
         
         {children}
+        
+        {/* ENTERPRISE AI CONCIERGE - Appears on all pages */}
+        <EnterpriseAIConcierge />
       </body>
     </html>
   );
