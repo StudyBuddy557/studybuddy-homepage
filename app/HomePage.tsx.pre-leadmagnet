@@ -91,7 +91,7 @@ function ExitIntentModal({ isOpen, onClose }: ExitIntentModalProps) {
     try {
       // MailerLite API integration placeholder
       // Replace with your actual MailerLite API endpoint
-      const response = await fetch('/api/lead-capture', {
+      const response = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, source: 'exit_intent', discount: '20_percent' }),
@@ -129,23 +129,23 @@ function ExitIntentModal({ isOpen, onClose }: ExitIntentModalProps) {
         </button>
         
         <div className="flex flex-col md:flex-row">
-          <div className="bg-gradient-to-br from-[#20B2AA] to-[#1A8F88] p-8 md:w-2/5 flex flex-col justify-center text-white text-center md:text-left">
-            <div className="text-5xl mb-3">📚</div>
-            <div className="text-2xl font-bold leading-tight mb-2">FREE TEAS 7 Study Guide</div>
-            <div className="text-sm opacity-90">Join 500+ students who passed on their first try</div>
+          <div className="bg-[#20B2AA] p-8 md:w-2/5 flex flex-col justify-center text-white text-center md:text-left">
+            <div className="text-4xl font-bold mb-2">20%</div>
+            <div className="text-lg font-medium leading-tight mb-4">OFF YOUR FIRST MONTH</div>
+            <div className="text-xs opacity-90">Limited time offer for new students.</div>
           </div>
           
           <div className="p-8 md:w-3/5">
-            <h3 className="text-2xl font-bold text-slate-900 mb-2">Before you go...</h3>
+            <h3 className="text-2xl font-bold text-slate-900 mb-2">Wait! Don&apos;t leave yet.</h3>
             <p className="text-slate-600 mb-6 text-sm">
-              Get our proven TEAS 7 study guide (PDF) with key formulas, must-know concepts, and study timeline calculator.
+              Pass your TEAS 7 or get your money back. Grab your free study guide and discount code.
             </p>
             
             {submitStatus === 'success' ? (
               <div className="text-center py-8">
                 <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto mb-4" />
                 <p className="text-lg font-bold text-slate-900">You&apos;re in!</p>
-                <p className="text-sm text-slate-500">Your free study guide is on its way.</p>
+                <p className="text-sm text-slate-500">Check your email for your discount code.</p>
               </div>
             ) : (
               <form className="space-y-3" onSubmit={handleSubmit}>
@@ -166,12 +166,12 @@ function ExitIntentModal({ isOpen, onClose }: ExitIntentModalProps) {
                   disabled={isSubmitting}
                   className="w-full bg-[#1E3A8A] text-white font-bold py-3 rounded-lg hover:bg-[#162c6b] transition-colors shadow-lg shadow-blue-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? 'Submitting...' : 'Send Me The Free Guide 🚀'}
+                  {isSubmitting ? 'Submitting...' : 'Unlock My 20% Off'}
                 </button>
               </form>
             )}
             <button onClick={onClose} className="w-full text-center text-slate-400 text-xs mt-4 hover:text-slate-600 underline">
-              No thanks, I donNo thanks, I&apos;ll pay full priceapos;t want free study resources
+              No thanks, I&apos;ll pay full price
             </button>
           </div>
         </div>
@@ -216,7 +216,7 @@ function StickyFloatingCTA() {
           </Link>
           <Link 
             href="/diagnostic" 
-            className="bg-gradient-to-br from-[#20B2AA] to-[#1A8F88] text-white px-8 py-2.5 rounded-lg font-bold hover:bg-[#1a9d96] shadow-lg shadow-teal-500/30 transition-all hover:-translate-y-0.5"
+            className="bg-[#20B2AA] text-white px-8 py-2.5 rounded-lg font-bold hover:bg-[#1a9d96] shadow-lg shadow-teal-500/30 transition-all hover:-translate-y-0.5"
           >
             Start Free Diagnostic
           </Link>
@@ -237,7 +237,7 @@ function MobileBottomNav() {
         
         <Link 
           href="/diagnostic" 
-          className="flex-1 bg-gradient-to-br from-[#20B2AA] to-[#1A8F88] text-white h-12 rounded-xl flex items-center justify-center font-bold text-sm shadow-lg shadow-teal-500/20 active:scale-95 transition-transform"
+          className="flex-1 bg-[#20B2AA] text-white h-12 rounded-xl flex items-center justify-center font-bold text-sm shadow-lg shadow-teal-500/20 active:scale-95 transition-transform"
         >
           Start Diagnostic
         </Link>
@@ -410,7 +410,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-gradient-to-br from-[#20B2AA] to-[#1A8F88] selection:text-white pb-20 md:pb-0">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-[#20B2AA] selection:text-white pb-20 md:pb-0">
       
       {/* 🧩 Components */}
       <ExitIntentModal isOpen={showExitIntent} onClose={() => setShowExitIntent(false)} />
@@ -463,7 +463,7 @@ export default function HomePage() {
               </Link>
               <Link 
                 href="/pricing" 
-                className="bg-gradient-to-br from-[#20B2AA] to-[#1A8F88] text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-[#1a9d96] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                className="bg-[#20B2AA] text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-[#1a9d96] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
               >
                 Get Started
               </Link>
@@ -487,7 +487,7 @@ export default function HomePage() {
                 <Link 
                   key={item.label}
                   href={item.href} 
-                  className="block px-4 py-3 text-slate-700 hover:bg-gradient-to-br from-[#20B2AA] to-[#1A8F88]/5 rounded-lg font-medium"
+                  className="block px-4 py-3 text-slate-700 hover:bg-[#20B2AA]/5 rounded-lg font-medium"
                   onClick={() => setMobileOpen(false)}
                 >
                   {item.label}
@@ -563,7 +563,7 @@ export default function HomePage() {
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <Link 
                   href="/diagnostic" 
-                  className="bg-gradient-to-br from-[#20B2AA] to-[#1A8F88] text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-[#1a9d96] hover:shadow-xl hover:shadow-teal-500/20 hover:-translate-y-1 transition-all duration-200 flex flex-col items-center justify-center text-center"
+                  className="bg-[#20B2AA] text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-[#1a9d96] hover:shadow-xl hover:shadow-teal-500/20 hover:-translate-y-1 transition-all duration-200 flex flex-col items-center justify-center text-center"
                 >
                   <span>Take Free 5-Min Diagnostic →</span>
                   <span className="text-xs font-normal opacity-90 mt-1">Get your personalized TEAS study plan</span>
@@ -606,7 +606,7 @@ export default function HomePage() {
                       <span className="font-bold text-[#20B2AA]">88%</span>
                     </div>
                     <div className="w-full bg-slate-200 rounded-full h-2.5">
-                      <div className="bg-gradient-to-br from-[#20B2AA] to-[#1A8F88] h-2.5 rounded-full" style={{ width: '88%' }}></div>
+                      <div className="bg-[#20B2AA] h-2.5 rounded-full" style={{ width: '88%' }}></div>
                     </div>
                   </div>
 
@@ -762,7 +762,7 @@ export default function HomePage() {
             <button 
               onClick={handleStateNavigate}
               disabled={!selectedState}
-              className="bg-gradient-to-br from-[#20B2AA] to-[#1A8F88] hover:bg-[#1a9d96] text-white font-bold px-8 py-3 rounded-lg transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-[#20B2AA] hover:bg-[#1a9d96] text-white font-bold px-8 py-3 rounded-lg transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
             >
               View Guide
             </button>
@@ -897,7 +897,7 @@ export default function HomePage() {
                 <span className="text-5xl font-extrabold text-slate-900 tracking-tight">$59</span>
                 <span className="text-slate-500 text-lg">/ 3 mo</span>
               </div>
-              <div className="bg-gradient-to-br from-[#20B2AA] to-[#1A8F88] text-white text-sm font-semibold px-4 py-2 rounded-lg inline-block mb-6">
+              <div className="bg-[#20B2AA] text-white text-sm font-semibold px-4 py-2 rounded-lg inline-block mb-6">
                 Save $16 vs. Monthly
               </div>
               
@@ -930,7 +930,7 @@ export default function HomePage() {
                 </li>
               </ul>
               
-              <Link href="/pricing?plan=pro" className="block w-full py-4 text-center bg-gradient-to-br from-[#20B2AA] to-[#1A8F88] rounded-xl font-bold text-white hover:bg-[#1a9d96] transition-colors shadow-lg shadow-teal-500/20 mb-4">
+              <Link href="/pricing?plan=pro" className="block w-full py-4 text-center bg-[#20B2AA] rounded-xl font-bold text-white hover:bg-[#1a9d96] transition-colors shadow-lg shadow-teal-500/20 mb-4">
                 Get 3-Month Access
               </Link>
               
@@ -1013,7 +1013,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-4 gap-12 mb-12">
             <div className="col-span-1 md:col-span-2">
               <div className="flex items-center gap-2 mb-6">
-                <div className="w-8 h-8 bg-gradient-to-br from-[#20B2AA] to-[#1A8F88] rounded-lg flex items-center justify-center text-white font-bold">S</div>
+                <div className="w-8 h-8 bg-[#20B2AA] rounded-lg flex items-center justify-center text-white font-bold">S</div>
                 <span className="text-2xl font-bold text-white tracking-tight">StudyBuddy</span>
               </div>
               <p className="text-slate-500 text-sm leading-relaxed max-w-sm mb-6">
