@@ -1,36 +1,17 @@
-/**
- * Sitemap.xml Generator (Next.js App Router)
- * Location: app/sitemap.ts
- * Includes all static pages + dynamic state/school pages
- */
-
-import { MetadataRoute } from 'next';
-
-const baseUrl = 'https://studybuddy.live';
-
-// List of US states for state-specific pages
-const states = [
-  'alabama', 'alaska', 'arizona', 'arkansas', 'california',
-  'colorado', 'connecticut', 'delaware', 'florida', 'georgia',
-  'hawaii', 'idaho', 'illinois', 'indiana', 'iowa',
-  'kansas', 'kentucky', 'louisiana', 'maine', 'maryland',
-  'massachusetts', 'michigan', 'minnesota', 'mississippi', 'missouri',
-  'montana', 'nebraska', 'nevada', 'new-hampshire', 'new-jersey',
-  'new-mexico', 'new-york', 'north-carolina', 'north-dakota', 'ohio',
-  'oklahoma', 'oregon', 'pennsylvania', 'rhode-island', 'south-carolina',
-  'south-dakota', 'tennessee', 'texas', 'utah', 'vermont',
-  'virginia', 'washington', 'west-virginia', 'wisconsin', 'wyoming',
-];
+import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  // Core pages
-  const corePages: MetadataRoute.Sitemap = [
+  const baseUrl = 'https://studybuddy.live'
+  
+  return [
+    // Homepage
     {
       url: baseUrl,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1.0,
     },
+    // Main pages
     {
       url: `${baseUrl}/pricing`,
       lastModified: new Date(),
@@ -40,31 +21,116 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${baseUrl}/diagnostic`,
       lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
+      changeFrequency: 'monthly',
+      priority: 0.8,
     },
     {
-      url: `${baseUrl}/guarantee`,
+      url: `${baseUrl}/pass-guarantee`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    // Content pages
+    {
+      url: `${baseUrl}/teas-7-syllabus`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/teas-math-guide`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/teas-reading-strategies`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/teas-science-guide`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/teas-scoring-guide`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/teas-study-plan-2-weeks`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    // Comparison pages
+    {
+      url: `${baseUrl}/compare/teas-prep-courses`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.7,
     },
     {
-      url: `${baseUrl}/pass-rate-methodology`,
+      url: `${baseUrl}/vs`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.6,
     },
-  ];
-
-  // State-specific pages
-  const statePages: MetadataRoute.Sitemap = states.map((state) => ({
-    url: `${baseUrl}/states/${state}`,
-    lastModified: new Date(),
-    changeFrequency: 'monthly' as const,
-    priority: 0.8,
-  }));
-
-  // Combine all pages
-  return [...corePages, ...statePages];
+    // Tools
+    {
+      url: `${baseUrl}/calculator`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    // States
+    {
+      url: `${baseUrl}/states`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    // Blog & Wiki
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/wiki`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.6,
+    },
+    // Legal
+    {
+      url: `${baseUrl}/privacy`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/terms`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/refunds`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/cookie-policy`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.2,
+    },
+  ]
 }
