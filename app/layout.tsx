@@ -60,8 +60,6 @@ export const metadata: Metadata = {
     canonical: 'https://studybuddy.live',
   },
 };
-};
-
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
