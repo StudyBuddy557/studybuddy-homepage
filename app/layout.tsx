@@ -1,8 +1,11 @@
+import { AnalyticsProvider } from './providers/AnalyticsProvider';
+import { MetaPixel } from '@/components/pixels/MetaPixel';
+import { TikTokPixel } from '@/components/pixels/TikTokPixel';
 import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 
-// Importing your new analytics components
+// Your existing analytics components
 import GoogleTagManager from '@/components/analytics/GoogleTagManager';
 import MicrosoftClarity from '@/components/analytics/MicrosoftClarity';
 import EnterpriseAIConcierge from '@/components/enterprise-ai/EnterpriseAIConcierge';
@@ -13,6 +16,7 @@ const plusJakarta = Plus_Jakarta_Sans({
   variable: '--font-plus-jakarta',
   display: 'swap',
 });
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://studybuddy.live'),
   title: {
@@ -60,6 +64,7 @@ export const metadata: Metadata = {
     canonical: 'https://studybuddy.live',
   },
 };
+
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -71,17 +76,27 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+  const tiktokPixelId = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID;
+
   return (
     <html lang="en">
       <body className={`${plusJakarta.variable} font-sans antialiased`}>
-        {/* NEW ANALYTICS COMPONENTS */}
+        {/* YOUR EXISTING ANALYTICS */}
         <GoogleTagManager />
         <MicrosoftClarity />
         
-        {children}
+        {/* NEW: Analytics Provider wraps everything */}
+        <AnalyticsProvider>
+          {children}
+        </AnalyticsProvider>
         
-        {/* ENTERPRISE AI CONCIERGE - Appears on all pages */}
+        {/* YOUR EXISTING AI CONCIERGE */}
         <EnterpriseAIConcierge />
+        
+        {/* NEW: Meta & TikTok Pixels */}
+        {metaPixelId && <MetaPixel pixelId={metaPixelId} />}
+        {tiktokPixelId && <TikTokPixel pixelId={tiktokPixelId} />}
       </body>
     </html>
   );

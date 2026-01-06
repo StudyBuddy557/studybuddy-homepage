@@ -1,26 +1,39 @@
-import React from 'react';
 import type { Metadata } from 'next';
 import HomePage from './HomePage';
-import { buildJsonLdForPage } from '@/lib/schema/render';
-import { findPageMapping } from '@/lib/teas/find-page';
 
 export const metadata: Metadata = {
-  title: 'TEAS 7 Exam Prep Course | 92% Pass Rate | StudyBuddy',
-  description: 'Master all four TEAS 7 sections with AI-powered tutoring. 4,000+ practice questions, 350+ video lectures, and personalized weak-area coaching. 92% pass rate vs 65% national average.',
+  title: 'StudyBuddy - AI-Powered TEAS 7 Prep | 92% Pass Rate',
+  description: 'Pass your TEAS 7 exam on your first try with AI-powered adaptive learning. 4,000+ practice questions, 350+ video lessons, and 24/7 AI tutoring. 92% pass rate guaranteed.',
+  keywords: 'TEAS 7 prep, TEAS exam, nursing school prep, AI tutor, practice questions, video lessons',
+  openGraph: {
+    title: 'StudyBuddy - AI-Powered TEAS 7 Prep',
+    description: 'Join 500+ students with 92% pass rate. AI-powered personalized study plans.',
+    type: 'website',
+  },
 };
 
 export default function Page() {
-  const mapping = findPageMapping('/');
-  const jsonLd = mapping ? buildJsonLdForPage('home', { mapping }) : null;
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'EducationalOrganization',
+    name: 'StudyBuddy',
+    description: 'AI-powered TEAS 7 exam preparation with 92% pass rate',
+    url: 'https://studybuddy.live',
+    offers: {
+      '@type': 'Offer',
+      category: 'Education',
+      priceCurrency: 'USD',
+      price: '24.99',
+      priceValidUntil: '2026-12-31',
+    },
+  };
 
   return (
     <>
-      {jsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: jsonLd }}
-        />
-      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <HomePage />
     </>
   );

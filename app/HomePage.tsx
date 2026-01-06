@@ -1,18 +1,72 @@
 'use client';
 
+import React, { memo, useMemo, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useEffect, useCallback } from 'react';
 import { 
-  CheckCircle2, Zap, Shield, Users, ArrowRight, 
-  Play, BookOpen, ChevronDown, X, 
-  Menu, Bot, Award, Star, Target, Brain, 
-  Sparkles, Timer, BarChart3, Home, User, AlertCircle, MessageCircle
+  CheckCircle2, Zap, Shield, Users, Target, Brain, BookOpen, 
+  ChevronDown, X, Menu, Award, Star, Sparkles, Timer, Home, User
 } from 'lucide-react';
 import { stateData } from '@/lib/state-data';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 🛠️ UTILS & HOOKS
+// 🎯 TYPE DEFINITIONS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+interface ValueProp {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  desc: string;
+}
+
+interface ComparisonRow {
+  label: string;
+  text?: boolean;
+  gen?: boolean;
+  sb?: boolean;
+  textVal?: string;
+  genVal?: string;
+  sbVal?: string;
+}
+
+interface ExpertCredential {
+  label: string;
+  title: string;
+  desc: string;
+}
+
+interface Review {
+  text: string;
+  author: string;
+  school: string;
+}
+
+interface FaqItem {
+  question: string;
+  answer: React.ReactNode;
+}
+
+interface NavItem {
+  label: string;
+  href: string;
+}
+
+interface ExitIntentModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+interface FaqItemComponentProps {
+  question: string;
+  answer: React.ReactNode;
+}
+
+interface HomePageProps {
+  faqData?: FaqItem[];
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🛠️ CUSTOM HOOKS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 function useScrollDirection() {
@@ -68,15 +122,93 @@ function useLocalStorage(key: string, initialValue: boolean) {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 🧩 SUB-COMPONENTS
+// 📊 DATA CONSTANTS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-interface ExitIntentModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+const NAV_ITEMS: NavItem[] = [
+  { label: 'Diagnostic', href: '/diagnostic' },
+  { label: 'Syllabus', href: '/teas-7-syllabus' },
+  { label: 'Methodology', href: '/pass-rate-methodology' },
+  { label: 'Compare', href: '/compare/teas-prep-courses' },
+  { label: 'Pricing', href: '/pricing' },
+];
 
-function ExitIntentModal({ isOpen, onClose }: ExitIntentModalProps) {
+const VALUE_PROPS: ValueProp[] = [
+  { icon: Users, title: "Who It's For", desc: "Pre-nursing & Allied Health Students" },
+  { icon: Zap, title: "Core Benefit", desc: "AI tutor fixes weak spots instantly" },
+  { icon: Shield, title: "Guarantee", desc: "100% Pass Guarantee* or full refund" },
+  { icon: BookOpen, title: "Study Time", desc: "Most students pass in 4-8 weeks" }
+];
+
+const COMPARISON_ROWS: ComparisonRow[] = [
+  { label: "Interactive AI Tutor", text: false, gen: false, sb: true },
+  { label: "Personalized Study Plan", text: false, gen: false, sb: true },
+  { label: "Practice Questions", textVal: "~500", genVal: "~1,000", sbVal: "4,000+" },
+  { label: "Video Explanations", text: false, genVal: "Limited", sbVal: "350+ Videos" },
+  { label: "Access on Any Device", text: false, gen: false, sb: true },
+  { label: "Pass Guarantee", text: false, gen: false, sb: true },
+];
+
+const EXPERT_CREDENTIALS: ExpertCredential[] = [
+  { label: "PhD", title: "Infectious Diseases & Immunology", desc: "25+ years teaching pre-nursing science" },
+  { label: "DNP", title: "Clinical Nursing Practice", desc: "20+ years NCLEX & TEAS test prep expertise" },
+  { label: "EdD", title: "Instructional Technology", desc: "30+ years designing adaptive learning systems" }
+];
+
+const DEFAULT_FAQ_ITEMS: FaqItem[] = [
+  { 
+    question: "How does the Pass Guarantee work?", 
+    answer: "Complete 80%+ of the course, answer 1,000+ practice questions, and study for 30+ days. If you don't pass, we'll give you a full $59 refund or 60 free days of extended access. No hidden loops." 
+  },
+  { 
+    question: "Are the practice exams realistic?", 
+    answer: "Yes. Our questions match the difficulty, format, and timing of the actual ATI TEAS 7 exam." 
+  },
+  { 
+    question: "What specific subjects are on the TEAS 7?", 
+    answer: "Reading, Math, Science, and English & Language Usage." 
+  },
+  { 
+    question: "Can I use a calculator on the TEAS 7?", 
+    answer: "Yes, a basic four-function calculator is provided on-screen during the test." 
+  },
+  { 
+    question: "Does StudyBuddy work on my phone or tablet?", 
+    answer: "Yes, the platform is fully responsive and works great on mobile devices." 
+  },
+  { 
+    question: "Is this course updated for the 2026 TEAS 7?", 
+    answer: "Yes, we update our content weekly to match the latest ATI standards." 
+  },
+  { 
+    question: "What is a good TEAS score for nursing school?", 
+    answer: "It depends on the program, but generally 65-70% for ADN and 75-80% for BSN." 
+  },
+];
+
+const REVIEWS: Review[] = [
+  {
+    text: "I was failing the math section consistently. The breakdown StudyBuddy gave me on algebra was a lifesaver. Passed with a 92%!",
+    author: "Sarah M.",
+    school: "University of Texas"
+  },
+  {
+    text: "The questions are harder than the actual TEAS, which made the real exam feel easy. I finished with 20 minutes to spare.",
+    author: "Jason K.",
+    school: "UCLA Nursing"
+  },
+  {
+    text: "Worth every penny. The study plan kept me honest and the mobile interface meant I could study on my lunch breaks at work.",
+    author: "Amara D.",
+    school: "Georgia State"
+  }
+];
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🧩 MEMOIZED SUB-COMPONENTS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+const ExitIntentModal = memo(({ isOpen, onClose }: ExitIntentModalProps) => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -89,8 +221,6 @@ function ExitIntentModal({ isOpen, onClose }: ExitIntentModalProps) {
     setSubmitStatus('idle');
 
     try {
-      // MailerLite API integration placeholder
-      // Replace with your actual MailerLite API endpoint
       const response = await fetch('/api/lead-capture', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -171,16 +301,17 @@ function ExitIntentModal({ isOpen, onClose }: ExitIntentModalProps) {
               </form>
             )}
             <button onClick={onClose} className="w-full text-center text-slate-400 text-xs mt-4 hover:text-slate-600 underline">
-              No thanks, I donNo thanks, I&apos;ll pay full priceapos;t want free study resources
+              No thanks, I don&apos;t want free study resources
             </button>
           </div>
         </div>
       </div>
     </div>
   );
-}
+});
+ExitIntentModal.displayName = 'ExitIntentModal';
 
-function StickyFloatingCTA() {
+const StickyFloatingCTA = memo(() => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -224,34 +355,34 @@ function StickyFloatingCTA() {
       </div>
     </div>
   );
-}
+});
+StickyFloatingCTA.displayName = 'StickyFloatingCTA';
 
-function MobileBottomNav() {
-  return (
-    <div className="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 z-50 px-6 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-      <div className="flex items-center justify-between gap-4">
-        <Link href="/" className="flex flex-col items-center text-slate-400 hover:text-[#20B2AA]">
-          <Home size={24} />
-          <span className="text-[10px] mt-1 font-medium">Home</span>
-        </Link>
-        
-        <Link 
-          href="/diagnostic" 
-          className="flex-1 bg-gradient-to-br from-[#20B2AA] to-[#1A8F88] text-white h-12 rounded-xl flex items-center justify-center font-bold text-sm shadow-lg shadow-teal-500/20 active:scale-95 transition-transform"
-        >
-          Start Diagnostic
-        </Link>
-        
-        <Link href="/dashboard" className="flex flex-col items-center text-slate-400 hover:text-[#20B2AA]">
-          <User size={24} />
-          <span className="text-[10px] mt-1 font-medium">Log In</span>
-        </Link>
-      </div>
+const MobileBottomNav = memo(() => (
+  <div className="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 z-50 px-6 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+    <div className="flex items-center justify-between gap-4">
+      <Link href="/" className="flex flex-col items-center text-slate-400 hover:text-[#20B2AA]">
+        <Home size={24} />
+        <span className="text-[10px] mt-1 font-medium">Home</span>
+      </Link>
+      
+      <Link 
+        href="/diagnostic" 
+        className="flex-1 bg-gradient-to-br from-[#20B2AA] to-[#1A8F88] text-white h-12 rounded-xl flex items-center justify-center font-bold text-sm shadow-lg shadow-teal-500/20 active:scale-95 transition-transform"
+      >
+        Start Diagnostic
+      </Link>
+      
+      <Link href="/dashboard" className="flex flex-col items-center text-slate-400 hover:text-[#20B2AA]">
+        <User size={24} />
+        <span className="text-[10px] mt-1 font-medium">Log In</span>
+      </Link>
     </div>
-  );
-}
+  </div>
+));
+MobileBottomNav.displayName = 'MobileBottomNav';
 
-function FaqItem({ question, answer }: { question: string; answer: string }) {
+const FaqItemComponent = memo(({ question, answer }: FaqItemComponentProps) => {
   const [isOpen, setIsOpen] = useState(false);
   
   return (
@@ -283,19 +414,19 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
       </div>
     </div>
   );
-}
+});
+FaqItemComponent.displayName = 'FaqItemComponent';
 
-function StarRating({ count = 5, size = 14 }: { count?: number; size?: number }) {
-  return (
-    <div className="flex text-[#F59E0B]">
-      {Array.from({ length: count }, (_, i) => (
-        <Star key={`star-${i}`} size={size} fill="currentColor" />
-      ))}
-    </div>
-  );
-}
+const StarRating = memo(({ count = 5, size = 14 }: { count?: number; size?: number }) => (
+  <div className="flex text-[#F59E0B]">
+    {Array.from({ length: count }, (_, i) => (
+      <Star key={`star-${i}`} size={size} fill="currentColor" />
+    ))}
+  </div>
+));
+StarRating.displayName = 'StarRating';
 
-function AvatarPlaceholder({ index, name }: { index: number; name?: string }) {
+const AvatarPlaceholder = memo(({ index, name }: { index: number; name?: string }) => {
   const colors = ['bg-teal-500', 'bg-blue-500', 'bg-purple-500', 'bg-pink-500', 'bg-orange-500'];
   const color = colors[index % colors.length];
   
@@ -306,13 +437,14 @@ function AvatarPlaceholder({ index, name }: { index: number; name?: string }) {
       {name ? name[0].toUpperCase() : (index + 1)}
     </div>
   );
-}
+});
+AvatarPlaceholder.displayName = 'AvatarPlaceholder';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 🚀 MAIN PAGE COMPONENT
+// 🚀 MAIN COMPONENT
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-export default function HomePage() {
+export default function HomePage({ faqData }: HomePageProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showExitIntent, setShowExitIntent] = useState(false);
@@ -340,79 +472,28 @@ export default function HomePage() {
     return () => document.removeEventListener('mouseleave', handleMouseLeave);
   }, [hasSeenModal, setHasSeenModal, isHydrated]);
 
-  const navItems = [
-    { label: 'Diagnostic', href: '/diagnostic' },
-    { label: 'Syllabus', href: '/teas-7-syllabus' },
-    { label: 'Methodology', href: '/pass-rate-methodology' },
-    { label: 'Compare', href: '/compare/teas-prep-courses' },
-    { label: 'Pricing', href: '/pricing' },
-  ];
-
-  const valueProps = [
-    { icon: Users, title: "Who It's For", desc: "Pre-nursing & Allied Health Students" },
-    { icon: Zap, title: "Core Benefit", desc: "AI tutor fixes weak spots instantly" },
-    { icon: Shield, title: "Guarantee", desc: "100% Pass Guarantee* or full refund" },
-    { icon: BookOpen, title: "Study Time", desc: "Most students pass in 4-8 weeks" }
-  ];
-
-  const comparisonRows = [
-    { label: "Interactive AI Tutor", text: false, gen: false, sb: true },
-    { label: "Personalized Study Plan", text: false, gen: false, sb: true },
-    { label: "Practice Questions", textVal: "~500", genVal: "~1,000", sbVal: "4,000+" },
-    { label: "Video Explanations", text: false, genVal: "Limited", sbVal: "350+ Videos" },
-    { label: "Access on Any Device", text: false, gen: false, sb: true },
-    { label: "Pass Guarantee", text: false, gen: false, sb: true },
-  ];
-
-  const expertCredentials = [
-    { label: "PhD", title: "Infectious Diseases & Immunology", desc: "25+ years teaching pre-nursing science" },
-    { label: "DNP", title: "Clinical Nursing Practice", desc: "20+ years NCLEX & TEAS test prep expertise" },
-    { label: "EdD", title: "Instructional Technology", desc: "30+ years designing adaptive learning systems" }
-  ];
-
-  const faqItems = [
-    { question: "How does the Pass Guarantee work?", answer: "Complete 80%+ of the course, answer 1,000+ practice questions, and study for 30+ days. If you don't pass, we'll give you a full $59 refund or 60 free days of extended access. No hidden loops." },
-    { question: "Are the practice exams realistic?", answer: "Yes. Our questions match the difficulty, format, and timing of the actual ATI TEAS 7 exam." },
-    { question: "What specific subjects are on the TEAS 7?", answer: "Reading, Math, Science, and English & Language Usage." },
-    { question: "Can I use a calculator on the TEAS 7?", answer: "Yes, a basic four-function calculator is provided on-screen during the test." },
-    { question: "Does StudyBuddy work on my phone or tablet?", answer: "Yes, the platform is fully responsive and works great on mobile devices." },
-    { question: "Is this course updated for the 2026 TEAS 7?", answer: "Yes, we update our content weekly to match the latest ATI standards." },
-    { question: "What is a good TEAS score for nursing school?", answer: "It depends on the program, but generally 65-70% for ADN and 75-80% for BSN." },
-  ];
-
-  const reviews = [
-    {
-      text: "I was failing the math section consistently. The breakdown StudyBuddy gave me on algebra was a lifesaver. Passed with a 92%!",
-      author: "Sarah M.",
-      school: "University of Texas"
-    },
-    {
-      text: "The questions are harder than the actual TEAS, which made the real exam feel easy. I finished with 20 minutes to spare.",
-      author: "Jason K.",
-      school: "UCLA Nursing"
-    },
-    {
-      text: "Worth every penny. The study plan kept me honest and the mobile interface meant I could study on my lunch breaks at work.",
-      author: "Amara D.",
-      school: "Georgia State"
-    }
-  ];
-
-  // AEO STRATEGY: Direct state page linking
-  const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleStateChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedState(e.target.value);
-  };
+  }, []);
 
-  const handleStateNavigate = () => {
+  const handleStateNavigate = useCallback(() => {
     if (selectedState) {
       window.location.href = `/states/${selectedState}`;
     }
-  };
+  }, [selectedState]);
+
+  // Memoize data
+  const navItems = useMemo(() => NAV_ITEMS, []);
+  const valueProps = useMemo(() => VALUE_PROPS, []);
+  const comparisonRows = useMemo(() => COMPARISON_ROWS, []);
+  const expertCredentials = useMemo(() => EXPERT_CREDENTIALS, []);
+  const faqItems = useMemo(() => faqData || DEFAULT_FAQ_ITEMS, [faqData]);
+  const reviews = useMemo(() => REVIEWS, []);
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-gradient-to-br from-[#20B2AA] to-[#1A8F88] selection:text-white pb-20 md:pb-0">
       
-      {/* 🧩 Components */}
+      {/* 🧩 Fixed Components */}
       <ExitIntentModal isOpen={showExitIntent} onClose={() => setShowExitIntent(false)} />
       <StickyFloatingCTA />
       <MobileBottomNav />
@@ -428,7 +509,6 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 group">
-              {/* UPDATED: LOGO IMAGE */}
               <div className="relative w-10 h-10 transition-transform group-hover:scale-105">
                 <Image
                   src="/logo.png"
@@ -510,7 +590,7 @@ export default function HomePage() {
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
           🎯 HERO SECTION
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden" aria-labelledby="hero-heading">
         <div 
           className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-pink-200/40 via-teal-200/30 to-blue-200/40 rounded-full blur-3xl -z-10 animate-pulse" 
           style={{ animationDuration: '8s' }} 
@@ -534,7 +614,7 @@ export default function HomePage() {
                 </div>
               </div>
               
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-slate-900 leading-[1.1] tracking-tight">
+              <h1 id="hero-heading" className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-slate-900 leading-[1.1] tracking-tight">
                 AI-Powered TEAS 7 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#20B2AA] to-[#1E3A8A]">
                   Prep by Nursing Professors.
@@ -660,10 +740,10 @@ export default function HomePage() {
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
           🎯 VALUE PROPS
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section className="py-24 bg-white border-t border-slate-100">
+      <section className="py-24 bg-white border-t border-slate-100" aria-labelledby="value-props-heading">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">What is StudyBuddy?</h2>
+            <h2 id="value-props-heading" className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">What is StudyBuddy?</h2>
             <p className="text-slate-500 text-lg">Quick answers to help you decide if this is right for you</p>
           </div>
 
@@ -682,22 +762,21 @@ export default function HomePage() {
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 COMPARISON TABLE (Restored with AEO Links)
+          🎯 COMPARISON TABLE
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section className="py-24 bg-slate-50">
+      <section className="py-24 bg-slate-50" aria-labelledby="comparison-heading">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <Link href="/compare/teas-prep-courses" className="bg-amber-100 text-amber-800 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-4 inline-block border border-amber-200 hover:bg-amber-200 transition-colors">
               The Honest Comparison
             </Link>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
+            <h2 id="comparison-heading" className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
               Not All TEAS Prep Is <br/> <span className="text-[#20B2AA]">Created Equal</span>
             </h2>
             <p className="text-slate-600 text-lg">See why students switch from ATI to StudyBuddy.</p>
           </div>
 
           <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
-            {/* Header Row */}
             <div className="grid grid-cols-4 bg-slate-50 border-b border-slate-200 py-6 px-4 text-center">
               <div className="text-left pl-6 font-bold text-xs uppercase tracking-widest text-slate-400 self-end">Features</div>
               <div><div className="font-bold text-slate-700">Textbooks</div><div className="text-xs text-slate-400">Traditional</div></div>
@@ -708,7 +787,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Rows */}
             {comparisonRows.map((row, i) => (
               <div key={`comparison-row-${i}`} className={`grid grid-cols-4 py-5 px-4 border-b border-slate-100 items-center text-center ${i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}>
                 <div className="text-left pl-6 text-sm font-bold text-slate-700">{row.label}</div>
@@ -735,11 +813,11 @@ export default function HomePage() {
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 STATE REQUIREMENTS (Restored AEO Logic)
+          🎯 STATE REQUIREMENTS
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-white" aria-labelledby="state-requirements-heading">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
+          <h2 id="state-requirements-heading" className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
             Nursing Requirements Vary by State. <br/>
             <span className="text-[#20B2AA]">Does Your Prep?</span>
           </h2>
@@ -774,16 +852,16 @@ export default function HomePage() {
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 EXPERT CONTENT (Link to Legit Check)
+          🎯 EXPERT CONTENT
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section className="py-24 bg-slate-50 border-t border-slate-100">
+      <section className="py-24 bg-slate-50 border-t border-slate-100" aria-labelledby="expert-heading">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
               <Link href="/is-studybuddy-legit" className="bg-indigo-100 text-indigo-700 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-6 inline-block hover:bg-indigo-200 transition-colors">
                 Verified Legitimacy
               </Link>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-8 leading-tight">
+              <h2 id="expert-heading" className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-8 leading-tight">
                 Built by PhD & DNP <br/> Educators. <br/>
                 <span className="text-indigo-600">Not Content Farms.</span>
               </h2>
@@ -831,18 +909,18 @@ export default function HomePage() {
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 PRICING (MATCHES SCREENSHOT)
+          🎯 PRICING
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section id="pricing" className="py-24 bg-slate-50">
+      <section id="pricing" className="py-24 bg-slate-50" aria-labelledby="pricing-heading">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
+            <h2 id="pricing-heading" className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Choose Your Plan</h2>
             <p className="text-slate-600 text-xl">
               One month to prep. Or lock in savings with 3 months.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 items-start max-w-4xl mx-auto">
-            {/* Basic Plan */}
             <div className="p-8 rounded-3xl border border-slate-200 text-left bg-white shadow-sm">
               <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Month-to-Month</div>
               <h3 className="text-3xl font-bold text-slate-900 mb-4">Basic</h3>
@@ -883,9 +961,7 @@ export default function HomePage() {
               </Link>
             </div>
              
-            {/* Pro Plan */}
             <div className="p-8 rounded-3xl border-2 border-[#20B2AA] shadow-xl text-left relative bg-white">
-              {/* Most Popular Badge */}
               <div className="absolute -top-4 right-6 bg-amber-400 text-white text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wider flex items-center gap-1.5 shadow-lg">
                 <Sparkles className="w-3.5 h-3.5" />
                 Most Popular
@@ -907,7 +983,6 @@ export default function HomePage() {
                   Everything in Basic
                 </li>
                 
-                {/* AI Tutor Highlight */}
                 <li className="p-4 bg-teal-50 rounded-xl border border-teal-100">
                   <div className="flex gap-3">
                     <Zap className="w-5 h-5 text-amber-500 shrink-0 mt-0.5"/>
@@ -918,7 +993,6 @@ export default function HomePage() {
                   </div>
                 </li>
                 
-                {/* Pass Guarantee Highlight */}
                 <li className="p-4 bg-orange-50 rounded-xl border border-orange-100">
                   <div className="flex gap-3">
                     <Shield className="w-5 h-5 text-orange-500 shrink-0 mt-0.5"/>
@@ -945,11 +1019,11 @@ export default function HomePage() {
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
           🎯 SOCIAL PROOF
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section className="py-24 bg-white border-y border-slate-200">
+      <section className="py-24 bg-white border-y border-slate-200" aria-labelledby="testimonials-heading">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-end mb-12">
             <div className="max-w-2xl">
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              <h2 id="testimonials-heading" className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
                 Nursing Students <span className="text-[#20B2AA]">Love Us</span>
               </h2>
               <p className="text-lg text-slate-600">
@@ -987,15 +1061,15 @@ export default function HomePage() {
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
           🎯 FAQ
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section className="py-24 bg-white px-4 sm:px-6 lg:px-8">
+      <section className="py-24 bg-white px-4 sm:px-6 lg:px-8" aria-labelledby="faq-heading">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">Frequently Asked Questions</h2>
+            <h2 id="faq-heading" className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">Frequently Asked Questions</h2>
             <p className="text-slate-500">Everything you need to know about the TEAS 7.</p>
           </div>
           <div className="space-y-4">
             {faqItems.map((item, i) => (
-              <FaqItem 
+              <FaqItemComponent 
                 key={`faq-${i}`}
                 question={item.question} 
                 answer={item.answer} 
@@ -1006,7 +1080,7 @@ export default function HomePage() {
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🎯 FOOTER (Clean & Complete)
+          🎯 FOOTER
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <footer className="bg-[#0F172A] text-slate-400 pt-16 pb-24 md:pb-8 border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
