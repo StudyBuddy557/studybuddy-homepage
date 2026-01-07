@@ -58,7 +58,6 @@ export default function Footer() {
         <div>
           <h4 className="text-white font-bold mb-4 uppercase text-xs tracking-wider">Legal & Support</h4>
           <ul className="space-y-3 text-sm">
-            <li><Link href="/refunds" className="hover:text-[#20B2AA] transition-colors">Refund Policy</Link></li>
             <li><Link href="/privacy-policy" className="hover:text-[#20B2AA] transition-colors">Privacy Policy</Link></li>
             <li><Link href="/terms-and-conditions" className="hover:text-[#20B2AA] transition-colors">Terms of Service</Link></li>
             <li><a href="mailto:support@studybuddy.live" className="hover:text-[#20B2AA] transition-colors">Contact Support</a></li>

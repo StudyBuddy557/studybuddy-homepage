@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
+export const dynamic = 'force-dynamic';
+
 // ❌ OLD: Top-level init removed to prevent build crashes
 // const openai = new OpenAI(...);
 

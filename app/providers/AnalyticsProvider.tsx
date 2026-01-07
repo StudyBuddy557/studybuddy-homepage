@@ -5,10 +5,9 @@
  * Initializes analytics system and provides tracking context to the app.
  * Should be included in root layout.
  */
-
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, Suspense } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { analytics } from '@/lib/analytics/tracker';
 import { ConsoleAdapter } from '@/lib/analytics/adapters/console';
@@ -18,7 +17,8 @@ interface AnalyticsProviderProps {
   children: React.ReactNode;
 }
 
-export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
+// Separate component that uses useSearchParams
+function AnalyticsTracker({ children }: AnalyticsProviderProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const initialized = useRef(false);
@@ -29,7 +29,6 @@ export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
 
     const debug = process.env.NEXT_PUBLIC_ANALYTICS_DEBUG === 'true';
     const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
-
     const adapters = [];
 
     // Add console adapter in development or if debug enabled
@@ -60,4 +59,13 @@ export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
   }, [pathname, searchParams]);
 
   return <>{children}</>;
+}
+
+// Main provider with Suspense boundary
+export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
+  return (
+    <Suspense fallback={null}>
+      <AnalyticsTracker>{children}</AnalyticsTracker>
+    </Suspense>
+  );
 }

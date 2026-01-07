@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+export const dynamic = 'force-dynamic';
+
 function isMCQ(message: string): boolean {
   const mcqPatterns = [
     /\b[A-D]\)\s/i,

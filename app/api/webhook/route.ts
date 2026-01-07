@@ -4,6 +4,8 @@ import Stripe from 'stripe';
 import { adminDb } from '@/lib/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
 
+export const dynamic = 'force-dynamic';
+
 // ❌ OLD: Top-level initialization removed to prevent build crashes
 // const stripe = new Stripe(...) 
 

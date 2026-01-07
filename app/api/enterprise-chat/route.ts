@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   const { messages, messageCount } = await req.json();
   const lastMessage = messages[messages.length - 1].content.toLowerCase();
