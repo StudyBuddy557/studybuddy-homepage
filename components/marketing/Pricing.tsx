@@ -2,10 +2,10 @@
 
 import { Check, X, ShieldCheck, Sparkles } from 'lucide-react';
 
-// ✅ UPDATED: Your Live Stripe Payment Links
+// ✅ UPDATED: LearnWorlds Checkout Links (Fixes "Silent Failure")
 const CHECKOUT_URLS = {
-  BASIC: "https://buy.stripe.com/eVq7sKbtn7IR5ma5jhcjS05",
-  PRO: "https://buy.stripe.com/bJe8wO6930gpdSG275cjS04",
+  BASIC: "https://learn.studybuddy.live/payment?product_id=2499",
+  PRO: "https://learn.studybuddy.live/payment?product_id=59-3-months",
 };
 
 export default function Pricing() {
