@@ -152,7 +152,7 @@ export default function MathGuidePage() {
             </div>
 
             <Link 
-              href="https://buy.stripe.com/eVq7sKbtn7IR5ma5jhcjS05" 
+              href="https://learn.studybuddy.live/payment?product_id=2499" 
               className="inline-flex items-center px-6 py-3 bg-[#20B2AA] text-white font-bold rounded-xl hover:bg-[#18968F] transition-all"
             >
               Get Unlimited AI Math Help <ArrowRight className="ml-2 w-5 h-5" />

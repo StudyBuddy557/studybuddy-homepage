@@ -153,7 +153,7 @@ export default function ProfessorsPage() {
              Why trust your TEAS score to anonymous writers? Get prep built by the professors who teach the actual classes.
            </p>
            <Link 
-             href="https://buy.stripe.com/eVq7sKbtn7IR5ma5jhcjS05" 
+             href="https://learn.studybuddy.live/payment?product_id=2499" 
              className="inline-flex items-center px-8 py-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-500 transition-all"
            >
              Start Studying Now <ArrowRight className="ml-2 w-5 h-5" />

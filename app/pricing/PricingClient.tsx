@@ -51,7 +51,7 @@ export default function PricingClient() {
             </p>
             
             <button
-              onClick={() => handleCheckoutClick('basic', 24.99, 'https://buy.stripe.com/eVq7sKbtn7IR5ma5jhcjS05')}
+              onClick={() => handleCheckoutClick('basic', 24.99, 'https://learn.studybuddy.live/payment?product_id=2499')}
               className="block w-full py-4 rounded-xl border-2 border-slate-200 text-center font-bold text-slate-700 hover:border-[#20B2AA] hover:text-[#20B2AA] transition-all mb-8"
               aria-label="Start Basic Plan for $24.99 per month"
             >
@@ -105,7 +105,7 @@ export default function PricingClient() {
             </p>
             
             <button
-              onClick={() => handleCheckoutClick('pro', 59, 'https://buy.stripe.com/bJe8wO6930gpdSG275cjS04')}
+              onClick={() => handleCheckoutClick('pro', 59, 'https://learn.studybuddy.live/payment?product_id=59-3-months')}
               className="block w-full py-4 rounded-xl bg-[#20B2AA] text-center font-bold text-white shadow-lg hover:bg-[#18968F] transition-all mb-8"
               aria-label="Get 3-Month Pro Access for $59"
             >
