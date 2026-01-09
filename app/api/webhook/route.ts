@@ -1,102 +1,75 @@
+// app/api/webhook/route.ts
+
 import { NextRequest, NextResponse } from 'next/server';
-import { headers } from 'next/headers';
 import Stripe from 'stripe';
-import { adminDb } from '@/lib/firebase-admin';
-import { FieldValue } from 'firebase-admin/firestore';
+import { FacebookConversionAPI } from '@/lib/analytics/server/facebook-capi';
+import { PurchaseData, UserData } from '@/lib/analytics/core/types';
 
-export const dynamic = 'force-dynamic';
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2024-12-18.acacia',
+});
 
-// ❌ OLD: Top-level initialization removed to prevent build crashes
-// const stripe = new Stripe(...) 
+const fbCAPI = new FacebookConversionAPI();
 
-export async function POST(req: NextRequest) {
-  // ✅ NEW: Initialize Stripe inside the request handler
-  if (!process.env.STRIPE_SECRET_KEY) {
-    console.error('❌ Missing STRIPE_SECRET_KEY in environment variables');
-    return NextResponse.json({ error: 'Server Configuration Error' }, { status: 500 });
-  }
-
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: '2023-10-16',
-  });
-
-  const body = await req.text();
-  // Await headers() for Next.js 13/14/15 compatibility
-  const signature = (await headers()).get("Stripe-Signature") as string;
+export async function POST(request: NextRequest) {
+  const body = await request.text();
+  const signature = request.headers.get('stripe-signature')!;
 
   let event: Stripe.Event;
 
-  // 1. Verify the Request is genuinely from Stripe
   try {
-    if (!process.env.STRIPE_WEBHOOK_SECRET) throw new Error('Missing Stripe Webhook Secret');
-    event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
+    event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET!);
   } catch (err: any) {
-    console.error(`⚠️  Webhook Signature Verification Failed: ${err.message}`);
+    console.error('Webhook signature verification failed:', err.message);
     return NextResponse.json({ error: err.message }, { status: 400 });
   }
 
-  // 2. Handle the Event
-  try {
-    if (event.type === 'checkout.session.completed' || event.type === 'invoice.payment_succeeded') {
-      const session = event.data.object as any; // Using 'any' to handle differences between Session and Invoice objects
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object as Stripe.Checkout.Session;
 
-      // Look for email in customer_details first!
-      const email = session.customer_details?.email || session.customer_email || session.email;
+    const customer = session.customer_details;
+    const metadata = session.metadata || {};
 
-      // Handle amount for both Checkout Sessions (amount_total) and Invoices (amount_paid)
-      const amountPaid = session.amount_total || session.amount_paid || session.amount_due || 0; 
+    const purchaseData: PurchaseData = {
+      transactionId: session.id,
+      value: (session.amount_total || 0) / 100,
+      currency: (session.currency || 'usd').toUpperCase(),
+      tax: (session.total_details?.amount_tax || 0) / 100,
+      items: [
+        {
+          item_id: metadata.plan_id || 'basic',
+          item_name: metadata.plan_name || 'TEAS 7 Basic Plan',
+          item_category: 'subscription',
+          price: (session.amount_total || 0) / 100,
+          quantity: 1,
+          currency: (session.currency || 'usd').toUpperCase(),
+        },
+      ],
+    };
 
-      // Get the "Original Price" (Before Coupon)
-      const originalPrice = session.amount_subtotal || session.subtotal || amountPaid;
+    const userData: Partial<UserData> = {
+      email: customer?.email || undefined,
+      phone: customer?.phone || undefined,
+      firstName: customer?.name?.split(' ')[0],
+      lastName: customer?.name?.split(' ').slice(1).join(' '),
+      city: customer?.address?.city || undefined,
+      state: customer?.address?.state || undefined,
+      country: customer?.address?.country || undefined,
+      zipCode: customer?.address?.postal_code || undefined,
+      externalId: session.client_reference_id || undefined,
+      fbp: metadata.fbp || undefined,
+      fbc: metadata.fbc || undefined,
+    };
 
-      console.log(`💰 Payment from ${email}: Paid $${amountPaid / 100} | Value $${originalPrice / 100}`);
+    const eventSourceUrl = metadata.checkout_url || `${process.env.NEXT_PUBLIC_SITE_URL}/checkout`;
 
-      if (email && adminDb) {
-        // 3. Determine Tier based on ORIGINAL Price
-        // $59.00 (5900 cents) = Pro
-        // $24.99 (2499 cents) = Basic
-        let tier: 'basic' | 'pro' = 'basic';
-        let credits = 50;
-
-        // Check 'originalPrice' instead of 'amountPaid'
-        if (originalPrice >= 5000) { 
-          tier = 'pro';
-          credits = 9999;
-        }
-
-        // 4. Sync to Firestore
-        const userRef = adminDb.collection('users').doc(email);
-        
-        await userRef.set({
-          email: email,
-          tier: tier,
-          isPro: tier === 'pro',
-          credits: credits,
-          lastPaymentAt: FieldValue.serverTimestamp(),
-          paymentSource: 'Stripe',
-          stripeCustomerId: session.customer,
-        }, { merge: true });
-
-        // Initialize Usage Limits for AI
-        await userRef.collection('meta').doc('usage').set({
-           maxDailyChats: tier === 'pro' ? 9999 : 10,
-           lastReset: FieldValue.serverTimestamp(),
-        }, { merge: true });
-        
-        console.log(`✅ User ${email} upgraded to ${tier} (Value: $${originalPrice / 100})`);
-      } else {
-        console.log('⚠️ No email found in event, skipping database update.');
-      }
+    try {
+      await fbCAPI.trackPurchase(purchaseData, userData, eventSourceUrl);
+      console.log('Server-side purchase tracked:', session.id);
+    } catch (error) {
+      console.error('Failed to track server-side purchase:', error);
     }
-
-    return NextResponse.json({ received: true });
-
-  } catch (err: any) {
-    console.error('❌ Webhook Logic Error:', err);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
+
+  return NextResponse.json({ received: true });
 }

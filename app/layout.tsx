@@ -1,9 +1,9 @@
-import { AnalyticsProvider } from './providers/AnalyticsProvider';
-import { MetaPixel } from '@/components/pixels/MetaPixel';
-import { TikTokPixel } from '@/components/pixels/TikTokPixel';
 import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
+
+// NEW: Enterprise Analytics System
+import { AnalyticsProvider } from './components/analytics/AnalyticsProvider';
 
 // Your existing analytics components
 import GoogleTagManager from '@/components/analytics/GoogleTagManager';
@@ -76,27 +76,30 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
-  const tiktokPixelId = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID;
-
   return (
     <html lang="en">
       <body className={`${plusJakarta.variable} font-sans antialiased`}>
-        {/* YOUR EXISTING ANALYTICS */}
+        {/* GTM noscript fallback - Required for Google Tag Manager */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-PJRBS3FP"
+            height="0"
+            width="0"
+            style={{ display: 'none', visibility: 'hidden' }}
+          />
+        </noscript>
+
+        {/* LEGACY ANALYTICS - Keep these if they have unique configurations */}
         <GoogleTagManager />
         <MicrosoftClarity />
         
-        {/* NEW: Analytics Provider wraps everything */}
+        {/* NEW: Enterprise Analytics System - Handles GTM, FB Pixel, GA4 */}
         <AnalyticsProvider>
           {children}
         </AnalyticsProvider>
         
-        {/* YOUR EXISTING AI CONCIERGE */}
+        {/* AI Concierge */}
         <EnterpriseAIConcierge />
-        
-        {/* NEW: Meta & TikTok Pixels */}
-        {metaPixelId && <MetaPixel pixelId={metaPixelId} />}
-        {tiktokPixelId && <TikTokPixel pixelId={tiktokPixelId} />}
       </body>
     </html>
   );
