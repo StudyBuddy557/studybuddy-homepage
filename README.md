@@ -244,3 +244,4 @@ Proprietary - StudyBuddy Platform
 
 **Built with ⚡ for nursing students by Rahul**
 
+# Analytics v1.0
