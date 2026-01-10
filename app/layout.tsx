@@ -1,10 +1,9 @@
 import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
-
 // NEW: Enterprise Analytics System
 import { AnalyticsProvider } from './components/analytics/AnalyticsProvider';
-
+import AttributionCapture from '@/components/analytics/AttributionCapture';
 // Your existing analytics components
 import GoogleTagManager from '@/components/analytics/GoogleTagManager';
 import MicrosoftClarity from '@/components/analytics/MicrosoftClarity';
@@ -88,13 +87,13 @@ export default function RootLayout({
             style={{ display: 'none', visibility: 'hidden' }}
           />
         </noscript>
-
         {/* LEGACY ANALYTICS - Keep these if they have unique configurations */}
         <GoogleTagManager />
         <MicrosoftClarity />
         
         {/* NEW: Enterprise Analytics System - Handles GTM, FB Pixel, GA4 */}
         <AnalyticsProvider>
+          <AttributionCapture />
           {children}
         </AnalyticsProvider>
         
