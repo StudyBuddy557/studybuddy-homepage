@@ -50,9 +50,9 @@ export default function AttributionCapture() {
 
     // Write each attribution value to a cookie
     Object.entries(attributionData).forEach(([key, value]) => {
-      const cookieName = ${COOKIE_PREFIX}${key};
+      const cookieName = `${COOKIE_PREFIX}${key}`;
       const cookieValue = encodeURIComponent(value);
-      const cookie = ${cookieName}=${cookieValue}; max-age=${MAX_AGE}; path=/; SameSite=Lax${secureFlag};
+      const cookie = `${cookieName}=${cookieValue}; max-age=${MAX_AGE}; path=/; SameSite=Lax${secureFlag}`;
       
       document.cookie = cookie;
     });
