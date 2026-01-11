@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
+import { Suspense } from 'react';
 import './globals.css';
 // NEW: Enterprise Analytics System
 import { AnalyticsProvider } from './components/analytics/AnalyticsProvider';
@@ -19,11 +20,11 @@ const plusJakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL('https://studybuddy.live'),
   title: {
-    default: 'StudyBuddy - TEAS 7 Prep with AI Tutor | 92% Pass Rate',
+    default: 'StudyBuddy - AI-Powered TEAS 7 Exam Prep & Practice Questions',
     template: '%s | StudyBuddy TEAS Prep'
   },
-  description: 'Pass your TEAS 7 exam with AI-powered study tools. 4,000+ practice questions, unlimited AI tutoring, and our 100% pass guarantee. Join 500+ students who passed first try.',
-  keywords: ['TEAS 7 prep', 'TEAS exam', 'nursing school prep', 'TEAS practice test', 'AI tutor', 'pass guarantee'],
+  description: 'Prepare for your TEAS 7 exam with AI-powered study tools. Access practice questions, video lessons, and personalized AI tutoring. Cancel anytime.',
+  keywords: ['TEAS 7 prep', 'TEAS exam', 'nursing school prep', 'TEAS practice test', 'AI tutor', 'TEAS study guide'],
   authors: [{ name: 'StudyBuddy' }],
   creator: 'StudyBuddy',
   openGraph: {
@@ -31,8 +32,8 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://studybuddy.live',
     siteName: 'StudyBuddy',
-    title: 'StudyBuddy - TEAS 7 Prep with AI Tutor',
-    description: 'Pass your TEAS 7 exam with AI-powered study tools. 92% pass rate. 100% money-back guarantee.',
+    title: 'StudyBuddy - AI-Powered TEAS 7 Exam Prep',
+    description: 'Prepare for your TEAS 7 exam with AI-powered study tools, practice questions, and video lessons.',
     images: [
       {
         url: '/StudyBuddy_AI_tutor_Avatar.png',
@@ -44,8 +45,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'StudyBuddy - TEAS 7 Prep with AI Tutor',
-    description: 'Pass your TEAS 7 exam with AI-powered study tools. 92% pass rate.',
+    title: 'StudyBuddy - AI-Powered TEAS 7 Exam Prep',
+    description: 'Prepare for your TEAS 7 exam with AI-powered study tools, practice questions, and video lessons.',
     images: ['/StudyBuddy_AI_tutor_Avatar.png'],
   },
   robots: {
@@ -93,7 +94,9 @@ export default function RootLayout({
         
         {/* NEW: Enterprise Analytics System - Handles GTM, FB Pixel, GA4 */}
         <AnalyticsProvider>
-          <AttributionCapture />
+          <Suspense fallback={null}>
+            <AttributionCapture />
+          </Suspense>
           {children}
         </AnalyticsProvider>
         
